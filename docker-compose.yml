@@ -8,7 +8,7 @@ services:
     networks:
       - backend
     healthcheck:
-      test: ["pg_isready", "-U", "${POSTGRES_USER}", "-d", "${POSTGRES_DB}"]
+      test: ["CMD", "pg_isready", "-U", "${POSTGRES_USER}", "-d", "${POSTGRES_DB}"]
       interval: 3s
       timeout: 3s
       retries: 5
@@ -16,19 +16,31 @@ services:
     volumes:
       - data:/var/lib/postgresql/data
   backend:
-    build: /backend
-    image: user/find-your-pet-backend:latest
+    build: ./backend
+    image: shuler7/find-your-pet-backend:1.0
     environment:
       - URL_DATABASE=${URL_DATABASE}
+      - SECRET_KEY=${SECRET_KEY}
+      - SMTP_HOST=${SMTP_HOST}
+      - SMTP_USER=${SMTP_USER}
+      - SMTP_PASSWORD=${SMTP_PASSWORD}
+      - EMAIL_FROM=${EMAIL_FROM}
+      - APP_URL=${APP_URL}
     networks:
       - backend
       - frontend
+    ports:
+      - "8000:8000"
     depends_on:
       database:
         condition: service_healthy
   frontend:
-    build: /frontend
-    image: user/find-your-pet-frontend:latest
+    build:
+      context: ./frontend
+      args:
+        - VITE_YMAPS_API_KEY=${VITE_YMAPS_API_KEY}
+        - VITE_YMAPS_GEOSUGGEST_API_KEY=${VITE_YMAPS_GEOSUGGEST_API_KEY}
+    image: shuler7/find-your-pet-frontend:1.0
     networks:
       - frontend
     ports:
