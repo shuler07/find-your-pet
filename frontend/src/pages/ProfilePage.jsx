@@ -20,15 +20,20 @@ import {
 import { useNavigate } from "react-router-dom";
 
 export default function ProfilePage() {
-    const _name = window.localStorage.getItem("user_name"),
-        _date = window.localStorage.getItem("user_date"),
-        _email = window.localStorage.getItem("user_email"),
-        _phone = window.localStorage.getItem("user_phone");
-
-    const [userName, setUserName] = useState(_name ? _name : "");
-    const [userDate, setUserDate] = useState(_date ? _date : "");
-    const [userEmail, setUserEmail] = useState(_email ? _email : "");
-    const [userPhone, setUserPhone] = useState(_phone ? _phone : "");
+    const _user = window.localStorage.getItem("fyp-user");
+    const [user, setUser] = useState(
+        _user
+            ? JSON.parse(_user)
+            : {
+                  name: "",
+                  date: "",
+                  email: "",
+                  phone: "",
+                  vk: "",
+                  tg: "",
+                  max: "",
+              }
+    );
     useEffect(() => {
         GetUser();
     }, []);
@@ -39,22 +44,8 @@ export default function ProfilePage() {
         const data = await ApiGetUser();
 
         if (data.user) {
-            if (data.user.name != userName) {
-                window.localStorage.setItem("user_name", data.user.name);
-                setUserName(data.user.name);
-            }
-            if (data.user.date != userDate) {
-                window.localStorage.setItem("user_date", data.user.date);
-                setUserDate(data.user.date);
-            }
-            if (data.user.email != userEmail) {
-                window.localStorage.setItem("user_email", data.user.email);
-                setUserEmail(data.user.email);
-            }
-            if (data.user.phone != userPhone) {
-                window.localStorage.setItem("user_phone", data.user.phone);
-                setUserPhone(data.user.phone);
-            }
+            window.localStorage.setItem("fyp-user", JSON.stringify(data.user));
+            setUser(data.user);
         } else if (data.error)
             CallAlert("Ошибка при обновлении профиля", "red");
     }
@@ -62,19 +53,11 @@ export default function ProfilePage() {
     return (
         <>
             <Header />
-            <div className="page-container">
-                <ProfileCard
-                    name={userName}
-                    date={userDate}
-                    email={userEmail}
-                    phone={userPhone}
-                />
+            <div id="profile-page-container" className="page-container">
+                <ProfileCard {...user} />
                 <AccountCard
-                    name={userName}
-                    setName={setUserName}
-                    email={userEmail}
-                    phone={userPhone}
-                    setPhone={setUserPhone}
+                    {...user}
+                    setUser={setUser}
                     CallAlert={CallAlert}
                     setSignedIn={setSignedIn}
                 />
@@ -86,7 +69,7 @@ export default function ProfilePage() {
     );
 }
 
-function ProfileCard({ name, date, email, phone }) {
+function ProfileCard({ name, date, email, phone, vk, tg, max }) {
     return (
         <section id="profile-card-section" className="card-section">
             <div id="profile-card-avatar">
@@ -100,14 +83,28 @@ function ProfileCard({ name, date, email, phone }) {
                 <h6 style={{ marginTop: "-1.25rem" }}>
                     Зарегистрирован {date}
                 </h6>
-                <div style={{ display: "flex", gap: "1rem" }}>
+                <div
+                    style={{ display: "flex", gap: ".5rem", flexWrap: "wrap" }}
+                >
                     <div className="profile-card-field">
                         <h6>Почта</h6>
                         <h3>{email}</h3>
                     </div>
                     <div className="profile-card-field">
                         <h6>Телефон</h6>
-                        <h3>{phone ? phone : "Не указан"}</h3>
+                        <h3>{phone || "Не указан"}</h3>
+                    </div>
+                    <div className="profile-card-field">
+                        <h6>VK</h6>
+                        <h3>{vk || "Не указан"}</h3>
+                    </div>
+                    <div className="profile-card-field">
+                        <h6>Telegram</h6>
+                        <h3>{tg || "Не указан"}</h3>
+                    </div>
+                    <div className="profile-card-field">
+                        <h6>Max</h6>
+                        <h3>{max || "Не указан"}</h3>
                     </div>
                 </div>
             </div>
@@ -116,30 +113,32 @@ function ProfileCard({ name, date, email, phone }) {
 }
 
 function AccountCard({
+    setUser,
     name,
-    setName,
     email,
     phone,
-    setPhone,
+    vk,
+    tg,
+    max,
     CallAlert,
     setSignedIn,
 }) {
     return (
-        <section id="account-card-section" className="card-section">
+        <section className="card-section">
             <h5>Аккаунт</h5>
             <AccountNameField
                 _name={name}
-                setUserName={setName}
+                setUser={setUser}
                 CallAlert={CallAlert}
             />
             <AccountPhoneField
                 _phone={phone}
-                setUserPhone={setPhone}
+                setUser={setUser}
                 CallAlert={CallAlert}
             />
             <AccountEmailField _email={email} CallAlert={CallAlert} />
             <AccountPasswordField CallAlert={CallAlert} />
-            <div style={{ display: "flex", gap: "2rem", position: "relative" }}>
+            <div id="account-card-row-container">
                 <AccountLogOut
                     CallAlert={CallAlert}
                     setSignedIn={setSignedIn}
@@ -153,7 +152,7 @@ function AccountCard({
     );
 }
 
-function AccountNameField({ _name, setUserName, CallAlert }) {
+function AccountNameField({ _name, setUser, CallAlert }) {
     const editButtonRef = useRef();
 
     const [disabled, setDisabled] = useState(true);
@@ -167,7 +166,7 @@ function AccountNameField({ _name, setUserName, CallAlert }) {
 
         if (data.success) {
             CallAlert("Имя успешно изменено", "green");
-            setUserName(name);
+            setUser((prev) => ({ ...prev, name }));
             window.localStorage.setItem("user_name", name);
         } else if (data.error)
             CallAlert("Ошибка при изменении имени. Попробуйте позже", "red");
@@ -189,9 +188,9 @@ function AccountNameField({ _name, setUserName, CallAlert }) {
     };
 
     return (
-        <div className="account-field">
+        <div className="account-field-container">
             <h6>Имя</h6>
-            <div style={{ position: "relative" }}>
+            <div className="account-field">
                 <input
                     className="account-edit-input"
                     type={null}
@@ -201,18 +200,19 @@ function AccountNameField({ _name, setUserName, CallAlert }) {
                     onChange={(e) => setName(e.target.value)}
                 />
                 <div
-                    className="account-edit-button disabled"
+                    className="primary-button account-edit-button disabled"
                     onClick={handleClickEditButton}
                     ref={editButtonRef}
                 >
                     <img />
+                    {disabled ? "Изменить" : "Сохранить"}
                 </div>
             </div>
         </div>
     );
 }
 
-function AccountPhoneField({ _phone, setUserPhone, CallAlert }) {
+function AccountPhoneField({ _phone, setUser, CallAlert }) {
     const editButtonRef = useRef();
 
     const [disabled, setDisabled] = useState(true);
@@ -226,7 +226,7 @@ function AccountPhoneField({ _phone, setUserPhone, CallAlert }) {
 
         if (data.success) {
             CallAlert("Телефон успешно изменен", "green");
-            setUserPhone(phone);
+            setUser((prev) => ({ ...prev, phone }));
             window.localStorage.setItem("user_phone", phone);
         } else if (data.error)
             CallAlert("Ошибка при изменении телефона. Попробуйте позже", "red");
@@ -253,9 +253,9 @@ function AccountPhoneField({ _phone, setUserPhone, CallAlert }) {
     };
 
     return (
-        <div className="account-field">
+        <div className="account-field-container">
             <h6>Телефон</h6>
-            <div style={{ position: "relative" }}>
+            <div className="account-field">
                 <input
                     className="account-edit-input"
                     type="phone"
@@ -265,11 +265,12 @@ function AccountPhoneField({ _phone, setUserPhone, CallAlert }) {
                     onChange={(e) => setPhone(e.target.value)}
                 />
                 <div
-                    className="account-edit-button disabled"
+                    className="primary-button account-edit-button disabled"
                     onClick={handleClickEditButton}
                     ref={editButtonRef}
                 >
                     <img />
+                    {disabled ? "Изменить" : "Сохранить"}
                 </div>
             </div>
         </div>
@@ -322,9 +323,9 @@ function AccountEmailField({ _email, CallAlert }) {
     };
 
     return (
-        <div className="account-field">
+        <div className="account-field-container">
             <h6>Почта</h6>
-            <div style={{ position: "relative" }}>
+            <div className="account-field">
                 <input
                     className="account-edit-input"
                     type="email"
@@ -334,11 +335,12 @@ function AccountEmailField({ _email, CallAlert }) {
                     onChange={(e) => setEmail(e.target.value)}
                 />
                 <div
-                    className="account-edit-button disabled"
+                    className="primary-button account-edit-button disabled"
                     onClick={handleClickEditButton}
                     ref={editButtonRef}
                 >
                     <img />
+                    {disabled ? "Изменить" : "Сохранить"}
                 </div>
             </div>
         </div>
@@ -384,39 +386,45 @@ function AccountPasswordField({ CallAlert }) {
     };
 
     return (
-        <div className="account-field">
+        <div className="account-field-container">
             <h6>Пароль</h6>
-            <div style={{ position: "relative" }}>
-                <input
-                    className="account-edit-input"
-                    type="password"
-                    autoComplete="current-password"
-                    placeholder="Текущий пароль"
-                    disabled={disabled}
-                    value={curPassword}
-                    onChange={(e) => setCurPassword(e.target.value)}
-                />
+            <div className="account-field">
                 <div
-                    className="account-edit-button disabled"
+                    style={{
+                        width: "100%",
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: ".25rem",
+                    }}
+                >
+                    <input
+                        className="account-edit-input"
+                        type="password"
+                        autoComplete="current-password"
+                        placeholder="Текущий пароль"
+                        disabled={disabled}
+                        value={curPassword}
+                        onChange={(e) => setCurPassword(e.target.value)}
+                    />
+                    {!disabled && (
+                        <input
+                            className="account-edit-input"
+                            type="password"
+                            placeholder="Новый пароль"
+                            value={newPassword}
+                            onChange={(e) => setNewPassword(e.target.value)}
+                        />
+                    )}
+                </div>
+                <div
+                    className="primary-button account-edit-button disabled"
                     onClick={handleClickEditButton}
                     ref={editButtonRef}
                 >
                     <img />
+                    {disabled ? "Изменить" : "Сохранить"}
                 </div>
             </div>
-            {!disabled && (
-                <input
-                    style={{
-                        paddingLeft: "1rem",
-                        width: "calc(100% - 1.5rem)",
-                    }}
-                    className="account-edit-input"
-                    type="password"
-                    placeholder="Новый пароль"
-                    value={newPassword}
-                    onChange={(e) => setNewPassword(e.target.value)}
-                />
-            )}
         </div>
     );
 }
@@ -443,9 +451,9 @@ function AccountLogOut({ CallAlert, setSignedIn }) {
     }
 
     return (
-        <div className="account-field" style={{ flexGrow: 1 }}>
+        <div className="account-field-container" style={{ flexGrow: 1 }}>
             <h6>Выход</h6>
-            <div style={{ position: "relative" }}>
+            <div className="account-field">
                 <button
                     className="primary-button red left-img"
                     style={{ width: "100%" }}
@@ -473,9 +481,9 @@ function AccountDelete({ CallAlert, setSignedIn }) {
     }
 
     return (
-        <div className="account-field" style={{ flexGrow: 1 }}>
+        <div className="account-field-container" style={{ flexGrow: 1 }}>
             <h6>Удалить</h6>
-            <div style={{ position: "relative" }}>
+            <div className="account-field">
                 <button
                     className="primary-button bright-red left-img"
                     style={{ width: "100%" }}

@@ -1,5 +1,13 @@
 from os import environ
+from dotenv import load_dotenv
 
+
+load_dotenv()
+
+
+URL_DATABASE = environ.get("URL_DATABASE")
+if not URL_DATABASE:
+    raise EnvironmentError("URL_DATABASE отсутсвует в переменных окружения")
 
 SECRET_KEY = environ.get("SECRET_KEY")
 ALGORITHM = "HS256"

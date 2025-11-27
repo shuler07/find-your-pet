@@ -85,12 +85,10 @@
     }
 
     #main-page-navigate-section {
-        margin: 0 2rem;
         width: calc(100% - 4rem);
     }
 
     #main-page-about-section {
-        margin: 0 2rem;
         width: calc(100% - 4rem);
     }
 }
