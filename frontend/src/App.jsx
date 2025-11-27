@@ -19,11 +19,11 @@ import { RestartAnim } from "./functions";
 export const AppContext = createContext();
 
 export default function App() {
-    const [signedIn, setSignedIn] = useState(true);
+    const [signedIn, setSignedIn] = useState(false);
     useEffect(() => {
-        //CheckAuth();
+        CheckAuth();
     }, []);
-    const [isAdmin, setIsAdmin] = useState(true);
+    const [isAdmin, setIsAdmin] = useState(false);
 
     const [alert, setAlert] = useState({ text: null, color: null });
     const alertRef = useRef();
