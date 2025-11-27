@@ -301,3 +301,21 @@ export async function ApiGetReportedAds() {
         return { error: true };
     }
 }
+
+export async function ApiGetAdCreator(uid) {
+    try {
+        const response = await fetch(API_PATHS.get_ad_creator + `?uid=${uid}`, {
+            method: "GET",
+            credentials: 'include',
+            headers: { 'Content-Type':'application/json' }
+        });
+
+        const data = await response.json();
+        if (DEBUG) console.debug("Getting ad creator. Data received:", data);
+
+        return data;
+    } catch (error) {
+        console.error("Getting ad creator. Error occured:", error);
+        return { error: true };
+    }
+}

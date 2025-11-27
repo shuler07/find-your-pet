@@ -1,12 +1,13 @@
 import "./AdPage.css";
 
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { AppContext } from "../App";
 
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 
 import { AD_INFO_DICT } from "../data";
+import { ApiGetAdCreator } from "../apiRequests";
 import {
     ymapsInitPromise,
     YMap,
@@ -16,10 +17,26 @@ import {
 } from "../ymaps";
 
 export default function AdPage() {
-    const ad = useContext(AppContext).ad;
+    const { ad, CallAlert } = useContext(AppContext);
 
-    const isCreator =
-        ad.contactEmail == window.localStorage.getItem("user_email");
+    const [creator, setCreator] = useState({});
+    const [isCreator, setIsCreator] = useState(false);
+    useEffect(() => {
+        GetCreator();
+    }, []);
+
+    async function GetCreator() {
+        const data = await ApiGetAdCreator(ad.user_id);
+
+        if (data.success) {
+            setCreator(data.user);
+            setIsCreator(data.isCreator);
+        } else if (data.error)
+            CallAlert(
+                "Ошибка при получении создателя объявления. Попробуйте позже",
+                "red"
+            );
+    }
 
     return (
         <>
@@ -41,11 +58,7 @@ export default function AdPage() {
                         extras={ad.extras}
                         isCreator={isCreator}
                     />
-                    <PetContacts
-                        contactName={ad.contactName}
-                        contactPhone={ad.contactPhone}
-                        contactEmail={ad.contactEmail}
-                    />
+                    <PetContacts status={ad.status} {...creator} />
                     <PetPlace
                         location={ad.location}
                         geoLocation={ad.geoLocation}
@@ -148,7 +161,7 @@ function PetInfo({
     );
 }
 
-function PetContacts({ status, contactName, contactPhone, contactEmail }) {
+function PetContacts({ status, name, date, email, phone, vk, tg, max }) {
     const profileText =
         status == "lost" ? "Владелец питомца" : "Нашедший питомца";
 
@@ -157,8 +170,8 @@ function PetContacts({ status, contactName, contactPhone, contactEmail }) {
             <div id="ad-contacts-profile">
                 <img src="/images/avatar-not-found.png" />
                 <div>
-                    <h3>{contactName}</h3>
-                    <h6 style={{ fontSize: ".8em" }}>{profileText}</h6>
+                    <h3>{name}</h3>
+                    <h6 style={{ fontSize: ".8em" }}>{`${profileText}, участник сообщества с ${date}`}</h6>
                 </div>
             </div>
             <div
@@ -169,12 +182,24 @@ function PetContacts({ status, contactName, contactPhone, contactEmail }) {
                 }}
             >
                 <div className="ad-contacts-connect">
-                    <img src="/icons/phone.svg" />
-                    <h6>{contactPhone}</h6>
+                    <img src="/icons/email.svg" />
+                    <h6>{email}</h6>
                 </div>
                 <div className="ad-contacts-connect">
-                    <img src="/icons/email.svg" />
-                    <h6>{contactEmail}</h6>
+                    <img src="/icons/phone.svg" />
+                    <h6>{phone}</h6>
+                </div>
+                <div className="ad-contacts-connect">
+                    <img src="/icons/vk.svg" />
+                    <h6>{vk}</h6>
+                </div>
+                <div className="ad-contacts-connect">
+                    <img src="/icons/tg.svg" />
+                    <h6>{tg}</h6>
+                </div>
+                <div className="ad-contacts-connect">
+                    <img src="/icons/max.svg" />
+                    <h6>{max}</h6>
                 </div>
             </div>
         </section>
@@ -212,19 +237,21 @@ function PetPlace({ location, geoLocation }) {
                                 display: "flex",
                                 justifyContent: "center",
                                 alignItems: "center",
-                                position: 'relative'
+                                position: "relative",
                             }}
                         >
                             <div
                                 style={{
-                                    background: "url('/images/russia_map_outline.png') center / cover",
+                                    background:
+                                        "url('/images/russia_map_outline.png') center / cover",
                                     position: "absolute",
                                     top: 0,
                                     left: 0,
                                     width: "100%",
                                     height: "100%",
-                                    opacity: .7,
-                                    maskImage: "radial-gradient(ellipse, white, transparent 75%)"
+                                    opacity: 0.7,
+                                    maskImage:
+                                        "radial-gradient(ellipse, white, transparent 75%)",
                                 }}
                             />
                             <h2 style={{ zIndex: 1 }}>Карта недоступна</h2>
