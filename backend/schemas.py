@@ -6,12 +6,14 @@ from datetime import datetime
 class UserRegister(BaseModel):
     email: EmailStr
     password: str = Field(min_length=8, max_length=72)
-    phone: Optional[str] = Field(None,pattern= r"^\+7\d{10}$")
+    phone: Optional[str] = Field(None, pattern=r"^\+7\d{10}$")
     name: Optional[str] = None
+
 
 class UserLogin(BaseModel):
     email: EmailStr
     password: str
+
 
 class UserOut(BaseModel):
     name: str
@@ -22,23 +24,25 @@ class UserOut(BaseModel):
     class Config:
         from_attributes = True
 
+
 class AdCreate(BaseModel):
     status: Literal["lost", "found"]
     type: Literal["dog", "cat"]
     breed: Literal["labrador", "german_shepherd", "poodle", "metis"]
     color: str
     size: Literal["little", "medium", "big"]
-    distincts: str = ''
-    nickname: str = ''
+    distincts: str
+    nickname: str
     danger: Literal["danger", "safe", "unknown"]
-    location: str = ''
-    geoLocation: List[int] = []
+    location: str
+    geoLocation: List[float]
     time: str
     contactName: str
     contactPhone: str
     contactEmail: EmailStr
-    extras: str = ''
-        
+    extras: str
+
+
 class AdOut(BaseModel):
     id: int
     status: str
@@ -46,19 +50,20 @@ class AdOut(BaseModel):
     breed: str
     color: str
     size: str
-    distincts: str = ''
-    nickname: str = ''
+    distincts: str
+    nickname: str
     danger: str
-    location: str = ''
-    geoLocation: List[int] = []
+    location: str
+    geoLocation: List[float]
     time: datetime
     contactName: str
     contactPhone: str
     contactEmail: str
-    extras: str = ''
+    extras: str
 
     class Config:
         from_attributes = True
+
 
 class AdFilters(BaseModel):
     status: Optional[str] = None
@@ -67,17 +72,21 @@ class AdFilters(BaseModel):
     size: Optional[str] = None
     danger: Optional[str] = None
     region: Optional[str] = None
-    geoloc: Optional[List[str]] = None
+    geoloc: Optional[List[float]] = None
     radius: Optional[int] = None
 
+
 class UpdateName(BaseModel):
-    name: str = Field(min_length=1,max_length=50)
+    name: str = Field(min_length=1, max_length=50)
+
 
 class UpdateEmail(BaseModel):
     email: EmailStr
 
+
 class UpdatePhone(BaseModel):
     phone: str = Field(None, pattern=r"^\+7\d{10}$")
+
 
 class UpdatePassword(BaseModel):
     curPassword: str = Field(..., min_length=8)
