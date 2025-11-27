@@ -12,6 +12,9 @@ import {
     ApiChangeName,
     ApiChangePassword,
     ApiChangePhone,
+    ApiChangeVk,
+    ApiChangeTg,
+    ApiChangeMax,
     ApiGetMyAds,
     ApiGetUser,
     ApiLogOutUser,
@@ -61,6 +64,11 @@ export default function ProfilePage() {
                     CallAlert={CallAlert}
                     setSignedIn={setSignedIn}
                 />
+                <SocialsCard
+                    {...user}
+                    setUser={setUser}
+                    CallAlert={CallAlert}
+                />
                 <PostedPetsCard CallAlert={CallAlert} />
                 <SettingsCard />
             </div>
@@ -95,7 +103,7 @@ function ProfileCard({ name, date, email, phone, vk, tg, max }) {
                         <h3>{phone || "Не указан"}</h3>
                     </div>
                     <div className="profile-card-field">
-                        <h6>VK</h6>
+                        <h6>ВКонтакте</h6>
                         <h3>{vk || "Не указан"}</h3>
                     </div>
                     <div className="profile-card-field">
@@ -112,17 +120,7 @@ function ProfileCard({ name, date, email, phone, vk, tg, max }) {
     );
 }
 
-function AccountCard({
-    setUser,
-    name,
-    email,
-    phone,
-    vk,
-    tg,
-    max,
-    CallAlert,
-    setSignedIn,
-}) {
+function AccountCard({ setUser, name, email, phone, CallAlert, setSignedIn }) {
     return (
         <section className="card-section">
             <h5>Аккаунт</h5>
@@ -297,10 +295,7 @@ function AccountEmailField({ _email, CallAlert }) {
                 "Письмо с подтверждением отправлено на новую почту",
                 "green"
             );
-            window.localStorage.removeItem("user_name");
-            window.localStorage.removeItem("user_date");
-            window.localStorage.removeItem("user_email");
-            window.localStorage.removeItem("user_phone");
+            window.localStorage.removeItem("fyp-user");
             window.location.pathname = "/";
         } else if (data.error)
             CallAlert("Ошибка при изменении почты. Попробуйте позже", "red");
@@ -438,10 +433,7 @@ function AccountLogOut({ CallAlert, setSignedIn }) {
         if (data.success) {
             CallAlert("Успешный выход из аккаунта", "green");
             setSignedIn(false);
-            window.localStorage.removeItem("user_name");
-            window.localStorage.removeItem("user_email");
-            window.localStorage.removeItem("user_date");
-            window.localStorage.removeItem("user_phone");
+            window.localStorage.removeItem("fyp-user");
             navigate("/");
         } else if (data.error)
             CallAlert(
@@ -492,6 +484,203 @@ function AccountDelete({ CallAlert, setSignedIn }) {
                     <img src="/icons/log_out.svg" />
                     Удалить аккаунт
                 </button>
+            </div>
+        </div>
+    );
+}
+
+function SocialsCard({ setUser, vk, tg, max, CallAlert }) {
+    return (
+        <section className="card-section">
+            <h5>Социальные сети</h5>
+            <AccountVkField _vk={vk} setUser={setUser} CallAlert={CallAlert} />
+            <AccountTgField _tg={tg} setUser={setUser} CallAlert={CallAlert} />
+            <AccountMaxField
+                _max={max}
+                setUser={setUser}
+                CallAlert={CallAlert}
+            />
+        </section>
+    );
+}
+
+function AccountVkField({ _vk, setUser, CallAlert }) {
+    const editButtonRef = useRef();
+
+    const [disabled, setDisabled] = useState(true);
+    const [vk, setVk] = useState(_vk);
+    useEffect(() => {
+        setVk(_vk);
+    }, [_vk]);
+
+    async function ChangeVk() {
+        const data = await ApiChangeVk(vk);
+
+        if (data.success) {
+            CallAlert("ВКонтакте успешно изменен", "green");
+            setUser((prev) => ({ ...prev, vk }));
+        } else if (data.error)
+            CallAlert(
+                "Ошибка при изменении ВКонтакте. Попробуйте позже",
+                "red"
+            );
+    }
+
+    const handleClickEditButton = () => {
+        if (disabled) {
+            editButtonRef.current.classList.remove("disabled");
+        } else {
+            editButtonRef.current.classList.add("disabled");
+            if (vk.length == 0 || vk == _vk) {
+                if (vk.length == 0)
+                    CallAlert("Неверный формат ВКонтакте", "red");
+                else if (vk == _vk)
+                    CallAlert("Текущий ВКонтакте совпадает с новым", "red");
+                setVk(_vk);
+            } else ChangeVk();
+        }
+        setDisabled((prev) => !prev);
+    };
+
+    return (
+        <div className="account-field-container">
+            <h6>ВКонтакте</h6>
+            <div className="account-field">
+                <input
+                    className="account-edit-input"
+                    type="text"
+                    placeholder={_vk || "Не указан"}
+                    disabled={disabled}
+                    value={vk || ""}
+                    onChange={(e) => setVk(e.target.value)}
+                />
+                <div
+                    className="primary-button account-edit-button disabled"
+                    onClick={handleClickEditButton}
+                    ref={editButtonRef}
+                >
+                    <img />
+                    {disabled ? "Изменить" : "Сохранить"}
+                </div>
+            </div>
+        </div>
+    );
+}
+
+function AccountTgField({ _tg, setUser, CallAlert }) {
+    const editButtonRef = useRef();
+
+    const [disabled, setDisabled] = useState(true);
+    const [tg, setTg] = useState(_tg);
+    useEffect(() => {
+        setTg(_tg);
+    }, [_tg]);
+
+    async function ChangeTg() {
+        const data = await ApiChangeTg(tg);
+
+        if (data.success) {
+            CallAlert("Telegram успешно изменен", "green");
+            setUser((prev) => ({ ...prev, tg }));
+        } else if (data.error)
+            CallAlert("Ошибка при изменении Telegram. Попробуйте позже", "red");
+    }
+
+    const handleClickEditButton = () => {
+        if (disabled) {
+            editButtonRef.current.classList.remove("disabled");
+        } else {
+            editButtonRef.current.classList.add("disabled");
+            if (tg.length == 0 || tg == _tg) {
+                if (tg.length == 0)
+                    CallAlert("Неверный формат Telegram", "red");
+                else if (tg == _tg)
+                    CallAlert("Текущий Telgram совпадает с новым", "red");
+                setTg(_tg);
+            } else ChangeTg();
+        }
+        setDisabled((prev) => !prev);
+    };
+
+    return (
+        <div className="account-field-container">
+            <h6>Telegram</h6>
+            <div className="account-field">
+                <input
+                    className="account-edit-input"
+                    type="text"
+                    placeholder={_tg || "Не указан"}
+                    disabled={disabled}
+                    value={tg || ""}
+                    onChange={(e) => setTg(e.target.value)}
+                />
+                <div
+                    className="primary-button account-edit-button disabled"
+                    onClick={handleClickEditButton}
+                    ref={editButtonRef}
+                >
+                    <img />
+                    {disabled ? "Изменить" : "Сохранить"}
+                </div>
+            </div>
+        </div>
+    );
+}
+
+function AccountMaxField({ _max, setUser, CallAlert }) {
+    const editButtonRef = useRef();
+
+    const [disabled, setDisabled] = useState(true);
+    const [max, setMax] = useState(_max);
+    useEffect(() => {
+        setMax(_max);
+    }, [_max]);
+
+    async function ChangeMax() {
+        const data = await ApiChangeMax(max);
+
+        if (data.success) {
+            CallAlert("Max успешно изменен", "green");
+            setUser((prev) => ({ ...prev, max }));
+        } else if (data.error)
+            CallAlert("Ошибка при изменении Max. Попробуйте позже", "red");
+    }
+
+    const handleClickEditButton = () => {
+        if (disabled) {
+            editButtonRef.current.classList.remove("disabled");
+        } else {
+            editButtonRef.current.classList.add("disabled");
+            if (max.length == 0 || max == _max) {
+                if (max.length == 0) CallAlert("Неверный формат Max", "red");
+                else if (max == _max)
+                    CallAlert("Текущий Max совпадает с новым", "red");
+                setMax(_max);
+            } else ChangeMax();
+        }
+        setDisabled((prev) => !prev);
+    };
+
+    return (
+        <div className="account-field-container">
+            <h6>Max</h6>
+            <div className="account-field">
+                <input
+                    className="account-edit-input"
+                    type="text"
+                    placeholder={_max || "Не указан"}
+                    disabled={disabled}
+                    value={max || ""}
+                    onChange={(e) => setMax(e.target.value)}
+                />
+                <div
+                    className="primary-button account-edit-button disabled"
+                    onClick={handleClickEditButton}
+                    ref={editButtonRef}
+                >
+                    <img />
+                    {disabled ? "Изменить" : "Сохранить"}
+                </div>
             </div>
         </div>
     );

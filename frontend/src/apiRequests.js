@@ -208,6 +208,63 @@ export async function ApiChangePassword(curPassword, newPassword) {
     }
 }
 
+export async function ApiChangeVk(vk) {
+    try {
+        const response = await fetch(API_PATHS.change_vk, {
+            method: "PUT",
+            credentials: "include",
+            body: JSON.stringify({ vk }),
+            headers: { "Content-Type": "application/json" },
+        });
+
+        const data = await response.json();
+        if (DEBUG) console.debug("Changing vk. Data received:", data);
+
+        return data;
+    } catch (error) {
+        console.error("Changing vk. Error occured:", error);
+        return { error: true };
+    }
+}
+
+export async function ApiChangeTg(tg) {
+    try {
+        const response = await fetch(API_PATHS.change_tg, {
+            method: "PUT",
+            credentials: "include",
+            body: JSON.stringify({ tg }),
+            headers: { "Content-Type": "application/json" },
+        });
+
+        const data = await response.json();
+        if (DEBUG) console.debug("Changing tg. Data received:", data);
+
+        return data;
+    } catch (error) {
+        console.error("Changing tg. Error occured:", error);
+        return { error: true };
+    }
+}
+
+export async function ApiChangeMax(max) {
+    try {
+        const response = await fetch(API_PATHS.change_max, {
+            method: "PUT",
+            credentials: "include",
+            body: JSON.stringify({ max }),
+            headers: { "Content-Type": "application/json" },
+        });
+
+        const data = await response.json();
+        if (DEBUG) console.debug("Changing max. Data received:", data);
+
+        return data;
+    } catch (error) {
+        console.error("Changing max. Error occured:", error);
+        return { error: true };
+    }
+}
+
 // Ads
 
 export async function ApiCreateAd(adDetails) {

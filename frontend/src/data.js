@@ -19,6 +19,9 @@ export const API_PATHS = {
     change_phone: API_BASENAME + "/user/phone",
     change_email: API_BASENAME + "/user/email",
     change_password: API_BASENAME + "/user/password",
+    change_vk: API_BASENAME + '/todo',
+    change_tg: API_BASENAME + '/todo',
+    change_max: API_BASENAME + '/todo'
 };
 
 export const DEBUG = true;
