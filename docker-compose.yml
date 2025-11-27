@@ -1,0 +1,47 @@
+services:
+  database:
+    image: postgres:17
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+    networks:
+      - backend
+    healthcheck:
+      test: ["pg_isready", "-U", "${POSTGRES_USER}", "-d", "${POSTGRES_DB}"]
+      interval: 3s
+      timeout: 3s
+      retries: 5
+      start_period: 5s
+    volumes:
+      - data:/var/lib/postgresql/data
+  backend:
+    build: /backend
+    image: user/find-your-pet-backend:latest
+    environment:
+      - URL_DATABASE=${URL_DATABASE}
+    networks:
+      - backend
+      - frontend
+    depends_on:
+      database:
+        condition: service_healthy
+  frontend:
+    build: /frontend
+    image: user/find-your-pet-frontend:latest
+    networks:
+      - frontend
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
+
+networks:
+  backend:
+    driver: bridge
+    internal: true
+  frontend:
+    driver: bridge
+  
+volumes:
+  data:
