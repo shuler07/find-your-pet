@@ -1,0 +1,101 @@
+#ad-details-container {
+    width: calc(100 - 8rem);
+    margin: 2rem 4rem;
+    display: flex;
+    gap: .75rem;
+    justify-content: center;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+.ad-page-section {
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    flex-grow: 1;
+    max-width: 100%;
+    background-color: var(--main-color);
+    border-radius: 1rem;
+    box-shadow: 0px 5px 10px #00000010;
+}
+
+#ad-photos {
+    position: relative;
+    width: 24rem;
+    aspect-ratio: 1 / 1;
+}
+
+#ad-photos > img {
+    width: 100%;
+}
+
+#ad-info {
+    width: calc(100% - 30rem);
+    min-width: 20rem;
+    position: relative;
+}
+
+#ad-info-status {
+    padding: .5rem 1rem;
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    border-radius: .75rem;
+}
+
+#ad-info-status > h3 {
+    font-size: .8em;
+    color: white;
+}
+
+#ad-contacts {
+    width: 16rem;
+}
+
+#ad-contacts-profile {
+    display: flex;
+    gap: 1rem;
+}
+
+#ad-contacts-profile > img {
+    width: 2.5rem;
+    height: 2.5rem;
+}
+
+#ad-contacts-profile > div {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.ad-contacts-connect {
+    padding: .5rem 1rem;
+    display: flex;
+    gap: .5rem;
+    border-radius: .5rem;
+    background-color: var(--secondary-color);
+}
+
+#ad-place {
+    width: calc(100% - 22rem);
+    min-width: 24rem;
+}
+
+#ad-place-map {
+    width: 100%;
+    height: 16rem;
+}
+
+
+
+@media (max-width: 768px) {
+    #ad-details-container {
+        width: calc(100% - 4rem);
+        margin: 1rem 2rem;
+    }
+    
+    #ad-photos {
+        width: 20rem;
+    }
+}

@@ -1,0 +1,54 @@
+.ad-card {
+    width: 14rem;
+    max-width: 20rem;
+    flex-grow: 1;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    background: var(--main-color);
+    border-radius: 1rem;
+    box-shadow: 0px 2px 4px #00000010;
+    contain: paint;
+    transition: all .25s ease;
+}
+.ad-card:hover {
+    box-shadow: 0px 5px 10px #00000020;
+}
+
+.ad-card > img {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+}
+
+.ad-card-status {
+    position: absolute;
+    top: .5rem;
+    right: .5rem;
+    padding: .25rem .5rem;
+    border-radius: 1rem;
+}
+
+.ad-card-status > h3 {
+    font-size: .8em;
+    color: white;
+}
+
+.ad-card-info-block {
+    padding: 0 1rem 4.5rem 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: .25rem;
+}
+
+.ad-card-info-block > h6 {
+    font-size: .8em;
+    font-weight: 500;
+}
+
+.ad-card > button {
+    position: absolute;
+    bottom: 0;
+    margin: 0 1rem 1rem 1rem;
+    width: calc(100% - 2rem);
+}

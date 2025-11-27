@@ -1,0 +1,183 @@
+@property --primary-button-color {
+    syntax: "<color>";
+    initial-value: #5c45df;
+    inherits: false;
+}
+
+html {
+    font-size: 100%;
+    font-family: system-ui;
+}
+
+body {
+    overflow: visible;
+    margin: 0;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    margin: 0;
+    color: var(--inverse-color);
+}
+h1 {
+    font-size: 2em;
+    font-weight: bold;
+}
+h2 {
+    font-size: 1.5em;
+    font-weight: bold;
+}
+h3 {
+    font-size: 1em;
+    font-weight: bold;
+}
+h4 {
+    font-size: 2em;
+    font-weight: normal;
+}
+h5 {
+    font-size: 1.5em;
+    font-weight: normal;
+}
+h6 {
+    font-size: 1em;
+    font-weight: normal;
+}
+
+#root {
+    min-height: 100dvh;
+    position: relative;
+}
+
+.lightTheme {
+    --primary-color: #5c45df;
+    --primary-light: #6f86df;
+
+    --accent-color: #c145df;
+    --accent-light: #d66fdf;
+
+    --main-color: #f8f8f8;
+    --secondary-color: #eee;
+    --inverse-color: black;
+}
+
+.darkTheme {
+    --primary-color: #5c45df;
+    --primary-light: #6f86df;
+
+    --accent-color: #c145df;
+    --accent-light: #d66fdf;
+
+    --main-color: #f8f8f8;
+    --secondary-color: #eee;
+    --inverse-color: black;
+}
+
+.primary-button {
+    padding: .5rem 2rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: .5rem;
+    background: var(--primary-color);
+    font-family: system-ui;
+    font-weight: bold;
+    font-size: .9em;
+    border: none;
+    border-radius: 1rem;
+    color: white;
+    cursor: pointer;
+    transition: all .5s ease;
+}
+.primary-button:disabled {
+    cursor: default;
+}
+.primary-button:not(.gradient-primary):is(:hover:not(:disabled), :disabled) {
+    background: var(--primary-light);
+}
+
+.primary-button.gradient-primary {
+    background: linear-gradient(
+        to right,
+        var(--primary-button-color),
+        var(--accent-color)
+    );
+    transition: --primary-button-color .5s ease;
+}
+.primary-button.gradient-primary:hover:not(:disabled) {
+    --primary-button-color: var(--primary-light);
+}
+
+.primary-button.red {
+    background-color: #e44a4a;
+}
+.primary-button.red:hover:not(:disabled) {
+    background-color: #ed6868;
+}
+
+.primary-button.bright-red {
+    background-color: #ff3030;
+}
+.primary-button.bright-red:hover:not(:disabled) {
+    background-color: #e44a4a;
+}
+
+.primary-button > img {
+    width: 1.25rem;
+    height: 1.25rem;
+    transition: all .5s ease;
+}
+.primary-button.left-img:hover:not(:disabled) > img {
+    translate: -2px 0;
+}
+.primary-button.right-img:hover:not(:disabled) > img {
+    translate: 2px 0;
+}
+
+.gradient-primary {
+    background: linear-gradient(
+        to right,
+        var(--primary-color),
+        var(--accent-color)
+    );
+}
+.gradient-accent {
+    background: linear-gradient(
+        to right,
+        var(--primary-light),
+        var(--accent-light)
+    );
+}
+
+.page-container {
+    padding-top: 5rem;
+    padding-bottom: 2rem;
+    min-height: calc(100dvh - 11rem);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 2rem;
+    position: relative;
+    background: var(--secondary-color);
+}
+
+.map-marker {
+    width: 1.5rem;
+    height: 1.5rem;
+    scale: 1.2;
+    translate: -.75rem -.75rem;
+    background: url('/icons/map-pin.svg');
+}
+
+
+
+@media (max-width: 768px) {
+    html {
+        font-size: 75%;
+    }
+}

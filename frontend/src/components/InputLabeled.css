@@ -1,0 +1,28 @@
+.input-labeled {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: .25rem;
+}
+
+.input-labeled label {
+    font-size: 1em;
+    font-weight: 500;
+    color: var(--inverse-color);
+}
+
+.input-labeled input {
+    padding: .75rem 1.5rem;
+    border: solid 2px color-mix(in srgb, var(--inverse-color), transparent 80%);
+    border-radius: 1rem;
+    font-size: 1em;
+    outline: none;
+    transition: all .25s ease;
+}
+.input-labeled input:focus-visible {
+    padding: 1rem 1.5rem;
+    border: solid 2px #000;
+}
+.input-labeled input.wrong-field {
+    border: solid 2px red !important;
+}

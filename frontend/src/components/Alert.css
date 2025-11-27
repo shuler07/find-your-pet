@@ -1,0 +1,43 @@
+#app-alert-container {
+    position: fixed;
+    z-index: 1;
+    display: flex;
+    justify-content: center;
+    bottom: .5rem;
+    width: 100%;
+    pointer-events: none;
+    animation: app-alert-appear 3s forwards;
+}
+
+@keyframes app-alert-appear {
+    0% {
+        opacity: 0;
+        translate: 0 4px;
+    }
+    20% {
+        opacity: 1;
+        translate: 0 0;
+    }
+    80% {
+        opacity: 1;
+        translate: 0 0;
+    }
+    100% {
+        opacity: 0;
+        translate: 0 4px;
+    }
+}
+
+#app-alert {
+    padding: .5rem 1rem;
+    max-width: calc(100% - 4rem);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 1rem;
+    box-shadow: 0px 5px 10px #00000040;
+}
+
+#app-alert > h3 {
+    color: white;
+}
