@@ -41,6 +41,7 @@ export default function CreateAdPage() {
         nickname: "", // pet nickname (unneccessary)
         danger: "", // ONLY danger / safe / unknown
         extras: "", // extra information from creator (unneccessary)
+        region: "", // ONLY moscow / moscow_city etc
         location: "", // place in words
         geoLocation: [], // place in coords
         time: "", // time in dd.MM.yyyy hh:mm:ss
@@ -343,6 +344,7 @@ function PetInformationFields({ validate, apply, adDetails }) {
 
 function LocationFields({ validate, apply, adDetails }) {
     const refs = {
+        region: useRef(),
         location: useRef(),
         map: useRef(),
         time: useRef(),
@@ -395,6 +397,7 @@ function LocationFields({ validate, apply, adDetails }) {
 
                 adDetails.current = {
                     ...adDetails.current,
+                    region: refs.region.current.value,
                     location: refs.location.current.value,
                     geoLocation: geoLocation,
                     time: refs.time.current.value,
@@ -404,6 +407,7 @@ function LocationFields({ validate, apply, adDetails }) {
 
                 adDetails.current = {
                     ...adDetails.current,
+                    region: refs.region.current.value,
                     location: refs.location.current.value,
                     geoLocation: [],
                     time: refs.time.current.value,
@@ -423,6 +427,7 @@ function LocationFields({ validate, apply, adDetails }) {
 
                 adDetails.current = {
                     ...adDetails.current,
+                    region: refs.region.current.value,
                     location: address,
                     geoLocation: geoLocation,
                     time: refs.time.current.value,
@@ -432,6 +437,7 @@ function LocationFields({ validate, apply, adDetails }) {
 
                 adDetails.current = {
                     ...adDetails.current,
+                    region: refs.region.current.value,
                     location: "",
                     geoLocation: geoLocation,
                     time: refs.time.current.value,
@@ -488,6 +494,16 @@ function LocationFields({ validate, apply, adDetails }) {
                 label="Когда вы потеряли или нашли животное? *"
                 ref={refs.time}
                 value={adDetails.current.time}
+            />
+            <DropdownLabeled
+                inputId="PetRegion"
+                label="Регион"
+                choices={[
+                    ["moscow_city", "город Москва"],
+                    ["moscow", "Московская область"]
+                ]}
+                ref={refs.region}
+                value={adDetails.current.region}
             />
         </div>
     );
