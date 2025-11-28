@@ -7,6 +7,7 @@ export const API_PATHS = {
     logout: API_BASENAME + "/logout",
     user: API_BASENAME + "/user",
     delete_user: API_BASENAME + '/user',
+    reset_password: API_BASENAME + '/todo',
 
     create_ad: API_BASENAME + "/ads/create",
     get_ads: API_BASENAME + "/ads",

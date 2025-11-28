@@ -7,14 +7,19 @@ import { AppContext } from "../App";
 import InputLabeled from "../components/InputLabeled";
 
 import { RestartAnim } from "../functions";
-import { ApiLoginUser, ApiRegisterUser } from "../apiRequests";
+import {
+    ApiLoginUser,
+    ApiRegisterUser,
+    ApiResetPassword,
+} from "../apiRequests";
 
 export default function SigninPage() {
     const [isRegister, setIsRegister] = useState(false);
+    const [isReseting, setIsReseting] = useState(false);
     useEffect(() => {
         const elem = document.getElementById("right-form-fields");
         RestartAnim(elem);
-    }, [isRegister]);
+    }, [isRegister, isReseting]);
 
     const emailInputRef = useRef();
     const passwordInputRef = useRef();
@@ -59,7 +64,7 @@ export default function SigninPage() {
 
     const authenticateUser = () => {
         setAuthButtonDisabled(true);
-        isRegister ? RegisterUser() : LoginUser();
+        isRegister ? RegisterUser() : isReseting ? ResetPassword() : LoginUser();
     };
 
     async function RegisterUser() {
@@ -112,6 +117,30 @@ export default function SigninPage() {
         }
     }
 
+    async function ResetPassword() {
+        const email = emailInputRef.current.value;
+        const new_password = passwordInputRef.current.value;
+
+        if (!credsValid(email, new_password, null)) return;
+
+        const data = await ApiResetPassword(email, new_password);
+
+        setAuthButtonDisabled(false);
+
+        if (data.success) {
+            CallAlert(
+                "Письмо для сброса пароля отправлено на вашу почту",
+                "green"
+            );
+            setIsReseting(false);
+        } else {
+            if (data.detail == "Неверный email")
+                CallAlert("Пользователя с такой почтой не существует", "red");
+            else if (data.error)
+                CallAlert("Ошибка при сбросе пароля. Попробуйте позже", "red");
+        }
+    }
+
     return (
         <div id="signin-page-container" className="gradient-accent">
             <form id="signin-form">
@@ -153,7 +182,7 @@ export default function SigninPage() {
                             type="password"
                             placeholder="********"
                             autoComplete="current-password"
-                            label="Пароль"
+                            label={isReseting ? "Новый пароль" : "Пароль"}
                             ref={passwordInputRef}
                             value={
                                 passwordInputRef.current
@@ -179,10 +208,16 @@ export default function SigninPage() {
                     </div>
                     <AuthButton
                         isRegister={isRegister}
+                        isReseting={isReseting}
                         event={authenticateUser}
                         disabled={authButtonDisabled}
                     />
-                    {!isRegister && <ForgetPasswordButton />}
+                    {!isRegister && (
+                        <ForgetPasswordButton
+                            isReseting={isReseting}
+                            setIsReseting={setIsReseting}
+                        />
+                    )}
                 </div>
             </form>
         </div>
@@ -231,11 +266,13 @@ function RightFormToogleContainer({ isRegister, setIsRegister }) {
     );
 }
 
-function AuthButton({ isRegister, event, disabled }) {
+function AuthButton({ isRegister, isReseting, event, disabled }) {
     const text = disabled
         ? "Ожидайте..."
         : isRegister
         ? "Зарегистрироваться"
+        : isReseting
+        ? "Сбросить"
         : "Войти";
 
     return (
@@ -252,10 +289,15 @@ function AuthButton({ isRegister, event, disabled }) {
     );
 }
 
-function ForgetPasswordButton() {
+function ForgetPasswordButton({ isReseting, setIsReseting }) {
+    const text = isReseting ? "Вернуться ко входу" : "Забыли пароль?";
+
     return (
-        <div id="forget-password-button">
-            <h3>Забыли пароль?</h3>
+        <div
+            id="forget-password-button"
+            onClick={() => setIsReseting((prev) => !prev)}
+        >
+            <h3>{text}</h3>
         </div>
     );
 }

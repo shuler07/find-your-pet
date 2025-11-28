@@ -112,6 +112,25 @@ export async function ApiDeleteUser() {
     }
 }
 
+export async function ApiResetPassword(email, new_password) {
+    try {
+        const response = await fetch(API_PATHS.reset_password, {
+            method: 'POST',
+            credentials: 'include',
+            body: JSON.stringify({ email, new_password }),
+            headers: { 'Content-Type':'application/json' }
+        });
+
+        const data = await response.json();
+        if (DEBUG) console.debug('Reseting password. Data received:', data);
+
+        return data;
+    } catch (error) {
+        console.error('Reseting password. Error occured:', error);
+        return { error: true };
+    }
+}
+
 // User data
 
 export async function ApiGetUser() {
