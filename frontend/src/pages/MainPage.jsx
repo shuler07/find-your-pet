@@ -1,21 +1,32 @@
 import "./MainPage.css";
 
-import { useContext } from "react";
-import { AppContext } from "../App";
+import { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { AppContext } from "../App";
 
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 
+import { ApiGetServerStats } from "../apiRequests";
+
 export default function MainPage() {
     const { signedIn } = useContext(AppContext);
-
-    const animalsBack = 0;
-    const activeAds = 0;
-    const communityMembers = 0;
-    const successRate = 0;
-
     const navigate = useNavigate();
+
+    const [serverStats, setServerStats] = useState({
+        animalsBack: 0,
+        activeAds: 0,
+        communityMembers: 0,
+        successRate: 0,
+    });
+
+    async function GetServerStats() {
+        const data = await ApiGetServerStats();
+
+        if (data.success) setServerStats(data.stats);
+    }
+
+    GetServerStats();
 
     const handleClickCreateAd = () => {
         if (signedIn) navigate("/ads/create");
@@ -61,28 +72,28 @@ export default function MainPage() {
                         <img src="/icons/house-check.svg" />
                         <div>
                             <h6>Животных возвращено</h6>
-                            <h3>{animalsBack}</h3>
+                            <h3>{serverStats.animalsBack}</h3>
                         </div>
                     </div>
                     <div className="about-block">
                         <img src="/icons/search-blue.svg" />
                         <div>
                             <h6>Активных объявлений</h6>
-                            <h3>{activeAds}</h3>
+                            <h3>{serverStats.activeAds}</h3>
                         </div>
                     </div>
                     <div className="about-block">
                         <img src="/icons/community.svg" />
                         <div>
                             <h6>Сообщество</h6>
-                            <h3>{communityMembers} чел.</h3>
+                            <h3>{serverStats.communityMembers} чел.</h3>
                         </div>
                     </div>
                     <div className="about-block">
                         <img src="/icons/heart.svg" />
                         <div>
                             <h6>Процент нахождения</h6>
-                            <h3>{successRate} %</h3>
+                            <h3>{serverStats.successRate} %</h3>
                         </div>
                     </div>
                 </section>

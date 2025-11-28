@@ -433,3 +433,23 @@ export async function ApiRemoveAd(id) {
         return { error: true };
     }
 }
+
+// Server
+
+export async function ApiGetServerStats() {
+    try {
+        const response = await fetch(API_PATHS.get_server_stats, {
+            method: "GET",
+            credentials: 'include',
+            headers: { 'Content-Type':'application/json' }
+        });
+
+        const data = await response.json();
+        if (DEBUG) console.debug("Getting server stats. Data received:", data);
+
+        return data;
+    } catch (error) {
+        console.error("Getting server stats. Error occured:", error);
+        return { error: true };
+    }
+}

@@ -25,6 +25,8 @@ export const API_PATHS = {
     change_tg: API_BASENAME + "/todo",
     change_max: API_BASENAME + "/todo",
     change_notifications_location: API_BASENAME + "/todo",
+
+    get_server_stats: API_BASENAME + "/todo",
 };
 
 export const DEBUG = true;
