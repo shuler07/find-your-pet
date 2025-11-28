@@ -414,3 +414,22 @@ export async function ApiGetAdCreator(uid) {
         return { error: true };
     }
 }
+
+export async function ApiRemoveAd(id) {
+    try {
+        const response = await fetch(API_PATHS.remove_ad, {
+            method: "DELETE",
+            credentials: 'include',
+            body: JSON.stringify({ id }),
+            headers: { 'Content-Type':'application/json' }
+        });
+
+        const data = await response.json();
+        if (DEBUG) console.debug("Removing ad. Data received:", data);
+
+        return data;
+    } catch (error) {
+        console.error("Removing ad. Error occured:", error);
+        return { error: true };
+    }
+}

@@ -1,13 +1,14 @@
 import "./AdPage.css";
 
 import { useContext, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { AppContext } from "../App";
 
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 
 import { AD_INFO_DICT } from "../data";
-import { ApiGetAdCreator } from "../apiRequests";
+import { ApiGetAdCreator, ApiRemoveAd } from "../apiRequests";
 import {
     ymapsInitPromise,
     YMap,
@@ -15,6 +16,7 @@ import {
     YMapDefaultSchemeLayer,
     YMapMarker,
 } from "../ymaps";
+import { RestartAnim } from "../functions";
 
 export default function AdPage() {
     const { ad, CallAlert } = useContext(AppContext);
@@ -45,18 +47,9 @@ export default function AdPage() {
                 <div id="ad-details-container">
                     <PetPhotos />
                     <PetInfo
-                        status={ad.status}
-                        type={ad.type}
-                        breed={ad.breed}
-                        color={ad.color}
-                        size={ad.size}
-                        distincts={ad.distincts}
-                        nickname={ad.nickname}
-                        danger={ad.danger}
-                        location={ad.location}
-                        time={ad.time}
-                        extras={ad.extras}
+                        {...ad}
                         isCreator={isCreator}
+                        CallAlert={CallAlert}
                     />
                     <PetContacts status={ad.status} {...creator} />
                     <PetPlace
@@ -79,6 +72,7 @@ function PetPhotos() {
 }
 
 function PetInfo({
+    id,
     status,
     type,
     breed,
@@ -91,13 +85,45 @@ function PetInfo({
     time,
     extras,
     isCreator,
+    CallAlert,
 }) {
+    const navigate = useNavigate();
+
     const nicknameText = nickname != "" ? nickname : "Кличка неизвестна";
     const distinctsText = distincts != "" ? distincts : "Не указаны";
     const extrasText = extras != "" ? extras : "Не указана";
     const styledInfoStatus = {
         backgroundColor: status == "lost" ? "#f53535" : "#1fcf1f",
     };
+    const helpText = isCreator
+        ? "Это созданное вами объявление. Если оно перестало быть актуальным вы можете его снять"
+        : "Пожалуйста, свяжитесь с автором объявления, если вы нашли потерянное животное или найденный питомец является вашим";
+
+    async function RemoveAd() {
+        const data = await ApiRemoveAd(id);
+
+        if (data.success) {
+            CallAlert("Объявление успешно снято", "green");
+            navigate("/profile");
+        } else if (data.error)
+            CallAlert("Ошибка при снятии объявления. Попробуйте позже", "red");
+    }
+
+    const scrollToContacts = () => {
+        const contactsElem = document.getElementById("ad-contacts");
+
+        contactsElem.scrollIntoView({
+            behavior: "smooth",
+            block: "center",
+        });
+
+        contactsElem.classList.add("anim");
+        RestartAnim(contactsElem);
+    };
+
+    const buttonImage = isCreator ? "/icons/remove.svg" : "/icons/message.svg";
+    const buttonText = isCreator ? "Снять объявление" : "Связаться";
+    const buttonEvent = isCreator ? RemoveAd : scrollToContacts;
 
     return (
         <section id="ad-info" className="ad-page-section">
@@ -140,22 +166,13 @@ function PetInfo({
                 <h3>Дополнительная информация</h3>
                 <h6>{extrasText}</h6>
             </div>
-            {isCreator ? (
-                <h6>
-                    Это созданное вами объявление. Если оно перестало быть
-                    актуальным вы можете его снять
-                </h6>
-            ) : (
-                <h6>
-                    Пожалуйста, свяжитесь с автором объявления, если вы нашли
-                    потерянное животное или найденный питомец является вашим
-                </h6>
-            )}
-            <button className={`primary-button ${isCreator && "red"}`}>
-                <img
-                    src={isCreator ? "/icons/remove.svg" : "/icons/message.svg"}
-                />
-                {isCreator ? "Снять объявление" : "Связаться"}
+            <h6>{helpText}</h6>
+            <button
+                className={`primary-button ${isCreator && "red"}`}
+                onClick={buttonEvent}
+            >
+                <img src={buttonImage} />
+                {buttonText}
             </button>
         </section>
     );
@@ -171,7 +188,9 @@ function PetContacts({ status, name, date, email, phone, vk, tg, max }) {
                 <img src="/images/avatar-not-found.png" />
                 <div>
                     <h3>{name}</h3>
-                    <h6 style={{ fontSize: ".8em" }}>{`${profileText}, участник сообщества с ${date}`}</h6>
+                    <h6
+                        style={{ fontSize: ".8em" }}
+                    >{`${profileText}, участник сообщества с ${date}`}</h6>
                 </div>
             </div>
             <div

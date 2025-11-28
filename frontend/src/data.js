@@ -15,6 +15,7 @@ export const API_PATHS = {
     get_ads_to_check: API_BASENAME + '/todo',
     get_reported_ads: API_BASENAME + '/todo',
     get_ad_creator: API_BASENAME + '/todo',
+    remove_ad: API_BASENAME + '/todo',
 
     change_name: API_BASENAME + "/user/name",
     change_phone: API_BASENAME + "/user/phone",
