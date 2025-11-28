@@ -265,6 +265,25 @@ export async function ApiChangeMax(max) {
     }
 }
 
+export async function ApiChangeNotificationsLocation(location) {
+    try {
+        const response = await fetch(API_PATHS.change_notifications_location, {
+            method: "PUT",
+            credentials: "include",
+            body: JSON.stringify({ notificationsLocation: location }),
+            headers: { "Content-Type": "application/json" },
+        });
+
+        const data = await response.json();
+        if (DEBUG) console.debug("Changing notifications location. Data received:", data);
+
+        return data;
+    } catch (error) {
+        console.error("Changing notifications location. Error occured:", error);
+        return { error: true };
+    }
+}
+
 // Ads
 
 export async function ApiCreateAd(adDetails) {

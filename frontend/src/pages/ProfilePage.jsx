@@ -15,6 +15,7 @@ import {
     ApiChangeVk,
     ApiChangeTg,
     ApiChangeMax,
+    ApiChangeNotificationsLocation,
     ApiGetMyAds,
     ApiGetUser,
     ApiLogOutUser,
@@ -35,6 +36,7 @@ export default function ProfilePage() {
                   vk: "",
                   tg: "",
                   max: "",
+                  notificationsLocation: [],
               }
     );
     useEffect(() => {
@@ -70,7 +72,11 @@ export default function ProfilePage() {
                     CallAlert={CallAlert}
                 />
                 <PostedPetsCard CallAlert={CallAlert} />
-                <SettingsCard />
+                <SettingsCard
+                    CallAlert={CallAlert}
+                    _notificationsLocation={user.notificationsLocation}
+                    setUser={setUser}
+                />
             </div>
             <Footer />
         </>
@@ -186,11 +192,11 @@ function AccountNameField({ _name, setUser, CallAlert }) {
     };
 
     return (
-        <div className="account-field-container">
+        <div className="profile-field-container">
             <h6>Имя</h6>
-            <div className="account-field">
+            <div className="profile-field">
                 <input
-                    className="account-edit-input"
+                    className="profile-field-bg"
                     type={null}
                     placeholder={_name}
                     disabled={disabled}
@@ -251,11 +257,11 @@ function AccountPhoneField({ _phone, setUser, CallAlert }) {
     };
 
     return (
-        <div className="account-field-container">
+        <div className="profile-field-container">
             <h6>Телефон</h6>
-            <div className="account-field">
+            <div className="profile-field">
                 <input
-                    className="account-edit-input"
+                    className="profile-field-bg"
                     type="phone"
                     placeholder={_phone ? _phone : "Не указан"}
                     disabled={disabled}
@@ -318,11 +324,11 @@ function AccountEmailField({ _email, CallAlert }) {
     };
 
     return (
-        <div className="account-field-container">
+        <div className="profile-field-container">
             <h6>Почта</h6>
-            <div className="account-field">
+            <div className="profile-field">
                 <input
-                    className="account-edit-input"
+                    className="profile-field-bg"
                     type="email"
                     placeholder={_email}
                     disabled={disabled}
@@ -381,9 +387,9 @@ function AccountPasswordField({ CallAlert }) {
     };
 
     return (
-        <div className="account-field-container">
+        <div className="profile-field-container">
             <h6>Пароль</h6>
-            <div className="account-field">
+            <div className="profile-field">
                 <div
                     style={{
                         width: "100%",
@@ -393,7 +399,7 @@ function AccountPasswordField({ CallAlert }) {
                     }}
                 >
                     <input
-                        className="account-edit-input"
+                        className="profile-field-bg"
                         type="password"
                         autoComplete="current-password"
                         placeholder="Текущий пароль"
@@ -403,7 +409,7 @@ function AccountPasswordField({ CallAlert }) {
                     />
                     {!disabled && (
                         <input
-                            className="account-edit-input"
+                            className="profile-field-bg"
                             type="password"
                             placeholder="Новый пароль"
                             value={newPassword}
@@ -443,9 +449,9 @@ function AccountLogOut({ CallAlert, setSignedIn }) {
     }
 
     return (
-        <div className="account-field-container" style={{ flexGrow: 1 }}>
+        <div className="profile-field-container" style={{ flexGrow: 1 }}>
             <h6>Выход</h6>
-            <div className="account-field">
+            <div className="profile-field">
                 <button
                     className="primary-button red left-img"
                     style={{ width: "100%" }}
@@ -473,9 +479,9 @@ function AccountDelete({ CallAlert, setSignedIn }) {
     }
 
     return (
-        <div className="account-field-container" style={{ flexGrow: 1 }}>
+        <div className="profile-field-container" style={{ flexGrow: 1 }}>
             <h6>Удалить</h6>
-            <div className="account-field">
+            <div className="profile-field">
                 <button
                     className="primary-button bright-red left-img"
                     style={{ width: "100%" }}
@@ -543,11 +549,11 @@ function AccountVkField({ _vk, setUser, CallAlert }) {
     };
 
     return (
-        <div className="account-field-container">
+        <div className="profile-field-container">
             <h6>ВКонтакте</h6>
-            <div className="account-field">
+            <div className="profile-field">
                 <input
-                    className="account-edit-input"
+                    className="profile-field-bg"
                     type="text"
                     placeholder={_vk || "Не указан"}
                     disabled={disabled}
@@ -603,11 +609,11 @@ function AccountTgField({ _tg, setUser, CallAlert }) {
     };
 
     return (
-        <div className="account-field-container">
+        <div className="profile-field-container">
             <h6>Telegram</h6>
-            <div className="account-field">
+            <div className="profile-field">
                 <input
-                    className="account-edit-input"
+                    className="profile-field-bg"
                     type="text"
                     placeholder={_tg || "Не указан"}
                     disabled={disabled}
@@ -662,11 +668,11 @@ function AccountMaxField({ _max, setUser, CallAlert }) {
     };
 
     return (
-        <div className="account-field-container">
+        <div className="profile-field-container">
             <h6>Max</h6>
-            <div className="account-field">
+            <div className="profile-field">
                 <input
-                    className="account-edit-input"
+                    className="profile-field-bg"
                     type="text"
                     placeholder={_max || "Не указан"}
                     disabled={disabled}
@@ -720,10 +726,71 @@ function PostedPetsCard({ CallAlert }) {
     );
 }
 
-function SettingsCard() {
+function SettingsCard({ CallAlert, _notificationsLocation, setUser }) {
+    const [notificationsLocation, setNotificationsLocation] = useState(
+        _notificationsLocation
+    );
+
+    const handleClickNotifications = () => {
+        if (notificationsLocation.length == 0) getGeolocation();
+        else ChangeNotificationsLocation();
+    };
+
+    const getGeolocation = () => {
+        if (!navigator.geolocation) {
+            CallAlert(
+                "Получение геолокации не поддерживается в вашем браузере",
+                "red"
+            );
+            return;
+        }
+
+        navigator.geolocation.getCurrentPosition(
+            (pos) => {
+                const geoloc = [pos.coords.longitude, pos.coords.latitude];
+                ChangeNotificationsLocation(geoloc);
+            },
+            (error) => {
+                console.error(
+                    "Getting geolocation from browser. Error occured:",
+                    error
+                );
+            }
+        );
+    };
+
+    async function ChangeNotificationsLocation(location) {
+        const data = await ApiChangeNotificationsLocation(location);
+
+        if (data.success) {
+            setNotificationsLocation(location);
+            setUser((prev) => ({ ...prev, notificationsLocation: location }));
+        } else if (data.error)
+            CallAlert("Что-то пошло не так. Попробуйте позже", "red");
+    }
+
     return (
         <section id="settings-card-section" className="card-section">
             <h5>Настройки</h5>
+            <div className="profile-field-container">
+                <h6>Уведомления</h6>
+                <div className="profile-field">
+                    <button
+                        className={`profile-field-checkbox ${
+                            notificationsLocation.length != 0 && "active"
+                        }`}
+                        onClick={handleClickNotifications}
+                    >
+                        <img />
+                    </button>
+                    <div className="profile-field-bg">
+                        <h6>
+                            Получать уведомления о новых объявлениях рядом с
+                            вами
+                        </h6>
+                    </div>
+                </div>
+            </div>
         </section>
     );
 }

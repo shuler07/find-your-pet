@@ -90,20 +90,20 @@
     position: relative;
 }
 
-.account-field-container {
+.profile-field-container {
     display: flex;
     flex-direction: column;
     gap: .25rem;
 }
 
-.account-field {
+.profile-field {
     position: relative;
     display: flex;
     gap: .5rem;
     justify-content: space-between;
 }
 
-.account-edit-input {
+.profile-field-bg {
     box-sizing: border-box;
     padding: .5rem 1rem;
     height: 2.5rem;
@@ -118,7 +118,7 @@
     transition: all .25s ease;
     border: solid 2px #00000000;
 }
-.account-edit-input:focus-visible {
+.profile-field-bg:focus-visible {
     border: solid 2px #000000;
 }
 
@@ -138,6 +138,34 @@
 }
 .account-edit-button:not(.disabled) > img {
     content: url('/icons/check.svg');
+}
+
+.profile-field-checkbox {
+    box-sizing: content-box;
+    padding: .5rem;
+    min-width: 1.5rem;
+    height: 1.5rem;
+    border-radius: 1rem;
+    margin: 0;
+    border: none;
+    background-color: #e44a4a;
+    cursor: pointer;
+    transition: all .25s ease;
+}
+.profile-field-checkbox > img {
+    content: url("/icons/close.svg");
+}
+.profile-field-checkbox:hover {
+    background-color: #ed6868;
+}
+.profile-field-checkbox.active {
+    background-color: #13b213;
+}
+.profile-field-checkbox.active > img {
+    content: url("/icons/check.svg");
+}
+.profile-field-checkbox.active:hover {
+    background-color: #5edc5e;
 }
 
 

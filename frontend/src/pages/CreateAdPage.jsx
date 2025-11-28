@@ -40,13 +40,10 @@ export default function CreateAdPage() {
         distincts: "", // distinctive features (unneccessary)
         nickname: "", // pet nickname (unneccessary)
         danger: "", // ONLY danger / safe / unknown
+        extras: "", // extra information from creator (unneccessary)
         location: "", // place in words
         geoLocation: [], // place in coords
         time: "", // time in dd.MM.yyyy hh:mm:ss
-        contactName: window.localStorage.getItem('user_name'), // contact name of creator
-        contactPhone: window.localStorage.getItem('user_phone'), // contact phone of creator
-        contactEmail: window.localStorage.getItem('user_email'), // contact email of creator
-        extras: "", // extra information from creator (unneccessary)
     });
 
     const { CallAlert } = useContext(AppContext);
@@ -69,7 +66,7 @@ export default function CreateAdPage() {
         await applyFieldsFunc.current();
         setNavigationButtonsDisabled(false);
 
-        if (activeStage != 3) setActiveStage((prev) => prev + 1);
+        if (activeStage != 2) setActiveStage((prev) => prev + 1);
         else CreateAd();
     };
 
@@ -107,7 +104,7 @@ export default function CreateAdPage() {
                     />
                     <StageNavigationContainer
                         backDisabled={activeStage == 0}
-                        last={activeStage == 3}
+                        last={activeStage == 2}
                         event={ProcessNavigationButtonClick}
                         disabled={navigationButtonsDisabled}
                     />
@@ -177,14 +174,6 @@ function FieldsContainer({
                     adDetails={adDetails}
                 />
             );
-        case 3:
-            return (
-                <ContactFields
-                    validate={validateFieldsFunc}
-                    apply={applyFieldsFunc}
-                    adDetails={adDetails}
-                />
-            );
     }
 }
 
@@ -233,13 +222,14 @@ function PetInformationFields({ validate, apply, adDetails }) {
         distincts: useRef(),
         nickname: useRef(),
         danger: useRef(),
+        extras: useRef(),
     };
 
     validate.current = () => {
         let flag = true;
 
         Object.entries(refs).forEach((value) => {
-            if (!["distincts", "nickname"].includes(value[0])) {
+            if (!["distincts", "nickname", "extras"].includes(value[0])) {
                 const elem = value[1].current;
                 if (elem.value == "") {
                     elem.classList.add("wrong-field");
@@ -261,6 +251,7 @@ function PetInformationFields({ validate, apply, adDetails }) {
             distincts: refs.distincts.current.value,
             nickname: refs.nickname.current.value,
             danger: refs.danger.current.value,
+            extras: refs.extras.current.value,
         };
     };
 
@@ -336,6 +327,15 @@ function PetInformationFields({ validate, apply, adDetails }) {
                 ]}
                 ref={refs.danger}
                 value={adDetails.current.danger}
+            />
+            <InputLabeled
+                inputId="PetContactExtra"
+                type="text"
+                placeholder="Хотите указать что-то еще?"
+                autoComplete="off"
+                label="Дополнительная информация"
+                ref={refs.extras}
+                value={adDetails.current.extras}
             />
         </div>
     );
@@ -599,84 +599,6 @@ function InputMap({ geoLocation, setGeoLocation, ref }) {
                     <YMapListener onClick={handleClickMap} />
                 </YMap>
             )}
-        </div>
-    );
-}
-
-function ContactFields({ validate, apply, adDetails }) {
-    const refs = {
-        contactName: useRef(),
-        contactPhone: useRef(),
-        contactEmail: useRef(),
-        extras: useRef(),
-    };
-
-    validate.current = () => {
-        let flag = true;
-
-        Object.entries(refs).forEach((value) => {
-            if (value[0] != "extras") {
-                const elem = value[1].current;
-                if (elem.value == "") {
-                    elem.classList.add("wrong-field");
-                    flag = false;
-                } else elem.classList.remove("wrong-field");
-            }
-        });
-
-        return flag;
-    };
-
-    apply.current = () => {
-        adDetails.current = {
-            ...adDetails.current,
-            contactName: refs.contactName.current.value,
-            contactPhone: refs.contactPhone.current.value,
-            contactEmail: refs.contactEmail.current.value,
-            extras: refs.extras.current.value,
-        };
-    };
-
-    const phoneField = adDetails.current.contactPhone ? adDetails.current.contactPhone : '';
-
-    return (
-        <div id="fields-container">
-            <InputLabeled
-                inputId="PetContactName"
-                type="text"
-                placeholder="Имя"
-                autoComplete="off"
-                label="Ваше имя *"
-                ref={refs.contactName}
-                value={adDetails.current.contactName}
-            />
-            <InputLabeled
-                inputId="PetContactPhone"
-                type="tel"
-                placeholder="+7 (___) ___-__-__"
-                autoComplete="tel"
-                label="Ваш телефон *"
-                ref={refs.contactPhone}
-                value={phoneField}
-            />
-            <InputLabeled
-                inputId="PetContactEmail"
-                type="email"
-                placeholder="example@mail.com"
-                autoComplete="email"
-                label="Ваша электронная почта *"
-                ref={refs.contactEmail}
-                value={adDetails.current.contactEmail}
-            />
-            <InputLabeled
-                inputId="PetContactExtra"
-                type="text"
-                placeholder="Хотите указать что-то еще?"
-                autoComplete="off"
-                label="Дополнительная информация"
-                ref={refs.extras}
-                value={adDetails.current.extras}
-            />
         </div>
     );
 }

@@ -21,7 +21,8 @@ export const API_PATHS = {
     change_password: API_BASENAME + "/user/password",
     change_vk: API_BASENAME + '/todo',
     change_tg: API_BASENAME + '/todo',
-    change_max: API_BASENAME + '/todo'
+    change_max: API_BASENAME + '/todo',
+    change_notifications_location: API_BASENAME + '/todo',
 };
 
 export const DEBUG = true;
@@ -30,7 +31,6 @@ export const CREATE_AD_STAGES = [
     "1. Основная информация",
     "2. Информация о животном",
     "3. Место и время",
-    "4. Способ связи",
 ];
 
 export const AD_INFO_DICT = {
