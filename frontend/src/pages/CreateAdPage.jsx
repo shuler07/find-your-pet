@@ -607,7 +607,7 @@ function InputMap({ geoLocation, setGeoLocation, ref }) {
                 >
                     <YMapDefaultSchemeLayer />
                     <YMapDefaultFeaturesLayer />
-                    {geoLocation && (
+                    {geoLocation.length != 0 && (
                         <YMapMarker coordinates={geoLocation}>
                             <div className="map-marker" />
                         </YMapMarker>
