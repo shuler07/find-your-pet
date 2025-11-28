@@ -5,16 +5,40 @@
     height: 70dvh;
     background: linear-gradient(rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.5) 50%), url("/images/main-intro-image.webp")
     center+35%/cover;
+    mask-image: linear-gradient(to bottom, white 80%, transparent);
     display: flex;
     gap: 1rem;
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    animation: main-page-intro-section-appear 1s forwards;
+}
+@keyframes main-page-intro-section-appear {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
 }
 
 #main-page-intro-section > h1 {
     font-size: max(3em, 6dvw);
     font-weight: 800;
+    animation: main-page-intro-section-text-appear 1s forwards;
+}
+#main-page-intro-section > h2 {
+    animation: main-page-intro-section-text-appear 1s forwards .1s;
+}
+@keyframes main-page-intro-section-text-appear {
+    0% {
+        opacity: 0;
+        translate: 0 2rem;
+    }
+    100% {
+        opacity: 1;
+        translate: 0 0;
+    }
 }
 
 #main-page-navigate-section {
