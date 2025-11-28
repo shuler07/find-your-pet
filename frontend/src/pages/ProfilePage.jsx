@@ -1,6 +1,7 @@
 import "./ProfilePage.css";
 
 import { useEffect, useRef, useState, useContext } from "react";
+import { useNavigate } from "react-router-dom";
 import { AppContext } from "../App";
 
 import Header from "../components/Header";
@@ -21,7 +22,7 @@ import {
     ApiLogOutUser,
     ApiDeleteUser,
 } from "../apiRequests";
-import { useNavigate } from "react-router-dom";
+import { getGeolocation } from "../functions";
 
 export default function ProfilePage() {
     const _user = window.localStorage.getItem("fyp-user");
@@ -732,32 +733,20 @@ function SettingsCard({ CallAlert, _notificationsLocation, setUser }) {
     );
 
     const handleClickNotifications = () => {
-        if (notificationsLocation.length == 0) getGeolocation();
+        if (notificationsLocation.length == 0) GetGeolocation();
         else ChangeNotificationsLocation();
     };
 
-    const getGeolocation = () => {
-        if (!navigator.geolocation) {
+    function GetGeolocation() {
+        const data = getGeolocation();
+
+        if (data) ChangeNotificationsLocation(geoloc);
+        else
             CallAlert(
                 "Получение геолокации не поддерживается в вашем браузере",
                 "red"
             );
-            return;
-        }
-
-        navigator.geolocation.getCurrentPosition(
-            (pos) => {
-                const geoloc = [pos.coords.longitude, pos.coords.latitude];
-                ChangeNotificationsLocation(geoloc);
-            },
-            (error) => {
-                console.error(
-                    "Getting geolocation from browser. Error occured:",
-                    error
-                );
-            }
-        );
-    };
+    }
 
     async function ChangeNotificationsLocation(location) {
         const data = await ApiChangeNotificationsLocation(location);
