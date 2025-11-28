@@ -10,7 +10,7 @@ import Footer from "../components/Footer";
 import DropdownLabeled from "../components/DropdownLabeled";
 import InputLabeled from "../components/InputLabeled";
 
-import { CREATE_AD_STAGES, DEBUG } from "../data";
+import { CREATE_AD_STAGES, DEBUG, DROPDOWN_CHOICES } from "../data";
 import {
     ymapsInitPromise,
     YMap,
@@ -203,10 +203,7 @@ function MainInformationFields({ validate, apply, adDetails }) {
             <DropdownLabeled
                 dropdownId="PetLostFound"
                 label="Потеряли или нашли животное? *"
-                choices={[
-                    ["lost", "Потеряли"],
-                    ["found", "Нашли"],
-                ]}
+                choices={DROPDOWN_CHOICES.status}
                 ref={refs.status}
                 value={adDetails.current.status}
             />
@@ -261,22 +258,14 @@ function PetInformationFields({ validate, apply, adDetails }) {
             <DropdownLabeled
                 dropdownId="PetType"
                 label="Тип животного *"
-                choices={[
-                    ["dog", "Собака"],
-                    ["cat", "Кошка"],
-                ]}
+                choices={DROPDOWN_CHOICES.type}
                 ref={refs.type}
                 value={adDetails.current.type}
             />
             <DropdownLabeled
                 dropdownId="PetBreed"
                 label="Порода *"
-                choices={[
-                    ["labrador", "Лабрадор"],
-                    ["german_shepherd", "Немецкая овчарка"],
-                    ["poodle", "Пудель"],
-                    ["metis", "Метис"],
-                ]}
+                choices={DROPDOWN_CHOICES.breed}
                 ref={refs.breed}
                 value={adDetails.current.breed}
             />
@@ -292,11 +281,7 @@ function PetInformationFields({ validate, apply, adDetails }) {
             <DropdownLabeled
                 dropdownId="PetSize"
                 label="Размер *"
-                choices={[
-                    ["little", "Маленький"],
-                    ["medium", "Средний"],
-                    ["big", "Крупный"],
-                ]}
+                choices={DROPDOWN_CHOICES.size}
                 ref={refs.size}
                 value={adDetails.current.size}
             />
@@ -321,11 +306,7 @@ function PetInformationFields({ validate, apply, adDetails }) {
             <DropdownLabeled
                 dropdownId="PetDanger"
                 label="Животное может быть опасным для окружающих? *"
-                choices={[
-                    ["danger", "Да"],
-                    ["safe", "Нет"],
-                    ["unknown", "Не знаю"],
-                ]}
+                choices={DROPDOWN_CHOICES.danger}
                 ref={refs.danger}
                 value={adDetails.current.danger}
             />
@@ -498,10 +479,7 @@ function LocationFields({ validate, apply, adDetails }) {
             <DropdownLabeled
                 inputId="PetRegion"
                 label="Регион"
-                choices={[
-                    ["moscow_city", "город Москва"],
-                    ["moscow", "Московская область"]
-                ]}
+                choices={DROPDOWN_CHOICES.region}
                 ref={refs.region}
                 value={adDetails.current.region}
             />
