@@ -13,6 +13,11 @@ export async function ApiCheckAuth() {
         const data = await response.json();
         if (DEBUG) console.debug("Authentication. Data received:", data);
 
+        if (data.detail && data.detail.includes("Токен недействителен")) {
+            await ApiRefreshAuth();
+            return await ApiCheckAuth();
+        };
+
         return data;
     } catch (error) {
         console.error("Authentication. Error occured:", error);
@@ -105,6 +110,11 @@ export async function ApiDeleteUser() {
         const data = await response.json();
         if (DEBUG) console.debug('Deleting user. Data received:', data);
 
+        if (data.detail && data.detail.includes("Токен недействителен")) {
+            await ApiRefreshAuth();
+            return await ApiDeleteUser();
+        };
+
         return data;
     } catch (error) {
         console.error('Deleting user. Error occured:', error);
@@ -144,6 +154,11 @@ export async function ApiGetUser() {
         const data = await response.json();
         if (DEBUG) console.debug("Getting user. Data received:", data);
 
+        if (data.detail && data.detail.includes("Токен недействителен")) {
+            await ApiRefreshAuth();
+            return await ApiGetUser();
+        };
+
         return data;
     } catch (error) {
         console.error("Getting user. Error occured:", error);
@@ -162,6 +177,11 @@ export async function ApiChangeName(name) {
 
         const data = await response.json();
         if (DEBUG) console.debug("Changing name. Data received:", data);
+
+        if (data.detail && data.detail.includes("Токен недействителен")) {
+            await ApiRefreshAuth();
+            return await ApiChangeName(name);
+        };
 
         return data;
     } catch (error) {
@@ -182,6 +202,11 @@ export async function ApiChangePhone(phone) {
         const data = await response.json();
         if (DEBUG) console.debug("Changing phone. Data received:", data);
 
+        if (data.detail && data.detail.includes("Токен недействителен")) {
+            await ApiRefreshAuth();
+            return await ApiChangePhone(phone);
+        };
+
         return data;
     } catch (error) {
         console.error("Changing phone. Error occured:", error);
@@ -200,6 +225,11 @@ export async function ApiChangeEmail(email) {
 
         const data = await response.json();
         if (DEBUG) console.debug("Changing email. Data received:", data);
+
+        if (data.detail && data.detail.includes("Токен недействителен")) {
+            await ApiRefreshAuth();
+            return await ApiChangeEmail(email);
+        };
 
         return data;
     } catch (error) {
@@ -220,6 +250,11 @@ export async function ApiChangePassword(curPassword, newPassword) {
         const data = await response.json();
         if (DEBUG) console.debug("Changing password. Data received:", data);
 
+        if (data.detail && data.detail.includes("Токен недействителен")) {
+            await ApiRefreshAuth();
+            return await ApiChangePassword(curPassword, newPassword);
+        };
+
         return data;
     } catch (error) {
         console.error("Changing password. Error occured:", error);
@@ -238,6 +273,11 @@ export async function ApiChangeVk(vk) {
 
         const data = await response.json();
         if (DEBUG) console.debug("Changing vk. Data received:", data);
+
+        if (data.detail && data.detail.includes("Токен недействителен")) {
+            await ApiRefreshAuth();
+            return await ApiChangeVk(vk);
+        };
 
         return data;
     } catch (error) {
@@ -258,6 +298,11 @@ export async function ApiChangeTg(tg) {
         const data = await response.json();
         if (DEBUG) console.debug("Changing tg. Data received:", data);
 
+        if (data.detail && data.detail.includes("Токен недействителен")) {
+            await ApiRefreshAuth();
+            return await ApiChangeTg(tg);
+        };
+
         return data;
     } catch (error) {
         console.error("Changing tg. Error occured:", error);
@@ -277,6 +322,11 @@ export async function ApiChangeMax(max) {
         const data = await response.json();
         if (DEBUG) console.debug("Changing max. Data received:", data);
 
+        if (data.detail && data.detail.includes("Токен недействителен")) {
+            await ApiRefreshAuth();
+            return await ApiChangeMax(max);
+        };
+
         return data;
     } catch (error) {
         console.error("Changing max. Error occured:", error);
@@ -295,6 +345,11 @@ export async function ApiChangeNotificationsLocation(location) {
 
         const data = await response.json();
         if (DEBUG) console.debug("Changing notifications location. Data received:", data);
+
+        if (data.detail && data.detail.includes("Токен недействителен")) {
+            await ApiRefreshAuth();
+            return await ApiChangeNotificationsLocation(location);
+        };
 
         return data;
     } catch (error) {
@@ -316,6 +371,11 @@ export async function ApiCreateAd(adDetails) {
 
         const data = await response.json();
         if (DEBUG) console.debug("Creating ad. Data received:", data);
+
+        if (data.detail && data.detail.includes("Токен недействителен")) {
+            await ApiRefreshAuth();
+            return await ApiCreateAd(adDetails);
+        };
 
         return data;
     } catch (error) {
@@ -354,6 +414,11 @@ export async function ApiGetMyAds() {
         const data = await response.json();
         if (DEBUG) console.debug("Getting my ads. Data received:", data);
 
+        if (data.detail && data.detail.includes("Токен недействителен")) {
+            await ApiRefreshAuth();
+            return await ApiGetMyAds();
+        };
+
         return data;
     } catch (error) {
         console.error("Getting my ads. Error occured:", error);
@@ -372,6 +437,11 @@ export async function ApiGetAdsToCheck() {
         const data = await response.json();
         if (DEBUG) console.debug("Getting ads to check. Data received:", data);
 
+        if (data.detail && data.detail.includes("Токен недействителен")) {
+            await ApiRefreshAuth();
+            return await ApiGetAdsToCheck();
+        };
+
         return data;
     } catch (error) {
         console.error("Getting ads to check. Error occured:", error);
@@ -389,6 +459,11 @@ export async function ApiGetReportedAds() {
 
         const data = await response.json();
         if (DEBUG) console.debug("Getting reported ads. Data received:", data);
+
+        if (data.detail && data.detail.includes("Токен недействителен")) {
+            await ApiRefreshAuth();
+            return await ApiGetReportedAds();
+        };
 
         return data;
     } catch (error) {
@@ -426,6 +501,11 @@ export async function ApiRemoveAd(id) {
 
         const data = await response.json();
         if (DEBUG) console.debug("Removing ad. Data received:", data);
+
+        if (data.detail && data.detail.includes("Токен недействителен")) {
+            await ApiRefreshAuth();
+            return await ApiRemoveAd(id);
+        };
 
         return data;
     } catch (error) {
