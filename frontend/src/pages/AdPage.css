@@ -28,6 +28,7 @@
 
 #ad-photos > img {
     width: 100%;
+    border-radius: 1rem;
 }
 
 #ad-info {
@@ -100,6 +101,11 @@
     gap: .5rem;
     border-radius: .5rem;
     background-color: var(--secondary-color);
+}
+
+.ad-contacts-connect > img {
+    width: 1.5rem;
+    height: 1.5rem;
 }
 
 #ad-place {

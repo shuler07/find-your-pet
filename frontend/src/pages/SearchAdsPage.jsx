@@ -17,6 +17,7 @@ import {
     YMapListener,
 } from "../ymaps";
 import { ApiGetAds } from "../apiRequests";
+import { RestartAnim } from "../functions";
 
 export default function SearchAdsPage() {
     // Alert
@@ -392,6 +393,10 @@ function GeolocSelection({ location, setGeolocOpened, setActiveFilters, theme })
     const [mapZoom, setMapZoom] = useState(9);
 
     const [geopoint, setGeopoint] = useState(location);
+    useEffect(() => {
+        const marker = document.querySelector(".map-marker");
+        if (marker) RestartAnim(marker);
+    }, [geopoint]);
 
     const handleClickMap = (e) => {
         if (!e?.entity) return;

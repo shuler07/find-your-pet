@@ -2,6 +2,7 @@ import "./CreateAdPage.css";
 
 import { useRef, useState, useContext, useEffect } from "react";
 import { AppContext } from "../App";
+import { useNavigate } from "react-router-dom";
 
 import React from "react";
 
@@ -22,7 +23,7 @@ import {
     getSuggestsByText
 } from "../ymaps";
 import { ApiCreateAd } from "../apiRequests";
-import { useNavigate } from "react-router-dom";
+import { RestartAnim } from "../functions";
 
 export default function CreateAdPage() {
     const navigate = useNavigate();
@@ -569,6 +570,11 @@ function InputMap({ geoLocation, setGeoLocation, ref, theme }) {
         geoLocation.length != 0 ? geoLocation : [37.617644, 55.755819]
     );
     const [mapZoom, setMapZoom] = useState(9);
+
+    useEffect(() => {
+        const marker = document.querySelector(".map-marker");
+        if (marker) RestartAnim(marker);
+    }, [geoLocation]);
 
     ymapsInitPromise.then(() => setMapLoaded(true));
 

@@ -122,7 +122,7 @@ function PetInfo({
         RestartAnim(contactsElem);
     };
 
-    const buttonImage = isCreator ? "/icons/remove.svg" : "/icons/message.svg";
+    const buttonImage = isCreator ? "/icons/trash.svg" : "/icons/message.svg";
     const buttonText = isCreator ? "Снять объявление" : "Связаться";
     const buttonEvent = isCreator ? RemoveAd : scrollToContacts;
 
@@ -202,23 +202,23 @@ function PetContacts({ status, name, date, email, phone, vk, tg, max }) {
                 }}
             >
                 <div className="ad-contacts-connect">
-                    <img src="/icons/email.svg" />
+                    <img src="/icons/email.png" />
                     <h6>{email}</h6>
                 </div>
                 <div className="ad-contacts-connect">
-                    <img src="/icons/phone.svg" />
+                    <img src="/icons/phone.png" />
                     <h6>{phone}</h6>
                 </div>
                 <div className="ad-contacts-connect">
-                    <img src="/icons/vk.svg" />
+                    <img src="/icons/vk.png" />
                     <h6>{vk}</h6>
                 </div>
                 <div className="ad-contacts-connect">
-                    <img src="/icons/tg.svg" />
+                    <img src="/icons/tg.png" />
                     <h6>{tg}</h6>
                 </div>
                 <div className="ad-contacts-connect">
-                    <img src="/icons/max.svg" />
+                    <img src="/icons/max.png" />
                     <h6>{max}</h6>
                 </div>
             </div>

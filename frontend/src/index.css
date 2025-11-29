@@ -176,6 +176,20 @@ h6 {
     scale: 1.2;
     translate: -.75rem -.75rem;
     background: url('/icons/map-pin.svg');
+    animation: map-marker-appear .5s ease forwards;
+}
+@keyframes map-marker-appear {
+    0% {
+        scale: 0;
+        opacity: .5;
+    }
+    75% {
+        scale: 1.2;
+    }
+    100% {
+        scale: 1;
+        opacity: 1;
+    }
 }
 
 

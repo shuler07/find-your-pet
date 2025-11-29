@@ -490,7 +490,7 @@ function AccountDelete({ CallAlert, setSignedIn }) {
                     style={{ width: "100%" }}
                     onClick={() => DeleteAccount()}
                 >
-                    <img src="/icons/log_out.svg" />
+                    <img src="/icons/trash.svg" />
                     Удалить аккаунт
                 </button>
             </div>
@@ -795,7 +795,7 @@ function SettingsNotificationsField({
                 </div>
                 <div
                     className={`primary-button account-edit-button ${
-                        notificationsLocation.length == 0 && "disabled"
+                        notificationsLocation.length == 0 && "red disabled"
                     }`}
                     onClick={handleClickNotifications}
                 >
