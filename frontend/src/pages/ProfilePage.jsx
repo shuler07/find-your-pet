@@ -76,7 +76,7 @@ export default function ProfilePage() {
                 <PostedPetsCard CallAlert={CallAlert} />
                 <SettingsCard
                     CallAlert={CallAlert}
-                    _notificationsLocation={user.notificationsLocation}
+                    notificationsLocation={user.notificationsLocation}
                     setUser={setUser}
                     theme={theme}
                     setTheme={setTheme}
@@ -732,10 +732,28 @@ function PostedPetsCard({ CallAlert }) {
 
 function SettingsCard({
     CallAlert,
-    _notificationsLocation,
+    notificationsLocation,
     setUser,
     theme,
     setTheme,
+}) {
+    return (
+        <section id="settings-card-section" className="card-section">
+            <h5>Настройки</h5>
+            <SettingsNotificationsField
+                CallAlert={CallAlert}
+                _notificationsLocation={notificationsLocation}
+                setUser={setUser}
+            />
+            <SettingsThemeField theme={theme} setTheme={setTheme} />
+        </section>
+    );
+}
+
+function SettingsNotificationsField({
+    CallAlert,
+    _notificationsLocation,
+    setUser,
 }) {
     const [notificationsLocation, setNotificationsLocation] = useState(
         _notificationsLocation
@@ -747,14 +765,14 @@ function SettingsCard({
     };
 
     function GetGeolocation() {
-        const data = getGeolocation();
-
-        if (data) ChangeNotificationsLocation(geoloc);
-        else
-            CallAlert(
-                "Получение геолокации не поддерживается в вашем браузере",
-                "red"
-            );
+        getGeolocation().then((data) => {
+            if (data) ChangeNotificationsLocation(data);
+            else
+                CallAlert(
+                    "Получение геолокации не поддерживается в вашем браузере",
+                    "red"
+                );
+        });
     }
 
     async function ChangeNotificationsLocation(location) {
@@ -768,42 +786,50 @@ function SettingsCard({
     }
 
     return (
-        <section id="settings-card-section" className="card-section">
-            <h5>Настройки</h5>
-            <div className="profile-field-container">
-                <h6>Уведомления</h6>
-                <div className="profile-field">
-                    <button
-                        className={`profile-field-checkbox ${
-                            notificationsLocation.length != 0 && "active"
-                        }`}
-                        onClick={handleClickNotifications}
+        <div className="profile-field-container">
+            <h6>Уведомления</h6>
+            <div className="profile-field">
+                <div className="profile-field-bg">
+                    <h6>
+                        Получать уведомления о новых объявлениях рядом с вами
+                    </h6>
+                </div>
+                <div
+                    className={`primary-button account-edit-button ${
+                        notificationsLocation.length == 0 && "disabled"
+                    }`}
+                    onClick={handleClickNotifications}
+                >
+                    <img
+                        style={{
+                            content:
+                                notificationsLocation.length == 0
+                                    ? 'url("/icons/close.svg")'
+                                    : 'url("/icons/check.svg")',
+                        }}
+                    />
+                </div>
+            </div>
+        </div>
+    );
+}
+
+function SettingsThemeField({ theme, setTheme }) {
+    return (
+        <div className="profile-field-container">
+            <h6>Тема</h6>
+            <div className="profile-field">
+                <div className="profile-field-select-div">
+                    <select
+                        className="profile-field-select"
+                        value={theme}
+                        onChange={(e) => setTheme(e.target.value)}
                     >
-                        <img />
-                    </button>
-                    <div className="profile-field-bg">
-                        <h6>
-                            Получать уведомления о новых объявлениях рядом с
-                            вами
-                        </h6>
-                    </div>
+                        <option value="light">Светлая</option>
+                        <option value="dark">Тёмная</option>
+                    </select>
                 </div>
             </div>
-            <div className="profile-field-container">
-                <h6>Тема</h6>
-                <div className="profile-field">
-                    <div className="profile-field-select-div">
-                        <select
-                            className="profile-field-select"
-                            value={theme}
-                            onChange={(e) => setTheme(e.target.value)}
-                        >
-                            <option value="light">Светлая</option>
-                            <option value="dark">Тёмная</option>
-                        </select>
-                    </div>
-                </div>
-            </div>
-        </section>
+        </div>
     );
 }
