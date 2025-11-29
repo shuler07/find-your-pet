@@ -23,7 +23,7 @@
     top: calc(50% - .5rem);
     right: 1rem;
     background: url('/icons/chevron-down.svg') center;
-    filter: invert(1);
+    filter: var(--image-filter);
 }
 
 .dropdown-labeled select {
@@ -31,8 +31,9 @@
     width: 100%;
     border: solid 2px color-mix(in srgb, var(--inverse-color), transparent 80%);
     border-radius: 1rem;
+    background: var(--secondary-color);
+    color: var(--inverse-color);
     font-size: 1em;
-    border: solid 2px color-mix(in srgb, var(--inverse-color), transparent 80%);
     outline: none;
     appearance: none;
     -webkit-appearance: none;
@@ -40,5 +41,5 @@
     transition: all .25s ease;
 }
 .dropdown-labeled select:focus-visible {
-    border: solid 2px #000;
+    border: solid 2px var(--inverse-color);
 }

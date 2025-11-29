@@ -53,7 +53,7 @@ h6 {
     position: relative;
 }
 
-.lightTheme {
+.light-theme {
     --primary-color: #5c45df;
     --primary-light: #6f86df;
 
@@ -63,18 +63,22 @@ h6 {
     --main-color: #f8f8f8;
     --secondary-color: #eee;
     --inverse-color: black;
+    --image-filter: invert(1);
+    --inverse-image-filter: invert(0);
 }
 
-.darkTheme {
-    --primary-color: #5c45df;
-    --primary-light: #6f86df;
+.dark-theme {
+    --primary-color: #4533a9;
+    --primary-light: #4d5e9e;
 
-    --accent-color: #c145df;
-    --accent-light: #d66fdf;
+    --accent-color: #862e9b;
+    --accent-light: #914c97;
 
-    --main-color: #f8f8f8;
-    --secondary-color: #eee;
-    --inverse-color: black;
+    --main-color: #202020;
+    --secondary-color: #141414;
+    --inverse-color: #f0f0f0;
+    --image-filter: invert(0);
+    --inverse-image-filter: invert(1);
 }
 
 .primary-button {

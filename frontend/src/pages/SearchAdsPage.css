@@ -41,11 +41,11 @@
     gap: .5rem;
     position: relative;
     border-radius: 1rem;
-    background: color-mix(in srgb, var(--secondary-color), black 10%);
+    background: color-mix(in srgb, var(--secondary-color), var(--inverse-color) 10%);
 }
 
 #search-bar > img {
-    filter: invert(1);
+    filter: var(--image-filter);
 }
 
 #search-field {
@@ -56,6 +56,7 @@
     border: none;
     font-size: 1em;
     outline: none;
+    color: var(--inverse-color);
 }
 
 .sidebar-element {
@@ -67,6 +68,7 @@
 .sidebar-element label {
     font-size: .9em;
     font-weight: 500;
+    color: var(--inverse-color);
 }
 
 .sidebar-element div {
@@ -81,7 +83,7 @@
     top: calc(50% - .5rem);
     right: .5rem;
     background: url('/icons/chevron-down.svg') center;
-    filter: invert(1);
+    filter: var(--image-filter);
     pointer-events: none;
 }
 
@@ -93,6 +95,7 @@
     appearance: none;
     -webkit-appearance: none;
     background: var(--secondary-color);
+    color: var(--inverse-color);
     font-size: .8em;
     font-weight: 500;
     font-family: system-ui;

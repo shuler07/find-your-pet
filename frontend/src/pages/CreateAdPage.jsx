@@ -47,7 +47,7 @@ export default function CreateAdPage() {
         time: "", // time in dd.MM.yyyy hh:mm:ss
     });
 
-    const { CallAlert } = useContext(AppContext);
+    const { CallAlert, theme } = useContext(AppContext);
 
     const [navigationButtonsDisabled, setNavigationButtonsDisabled] =
         useState(false);
@@ -102,6 +102,7 @@ export default function CreateAdPage() {
                         validateFieldsFunc={validateFieldsFunc}
                         applyFieldsFunc={applyFieldsFunc}
                         adDetails={adDetails}
+                        theme={theme}
                     />
                     <StageNavigationContainer
                         backDisabled={activeStage == 0}
@@ -149,6 +150,7 @@ function FieldsContainer({
     validateFieldsFunc,
     applyFieldsFunc,
     adDetails,
+    theme
 }) {
     switch (activeStage) {
         case 0:
@@ -173,6 +175,7 @@ function FieldsContainer({
                     validate={validateFieldsFunc}
                     apply={applyFieldsFunc}
                     adDetails={adDetails}
+                    theme={theme}
                 />
             );
     }
@@ -323,7 +326,7 @@ function PetInformationFields({ validate, apply, adDetails }) {
     );
 }
 
-function LocationFields({ validate, apply, adDetails }) {
+function LocationFields({ validate, apply, adDetails, theme }) {
     const refs = {
         region: useRef(),
         location: useRef(),
@@ -466,6 +469,7 @@ function LocationFields({ validate, apply, adDetails }) {
                         geoLocation={geoLocation}
                         setGeoLocation={setGeoLocation}
                         ref={refs.map}
+                        theme={theme}
                     />
                 ))}
             <InputLabeled
@@ -559,7 +563,7 @@ function InputAddress({ value, ref }) {
     );
 }
 
-function InputMap({ geoLocation, setGeoLocation, ref }) {
+function InputMap({ geoLocation, setGeoLocation, ref, theme }) {
     const [mapLoaded, setMapLoaded] = useState(false);
     const [mapLocation, setMapLocation] = useState(
         geoLocation.length != 0 ? geoLocation : [37.617644, 55.755819]
@@ -581,6 +585,7 @@ function InputMap({ geoLocation, setGeoLocation, ref }) {
             {mapLoaded && (
                 <YMap
                     location={{ center: mapLocation, zoom: mapZoom }}
+                    theme={theme}
                     style={{ width: "100%", height: "100%" }}
                 >
                     <YMapDefaultSchemeLayer />

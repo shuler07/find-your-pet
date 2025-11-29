@@ -23,6 +23,7 @@ import {
     ApiDeleteUser,
 } from "../apiRequests";
 import { getGeolocation } from "../functions";
+import DropdownLabeled from "../components/DropdownLabeled";
 
 export default function ProfilePage() {
     const _user = window.localStorage.getItem("fyp-user");
@@ -44,13 +45,13 @@ export default function ProfilePage() {
         GetUser();
     }, []);
 
-    const { CallAlert, setSignedIn } = useContext(AppContext);
+    const { CallAlert, setSignedIn, theme, setTheme } = useContext(AppContext);
 
     async function GetUser() {
         const data = await ApiGetUser();
 
         if (data.user) {
-            window.localStorage.setItem("fyp-user", JSON.stringify(data.user));
+            // window.localStorage.setItem("fyp-user", JSON.stringify(data.user));
             setUser(data.user);
         } else if (data.error)
             CallAlert("Ошибка при обновлении профиля", "red");
@@ -77,6 +78,8 @@ export default function ProfilePage() {
                     CallAlert={CallAlert}
                     _notificationsLocation={user.notificationsLocation}
                     setUser={setUser}
+                    theme={theme}
+                    setTheme={setTheme}
                 />
             </div>
             <Footer />
@@ -727,7 +730,13 @@ function PostedPetsCard({ CallAlert }) {
     );
 }
 
-function SettingsCard({ CallAlert, _notificationsLocation, setUser }) {
+function SettingsCard({
+    CallAlert,
+    _notificationsLocation,
+    setUser,
+    theme,
+    setTheme,
+}) {
     const [notificationsLocation, setNotificationsLocation] = useState(
         _notificationsLocation
     );
@@ -777,6 +786,21 @@ function SettingsCard({ CallAlert, _notificationsLocation, setUser }) {
                             Получать уведомления о новых объявлениях рядом с
                             вами
                         </h6>
+                    </div>
+                </div>
+            </div>
+            <div className="profile-field-container">
+                <h6>Тема</h6>
+                <div className="profile-field">
+                    <div className="profile-field-select-div">
+                        <select
+                            className="profile-field-select"
+                            value={theme}
+                            onChange={(e) => setTheme(e.target.value)}
+                        >
+                            <option value="light">Светлая</option>
+                            <option value="dark">Тёмная</option>
+                        </select>
                     </div>
                 </div>
             </div>

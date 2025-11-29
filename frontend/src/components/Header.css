@@ -7,8 +7,8 @@ header {
     justify-content: space-between;
     align-items: center;
     z-index: 2;
-    background: color-mix(in srgb, var(--main-color), transparent 20%);
-    backdrop-filter: blur(5px);
+    background: color-mix(in srgb, var(--main-color), transparent 10%);
+    backdrop-filter: blur(10px);
     box-shadow: 0px 5px 10px #00000010;
     transition: all .25s ease;
 }
@@ -16,7 +16,7 @@ header {
 #header-logo {
     height: 100%;
     cursor: pointer;
-    filter: invert(1);
+    filter: var(--image-filter);
 }
 
 #header-bar {
@@ -35,7 +35,7 @@ header {
     background: var(--primary-color);
 }
 .header-button.primary > h6 {
-    color: var(--main-color);
+    color: white;
 }
 .header-button.accent {
     border: solid 2px var(--primary-color);
@@ -49,5 +49,5 @@ header {
     background: var(--primary-light);
 }
 .header-button.accent:hover {
-    background: color-mix(in srgb, var(--primary-light), transparent 60%);
+    background: color-mix(in srgb, var(--primary-light), transparent 80%);
 }

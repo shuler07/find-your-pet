@@ -19,7 +19,7 @@ import {
 import { RestartAnim } from "../functions";
 
 export default function AdPage() {
-    const { ad, CallAlert } = useContext(AppContext);
+    const { ad, CallAlert, theme } = useContext(AppContext);
 
     const [creator, setCreator] = useState({});
     const [isCreator, setIsCreator] = useState(false);
@@ -55,6 +55,7 @@ export default function AdPage() {
                     <PetPlace
                         location={ad.location}
                         geoLocation={ad.geoLocation}
+                        theme={theme}
                     />
                 </div>
             </div>
@@ -225,7 +226,7 @@ function PetContacts({ status, name, date, email, phone, vk, tg, max }) {
     );
 }
 
-function PetPlace({ location, geoLocation }) {
+function PetPlace({ location, geoLocation, theme }) {
     const [mapLoaded, setMapLoaded] = useState(false);
     ymapsInitPromise.then(() => setMapLoaded(true));
 
@@ -241,7 +242,7 @@ function PetPlace({ location, geoLocation }) {
             <div id="ad-place-map">
                 {mapLoaded &&
                     (geoLocation.length != 0 ? (
-                        <YMap location={{ center: geoLocation, zoom: 9 }}>
+                        <YMap location={{ center: geoLocation, zoom: 9 }} theme={theme}>
                             <YMapDefaultSchemeLayer />
                             <YMapDefaultFeaturesLayer />
                             <YMapMarker coordinates={geoLocation}>
@@ -268,6 +269,7 @@ function PetPlace({ location, geoLocation }) {
                                     left: 0,
                                     width: "100%",
                                     height: "100%",
+                                    filter: "var(--inverse-image-filter)",
                                     opacity: 0.7,
                                     maskImage:
                                         "radial-gradient(ellipse, white, transparent 75%)",

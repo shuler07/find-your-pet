@@ -20,7 +20,7 @@ import { ApiGetAds } from "../apiRequests";
 
 export default function SearchAdsPage() {
     // Alert
-    const { CallAlert, isAdmin } = useContext(AppContext);
+    const { CallAlert, isAdmin, theme } = useContext(AppContext);
 
     // Ads
     const [ads, setAds] = useState([]);
@@ -180,6 +180,7 @@ export default function SearchAdsPage() {
                     location={activeFilters.geoloc}
                     setGeolocOpened={setGeolocOpened}
                     setActiveFilters={setActiveFilters}
+                    theme={theme}
                 />
             )}
             <Footer />
@@ -379,7 +380,7 @@ function SearchBar({ value, event }) {
     );
 }
 
-function GeolocSelection({ location, setGeolocOpened, setActiveFilters }) {
+function GeolocSelection({ location, setGeolocOpened, setActiveFilters, theme }) {
     const mapRef = useRef();
     const [mapLoaded, setMapLoaded] = useState(false);
 
@@ -414,6 +415,7 @@ function GeolocSelection({ location, setGeolocOpened, setActiveFilters }) {
                 {mapLoaded && (
                     <YMap
                         location={{ center: mapLocation, zoom: mapZoom }}
+                        theme={theme}
                         style={{ width: "100%", height: "100%" }}
                         ref={mapRef}
                     >

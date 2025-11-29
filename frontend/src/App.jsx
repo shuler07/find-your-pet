@@ -54,6 +54,20 @@ export default function App() {
             CallAlert("Ошибка при аутентфикации. Попробуйте позже", "red");
     }
 
+    const _theme = window.localStorage.getItem("fyp-theme");
+    const [theme, setTheme] = useState(_theme || "light");
+    useEffect(() => {
+        window.localStorage.setItem("fyp-theme", theme);
+        const html = document.documentElement;
+        if (theme == "light") {
+            html.classList.remove('dark-theme');
+            html.classList.add("light-theme");
+        } else {
+            html.classList.remove('light-theme');
+            html.classList.add("dark-theme");
+        };
+    }, [theme]);
+
     return (
         <AppContext
             value={{
@@ -61,6 +75,8 @@ export default function App() {
                 isAdmin,
                 setSignedIn,
                 CallAlert,
+                theme,
+                setTheme
             }}
         >
             <Router>

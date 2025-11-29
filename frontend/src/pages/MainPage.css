@@ -25,9 +25,11 @@
 #main-page-intro-section > h1 {
     font-size: max(3em, 6dvw);
     font-weight: 800;
+    color: black;
     animation: main-page-intro-section-text-appear 1s forwards;
 }
 #main-page-intro-section > h2 {
+    color: black;
     animation: main-page-intro-section-text-appear 1s forwards .1s;
 }
 @keyframes main-page-intro-section-text-appear {
@@ -55,19 +57,19 @@
     gap: .5rem;
     border-radius: 1rem;
     background: var(--main-color);
-    box-shadow: 0px 2px 4px #00000010;
+    box-shadow: 0px 2px 4px color-mix(in srgb, var(--inverse-color), transparent 95%);
     cursor: pointer;
     transition: all .25s ease;
 }
 .navigate-banner:hover {
-    background: color-mix(in srgb, var(--main-color), #000 2%);
-    box-shadow: 0px 5px 10px #00000020;
+    background: color-mix(in srgb, var(--main-color), var(--inverse-color) 2%);
+    box-shadow: 0px 5px 10px color-mix(in srgb, var(--inverse-color), transparent 90%);
 }
 
 .navigate-banner > img {
     width: 2rem;
     height: 2rem;
-    filter: invert(1);
+    filter: var(--image-filter);
 }
 
 #main-page-about-section {
@@ -86,7 +88,7 @@
     gap: .25rem;
     border-radius: 1rem;
     background: var(--main-color);
-    box-shadow: 0px 2px 4px #00000010;
+    box-shadow: 0px 2px 4px color-mix(in srgb, var(--inverse-color), transparent 95%);
 }
 
 .about-block div h6, .about-block div h3 {
