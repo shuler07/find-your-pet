@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Mapped, mapped_column
-from sqlalchemy import DateTime, String, Text, ForeignKey, ARRAY, Float
+from sqlalchemy import DateTime, String, Text, ForeignKey, ARRAY, Float, Boolean
 from database import Base
 from datetime import datetime, timezone
 from typing import Optional
@@ -25,7 +25,8 @@ class Ad(Base):
     __tablename__ = "ads"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))
+    user_id: Mapped[int] = mapped_column(
+        ForeignKey("users.id", ondelete="CASCADE"))
 
     status: Mapped[str] = mapped_column(String(10))
     type: Mapped[str] = mapped_column(String(10))
@@ -36,7 +37,9 @@ class Ad(Base):
     nickname: Mapped[str] = mapped_column(String(50))
     danger: Mapped[str] = mapped_column(String(10))
     location: Mapped[str] = mapped_column(String(100))
-    geoLocation: Mapped[ARRAY[float]] = mapped_column(ARRAY(Float, as_tuple=True))
+    ischecked: Mapped[bool] = mapped_column(Boolean, default=False)
+    geoLocation: Mapped[ARRAY[float]] = mapped_column(
+        ARRAY(Float, as_tuple=True))
     time: Mapped[datetime] = mapped_column(DateTime(timezone=True))
     contactName: Mapped[str] = mapped_column(String(50))
     contactPhone: Mapped[str] = mapped_column(String(20))

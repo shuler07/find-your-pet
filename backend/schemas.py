@@ -61,6 +61,7 @@ class AdOut(BaseModel):
     contactPhone: str
     contactEmail: str
     extras: str
+    ischecked: bool
 
     class Config:
         from_attributes = True

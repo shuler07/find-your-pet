@@ -34,6 +34,7 @@ async def create_ad(data: AdCreate, session: sessionDep, current_user: userDep):
         contactPhone=data.contactPhone,
         contactEmail=data.contactEmail,
         extras=data.extras,
+        ischecked=False,
     )
 
     session.add(ad)
@@ -46,7 +47,7 @@ async def create_ad(data: AdCreate, session: sessionDep, current_user: userDep):
 @router.post("/ads")
 async def get_ads(session: sessionDep, filters: AdFilters):
     try:
-        query = select(Ad)
+        query = select(Ad).where(Ad.ischecked == True)
 
         if filters.status:
             query = query.where(Ad.status == filters.status)
@@ -76,7 +77,8 @@ async def get_ads(session: sessionDep, filters: AdFilters):
 @router.get("/ads/my")
 async def get_my_ads(session: sessionDep, current_user: userDep):
     query = (
-        select(Ad).where(Ad.user_id == current_user.id).order_by(Ad.created_at.desc())
+        select(Ad).where(Ad.user_id == current_user.id).
+        where(Ad.ischecked == True).order_by(Ad.created_at.desc())
     )
     result = await session.scalars(query)
     ads = result.all()
