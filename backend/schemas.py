@@ -26,7 +26,7 @@ class UserOut(BaseModel):
 
 
 class AdCreate(BaseModel):
-    status: Literal["lost", "found"]
+    status: Literal["lost", "found","closed"]
     type: Literal["dog", "cat"]
     breed: Literal["labrador", "german_shepherd", "poodle", "metis"]
     color: str

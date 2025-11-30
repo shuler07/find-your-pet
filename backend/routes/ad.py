@@ -45,9 +45,12 @@ async def create_ad(data: AdCreate, session: sessionDep, current_user: userDep):
 
 
 @router.post("/ads")
-async def get_ads(session: sessionDep, filters: AdFilters):
+async def get_ads(session: sessionDep, filters: AdFilters, current_user: userDep):
     try:
         query = select(Ad).where(Ad.ischecked == True)
+
+        if current_user.role != "admin":
+            query = query.where(Ad.status != "closed")
 
         if filters.status:
             query = query.where(Ad.status == filters.status)
@@ -80,6 +83,8 @@ async def get_my_ads(session: sessionDep, current_user: userDep):
         select(Ad).where(Ad.user_id == current_user.id).
         where(Ad.ischecked == True).order_by(Ad.created_at.desc())
     )
+    if current_user.role != "admin":
+        query = query.where(Ad.status != "closed")
     result = await session.scalars(query)
     ads = result.all()
     ads_out = [AdOut.model_validate(ad) for ad in ads]
