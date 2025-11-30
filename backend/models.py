@@ -14,6 +14,8 @@ class User(Base):
     phone: Mapped[Optional[str]] = mapped_column(default="")
     name: Mapped[Optional[str]] = mapped_column(nullable=True)
     role: Mapped[str] = mapped_column(default="user")
+    avatar_delete_url: Mapped[str] = mapped_column(default="")
+    avatar_display_url: Mapped[str] = mapped_column(default="")
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         default=lambda: datetime.now(timezone.utc),
@@ -38,6 +40,8 @@ class Ad(Base):
     danger: Mapped[str] = mapped_column(String(10))
     location: Mapped[str] = mapped_column(String(100))
     ischecked: Mapped[bool] = mapped_column(Boolean, default=False)
+    ad_image_delete_url: Mapped[str] = mapped_column(default="")
+    ad_image_display_url: Mapped[str] = mapped_column(default="")
     geoLocation: Mapped[ARRAY[float]] = mapped_column(
         ARRAY(Float, as_tuple=True))
     time: Mapped[datetime] = mapped_column(DateTime(timezone=True))

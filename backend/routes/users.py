@@ -1,7 +1,9 @@
 from fastapi import APIRouter, HTTPException, Response, Request
+from pydantic import BaseModel
 from sqlalchemy import select
 from jose import JWTError, jwt
 from datetime import timedelta
+import httpx
 from dependencies import userDep, sessionDep
 import random
 from models import User
@@ -32,6 +34,26 @@ router = APIRouter()
 
 names = ["Альфа", "Барсик", "Крош", "Стрелка", "Мурзик"]
 
+class AvatarUpdate(BaseModel):
+    avatar_delete_url: str
+    avatar_display_url: str
+
+@router.put("/user/avatar")
+async def update_avatar(
+    data: AvatarUpdate,
+    session: sessionDep,
+    current_user: userDep,
+):
+    if current_user.avatar_delete_url:
+        try:
+            async with httpx.AsyncClient() as client:
+                await client.delete(current_user.avatar_delete_url)
+        except Exception as e:
+            print(f"Ошибка при удалении старого аватара: {e}")
+    current_user.avatar_delete_url = data.avatar_delete_url
+    current_user.avatar_display_url = data.avatar_display_url
+    await session.commit()
+    return {"success": True,"message":"Аватар обновлен"}
 
 @router.post("/register")
 async def register(user: UserRegister, session: sessionDep):
