@@ -1,3 +1,4 @@
+from typing import Optional
 from fastapi import APIRouter, HTTPException, Request
 from sqlalchemy import select
 from datetime import datetime
@@ -78,11 +79,22 @@ async def get_ads(session: sessionDep, filters: AdFilters, current_user: userDep
         return {"success": False, "message": "Ошибка на сервере"}
 
 
-@router.get("/ads/my")
-async def get_my_ads(session: sessionDep, current_user: userDep):
+@router.get("/ads/user")
+async def get_user_ads(session: sessionDep, current_user: userDep, uid: Optional[int] = None):
+    if current_user.role != "admin":
+        target_user_id = current_user.id
+    else:
+        target_user_id = uid if uid is not None else current_user.id
+
+    if current_user.role != "admin" and target_user_id != current_user.id:
+        raise HTTPException(
+            status_code=403, detail="Нет доступа к чужим объявлениям")
+
     query = (
-        select(Ad).where(Ad.user_id == current_user.id).
-        where(Ad.ischecked == True).order_by(Ad.created_at.desc())
+        select(Ad).
+        where(Ad.user_id == target_user_id).
+        where(Ad.ischecked == True).
+        order_by(Ad.created_at.desc())
     )
     if current_user.role != "admin":
         query = query.where(Ad.status != "closed")

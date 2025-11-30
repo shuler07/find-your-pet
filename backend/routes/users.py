@@ -1,3 +1,4 @@
+from typing import Optional
 from fastapi import APIRouter, HTTPException, Response, Request
 from pydantic import BaseModel
 from sqlalchemy import select
@@ -189,18 +190,20 @@ async def logout(response: Response):
 
 
 @router.get("/user")
-async def get_user(request: Request, session: sessionDep):
+async def get_user(request: Request, session: sessionDep,uid: Optional[int] = None):
     token = request.cookies.get("access_token")
     if not token:
         raise HTTPException(status_code=401, detail="Нет access токена")
 
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        current_user_id = int(payload["sub"])
     except JWTError:
         raise HTTPException(status_code=401, detail="Токен недействителен или истёк")
 
-    user_id = payload.get("sub")
-    user = await session.get(User, int(user_id))
+    target_user_id = uid if uid is not None else current_user_id
+
+    user = await session.get(User, target_user_id)
     if not user:
         raise HTTPException(status_code=404, detail="Пользователь не найден")
 
