@@ -10,7 +10,8 @@ import SearchAdsPage from "./pages/SearchAdsPage";
 import CreateAdPage from "./pages/CreateAdPage";
 import AdPage from "./pages/AdPage";
 import AuthorsPage from "./pages/AuthorsPage";
-import ProfilePage from "./pages/ProfilePage";
+import MyProfilePage from "./pages/MyProfilePage";
+import UserProfilePage from './pages/UserProfilePage';
 import AdminPage from "./pages/AdminPage";
 
 import { ApiCheckAuth, ApiRefreshAuth } from "./apiRequests";
@@ -83,7 +84,8 @@ export default function App() {
                 <Routes>
                     <Route index element={<MainPage />} />
                     <Route path="/signin" element={<SigninPage />} />
-                    <Route path="/profile" element={<ProfilePage />} />
+                    <Route path="/profile" element={<MyProfilePage />} />
+                    <Route path="/profile/:uid" element={<UserProfilePage />} />
                     <Route path="/help" element={<HelpPage />} />
                     <Route path="/ads/create" element={<CreateAdPage />} />
                     <Route path="/ads" element={<SearchAdsPage />} />

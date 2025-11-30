@@ -13,7 +13,7 @@
     gap: 1rem;
     background: var(--main-color);
     border-radius: 1rem;
-    box-shadow: 0px 5px 10px #00000010;
+    box-shadow: 0px 5px 10px color-mix(in srgb, var(--inverse-color), transparent 95%);
 }
 
 .card-section > h5 {
@@ -35,7 +35,7 @@
     border: solid 1px #00000080;
 }
 
-#profile-card-avatar > img {
+#profile-card-avatar > div {
     width: 8rem;
     height: 8rem;
     border-radius: 4rem;

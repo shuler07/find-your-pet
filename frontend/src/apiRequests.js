@@ -141,11 +141,32 @@ export async function ApiResetPassword(email, new_password) {
     }
 }
 
+export async function ApiChangeAvatar(delete_url, display_url) {
+    try {
+        const response = await fetch(API_PATHS.change_avatar, {
+            method: 'PUT',
+            credentials: 'include',
+            body: JSON.stringify({ delete_url, display_url }),
+            headers: { 'Content-Type':'application/json' }
+        });
+
+        const data = await response.json();
+        if (DEBUG) console.debug('Changing avatar. Data received:', data);
+
+        return data;
+    } catch (error) {
+        console.error('Changing avatar. Error occured:', error);
+        return { error: true };
+    }
+}
+
 // User data
 
-export async function ApiGetUser() {
+export async function ApiGetUser(uid) {
     try {
-        const response = await fetch(API_PATHS.user, {
+        const url = `${API_PATHS.user}/?uid=${uid}`;
+
+        const response = await fetch(url, {
             method: "GET",
             credentials: "include",
             headers: { "Content-Type": "application/json" },
@@ -156,7 +177,7 @@ export async function ApiGetUser() {
 
         if (data.detail && data.detail.includes("Токен недействителен")) {
             await ApiRefreshAuth();
-            return await ApiGetUser();
+            return await ApiGetUser(uid);
         };
 
         return data;
@@ -403,25 +424,27 @@ export async function ApiGetAds(filters) {
     }
 }
 
-export async function ApiGetMyAds() {
+export async function ApiGetUserAds(uid) {
     try {
-        const response = await fetch(API_PATHS.get_my_ads, {
+        const url = `${API_PATHS.get_user_ads}/?uid=${uid}`;
+
+        const response = await fetch(url, {
             method: "GET",
             credentials: "include",
             headers: { "Content-Type": "application/json" },
         });
 
         const data = await response.json();
-        if (DEBUG) console.debug("Getting my ads. Data received:", data);
+        if (DEBUG) console.debug("Getting user ads. Data received:", data);
 
         if (data.detail && data.detail.includes("Токен недействителен")) {
             await ApiRefreshAuth();
-            return await ApiGetMyAds();
+            return await ApiGetUserAds(uid);
         };
 
         return data;
     } catch (error) {
-        console.error("Getting my ads. Error occured:", error);
+        console.error("Getting user ads. Error occured:", error);
         return { error: true };
     }
 }

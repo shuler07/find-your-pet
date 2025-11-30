@@ -45,13 +45,13 @@ export default function AdPage() {
             <Header />
             <div className="page-container">
                 <div id="ad-details-container">
-                    <PetPhotos />
+                    <PetPhotos photo={ad.ad_image_display_url} />
                     <PetInfo
                         {...ad}
                         isCreator={isCreator}
                         CallAlert={CallAlert}
                     />
-                    <PetContacts status={ad.status} {...creator} />
+                    <PetContacts uid={ad.user_id} status={ad.status} {...creator} />
                     <PetPlace
                         location={ad.location}
                         geoLocation={ad.geoLocation}
@@ -64,10 +64,12 @@ export default function AdPage() {
     );
 }
 
-function PetPhotos() {
+function PetPhotos({ photo }) {
+    const img = photo.length != 0 ? photo : "/images/image-not-found.png";
+
     return (
         <section id="ad-photos" className="ad-page-section">
-            <img src="/images/image-not-found.png" />
+            <div style={{ background: `url("${img}") center / cover` }} />
         </section>
     );
 }
@@ -179,13 +181,20 @@ function PetInfo({
     );
 }
 
-function PetContacts({ status, name, date, email, phone, vk, tg, max }) {
+function PetContacts({ uid, status, name, date, email, phone, vk, tg, max }) {
+    const navigate = useNavigate();
+
+    console.log(uid)
     const profileText =
         status == "lost" ? "Владелец питомца" : "Нашедший питомца";
 
+    const handleClickContacts = () => {
+        navigate(`/profile/${uid}`);
+    };
+
     return (
         <section id="ad-contacts" className="ad-page-section">
-            <div id="ad-contacts-profile">
+            <div id="ad-contacts-profile" onClick={handleClickContacts}>
                 <img src="/images/avatar-not-found.png" />
                 <div>
                     <h3>{name}</h3>

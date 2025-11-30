@@ -8,10 +8,11 @@ export const API_PATHS = {
     user: API_BASENAME + "/user",
     delete_user: API_BASENAME + "/user",
     reset_password: API_BASENAME + "/todo",
+    change_avatar: API_BASENAME + '/todo',
 
     create_ad: API_BASENAME + "/ads/create",
     get_ads: API_BASENAME + "/ads",
-    get_my_ads: API_BASENAME + "/ads/my",
+    get_user_ads: API_BASENAME + "/ads/user",
     get_ads_to_check: API_BASENAME + "/todo",
     get_reported_ads: API_BASENAME + "/todo",
     get_ad_creator: API_BASENAME + "/todo",

@@ -20,10 +20,11 @@ import {
     YMapMarker,
     YMapListener,
     getGeoLocationOrAddress,
-    getSuggestsByText
+    getSuggestsByText,
 } from "../ymaps";
 import { ApiCreateAd } from "../apiRequests";
 import { RestartAnim } from "../functions";
+import { UploadImage } from "../imageuploader";
 
 export default function CreateAdPage() {
     const navigate = useNavigate();
@@ -35,6 +36,9 @@ export default function CreateAdPage() {
     const adDetails = useRef({
         status: "", // ONLY lost / found
         type: "", // ONLY dog / cat
+        adImageDeleteUrl: "",
+        adImageDisplayUrl: "",
+        image: null,
         breed: "", // ONLY labrador, german_shepherd, poodle, metis etc
         color: "", // pet color
         size: "", // ONLY little / medium / big
@@ -75,16 +79,26 @@ export default function CreateAdPage() {
     async function CreateAd() {
         setNavigationButtonsDisabled(true);
 
-        const data = await ApiCreateAd(adDetails.current);
+        if (adDetails.current.image) {
+            const data1 = await UploadImage(adDetails.current.image);
+
+            if (data1.success) {
+                adDetails.current.adImageDeleteUrl = data1.data.delete_url;
+                adDetails.current.adImageDisplayUrl = data1.data.display_url;
+            } else if (data1.error) CallAlert("Ошибка при загрузке фотографии", "red");
+        };
+
+        const _adDetails = Object.fromEntries(Object.entries(adDetails.current).filter((v) => v != 'image'));
+        const data2 = await ApiCreateAd(_adDetails);
 
         setNavigationButtonsDisabled(false);
 
-        if (data.success) {
+        if (data2.success) {
             CallAlert("Объявление успешно создано", "green");
             navigate("/");
-        } else if (data.message == "Неверный формат времени")
+        } else if (data2.message == "Неверный формат времени")
             CallAlert("Время указано в неверном формате", "red");
-        else if (data.error)
+        else if (data2.error)
             CallAlert(
                 "Ошибка при создании объявления. Попробуйте позже",
                 "red"
@@ -151,7 +165,7 @@ function FieldsContainer({
     validateFieldsFunc,
     applyFieldsFunc,
     adDetails,
-    theme
+    theme,
 }) {
     switch (activeStage) {
         case 0:
@@ -183,7 +197,14 @@ function FieldsContainer({
 }
 
 function MainInformationFields({ validate, apply, adDetails }) {
-    const refs = { status: useRef() };
+    const refs = { status: useRef(), type: useRef() };
+    const [img, setImg] = useState(null);
+
+    const handleChangeImage = (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        setImg(file);
+    };
 
     validate.current = () => {
         Object.values(refs).forEach((ref) => {
@@ -199,6 +220,8 @@ function MainInformationFields({ validate, apply, adDetails }) {
         adDetails.current = {
             ...adDetails.current,
             status: refs.status.current.value,
+            type: refs.type.current.value,
+            image: img,
         };
     };
 
@@ -211,13 +234,47 @@ function MainInformationFields({ validate, apply, adDetails }) {
                 ref={refs.status}
                 value={adDetails.current.status}
             />
+            <DropdownLabeled
+                dropdownId="PetType"
+                label="Тип животного *"
+                choices={DROPDOWN_CHOICES.type}
+                ref={refs.type}
+                value={adDetails.current.type}
+            />
+            <div
+                style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: ".25rem",
+                }}
+            >
+                <h3 style={{ fontWeight: 500 }}>Фотография животного</h3>
+                <label id="image-uploader" htmlFor="image-uploader-button">
+                    <input
+                        id="image-uploader-button"
+                        style={{ display: "none" }}
+                        type="file"
+                        onChange={handleChangeImage}
+                    />
+                    <h6>
+                        {img ? "Фотография выбрана" : "Фотография не выбрана"}
+                    </h6>
+                </label>
+                {img && (
+                    <div style={{ display: 'flex', justifyContent: 'center' }}>
+                        <img
+                            id="image-preview"
+                            src={URL.createObjectURL(img)}
+                        />
+                    </div>
+                )}
+            </div>
         </div>
     );
 }
 
 function PetInformationFields({ validate, apply, adDetails }) {
     const refs = {
-        type: useRef(),
         breed: useRef(),
         color: useRef(),
         size: useRef(),
@@ -246,7 +303,6 @@ function PetInformationFields({ validate, apply, adDetails }) {
     apply.current = () => {
         adDetails.current = {
             ...adDetails.current,
-            type: refs.type.current.value,
             breed: refs.breed.current.value,
             color: refs.color.current.value,
             size: refs.size.current.value,
@@ -259,13 +315,6 @@ function PetInformationFields({ validate, apply, adDetails }) {
 
     return (
         <div id="fields-container">
-            <DropdownLabeled
-                dropdownId="PetType"
-                label="Тип животного *"
-                choices={DROPDOWN_CHOICES.type}
-                ref={refs.type}
-                value={adDetails.current.type}
-            />
             <DropdownLabeled
                 dropdownId="PetBreed"
                 label="Порода *"
@@ -301,7 +350,7 @@ function PetInformationFields({ validate, apply, adDetails }) {
             <InputLabeled
                 inputId="PetNickname"
                 type="text"
-                placeholder=""
+                placeholder="Укажите кличку, если знаете"
                 autoComplete="off"
                 label="Кличка"
                 ref={refs.nickname}
@@ -334,7 +383,9 @@ function LocationFields({ validate, apply, adDetails, theme }) {
         map: useRef(),
         time: useRef(),
     };
-    const [geoLocation, setGeoLocation] = useState(adDetails.current.geoLocation);
+    const [geoLocation, setGeoLocation] = useState(
+        adDetails.current.geoLocation
+    );
 
     const [placeSelection, setPlaceSelection] = useState("write");
 

@@ -57,11 +57,13 @@ function AdCard({ ad }) {
         location,
         geoLocation,
         time,
+        ad_image_display_url
     } = ad;
 
     const navigate = useNavigate();
     const context = useContext(AppContext);
 
+    const image = ad_image_display_url.length != 0 ? ad_image_display_url : "/images/image-not-found.png";
     const title = nickname ? nickname : "Кличка неизвестна";
     const subtitle = `${AD_INFO_DICT.type[type]} • ${AD_INFO_DICT.breed[breed]}`;
     const description = `Окрас: ${color}, размер: ${AD_INFO_DICT.size[size]}`;
@@ -102,7 +104,7 @@ function AdCard({ ad }) {
 
     return (
         <div className="ad-card">
-            <img src="/images/image-not-found.png" />
+            <div className="ad-card-image" style={{ background: `url("${image}") center / cover` }} />
             <div
                 className="ad-card-status"
                 style={{ background: status == "lost" ? "#f53535" : "#1fcf1f" }}

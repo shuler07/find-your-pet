@@ -67,6 +67,34 @@
     }
 }
 
+#image-uploader {
+    padding: .75rem 1.5rem;
+    position: relative;
+    border: solid 2px color-mix(in srgb, var(--inverse-color), transparent 80%);
+    border-radius: 1rem;
+    background: var(--secondary-color);
+    color: var(--inverse-color);
+    font-size: 1em;
+    cursor: pointer;
+    transition: all .25s ease;
+}
+#image-uploader::after {
+    content: '';
+    position: absolute;
+    width: 1rem;
+    height: 1rem;
+    top: calc(50% - .5rem);
+    right: 1rem;
+    background: url('/icons/chevron-down.svg') center;
+    filter: var(--image-filter);
+}
+
+#image-preview {
+    width: 24rem;
+    border-radius: 1rem;
+    box-shadow: 0px 5px 10px color-mix(in srgb, var(--inverse-color), transparent 95%);
+}
+
 #fields-select-place {
     display: flex;
     flex-direction: column;

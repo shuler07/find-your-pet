@@ -17,13 +17,14 @@ import {
     ApiChangeTg,
     ApiChangeMax,
     ApiChangeNotificationsLocation,
-    ApiGetMyAds,
+    ApiGetUserAds,
     ApiGetUser,
     ApiLogOutUser,
     ApiDeleteUser,
+    ApiChangeAvatar,
 } from "../apiRequests";
 import { getGeolocation } from "../functions";
-import DropdownLabeled from "../components/DropdownLabeled";
+import { UploadImage } from "../imageuploader";
 
 export default function ProfilePage() {
     const _user = window.localStorage.getItem("fyp-user");
@@ -48,7 +49,7 @@ export default function ProfilePage() {
     const { CallAlert, setSignedIn, theme, setTheme } = useContext(AppContext);
 
     async function GetUser() {
-        const data = await ApiGetUser();
+        const data = await ApiGetUser(null);
 
         if (data.user) {
             // window.localStorage.setItem("fyp-user", JSON.stringify(data.user));
@@ -61,7 +62,7 @@ export default function ProfilePage() {
         <>
             <Header />
             <div id="profile-page-container" className="page-container">
-                <ProfileCard {...user} />
+                <ProfileCard CallAlert={CallAlert} {...user} />
                 <AccountCard
                     {...user}
                     setUser={setUser}
@@ -87,14 +88,49 @@ export default function ProfilePage() {
     );
 }
 
-function ProfileCard({ name, date, email, phone, vk, tg, max }) {
+function ProfileCard({ CallAlert, name, date, email, phone, vk, tg, max }) {
+    const [avatarUrl, setAvatarUrl] = useState("/images/avatar-not-found.png");
+
+    const handleClickEditAvatar = async (e) => {
+        const img = e.target.files[0];
+        if (!img) return;
+
+        const data1 = await UploadImage(img);
+
+        if (data1.success) {
+            const { delete_url, display_url } = data1.data;
+
+            const data2 = await ApiChangeAvatar(delete_url, display_url);
+
+            if (data2.success) {
+                setAvatarUrl(display_url);
+                CallAlert("Фото профиля успешно изменено", "green");
+            } else if (data2.error)
+                CallAlert(
+                    "Ошибка при изменении фото профиля. Попробуйте позже",
+                    "red"
+                );
+        }
+    };
+
     return (
         <section id="profile-card-section" className="card-section">
             <div id="profile-card-avatar">
-                <img src="/images/avatar-not-found.png" />
-                <div id="edit-avatar-button">
+                <div style={{ background: `url("${avatarUrl}") center / cover` }} />
+                <label
+                    id="edit-avatar-button"
+                    htmlFor="avatar-upload-input"
+                    style={{ cursor: "pointer" }}
+                >
                     <img src="/icons/edit-pencil.svg" />
-                </div>
+                    <input
+                        id="avatar-upload-input"
+                        type="file"
+                        accept="image/*"
+                        style={{ display: "none" }}
+                        onChange={handleClickEditAvatar}
+                    />
+                </label>
             </div>
             <div id="profile-card-info">
                 <h2>{name}</h2>
@@ -702,7 +738,7 @@ function PostedPetsCard({ CallAlert }) {
     }, []);
 
     async function GetMyAds() {
-        const data = await ApiGetMyAds();
+        const data = await ApiGetUserAds(null);
 
         if (data.success) setMyAds(data.ads);
         else if (data.error)
