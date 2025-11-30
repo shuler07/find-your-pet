@@ -274,3 +274,13 @@ async def verify_email_change(token: str, session: sessionDep, response: Respons
     response.delete_cookie("refresh_token")
 
     return {"success": True, "message": "Email успешно изменён"}
+
+@router.delete("/user")
+async def delete_user(session: sessionDep, current_user: userDep, response: Response):
+    await session.delete(current_user)
+    await session.commit()
+
+    response.delete_cookie("access_token")
+    response.delete_cookie("refresh_token")
+
+    return {"success": True, "message": "Аккаунт удалён"}
