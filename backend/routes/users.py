@@ -75,7 +75,7 @@ async def login(response: Response, data: UserLogin, session: sessionDep):
     response.set_cookie(key="access_token", value=access_token, httponly=True)
     response.set_cookie(key="refresh_token", value=refresh_token, httponly=True)
 
-    return {"success": True, "message": "Вход выполнен"}
+    return {"success": True, "message": "Вход выполнен", "role": user.role}
 
 
 @router.get("/verify")
@@ -116,36 +116,46 @@ async def verify_email(token: str, session: sessionDep):
 
 
 @router.get("/me")
-async def get_me(request: Request):
+async def get_me(request: Request, session: sessionDep):
     access_token = request.cookies.get("access_token")
     if not access_token:
         raise HTTPException(status_code=401, detail="Нет access токена")
 
     try:
-        jwt.decode(access_token, SECRET_KEY, algorithms=[ALGORITHM])
-
-        return {"success": True}
+        payload = jwt.decode(access_token, SECRET_KEY, algorithms=[ALGORITHM])
+        user_id = int(payload["sub"])
     except JWTError:
         raise HTTPException(status_code=401, detail="Токен недействителен или истёк")
+    
+    user = await session.get(User, user_id)
+    if not user:
+        raise HTTPException(status_code=404, detail="Пользователь не найден")
+
+    return {"success": True, "role": user.role}
 
 
 @router.get("/refresh")
-async def refresh_token(request: Request, response: Response):
+async def refresh_token(request: Request, response: Response, session: sessionDep):  # ← Добавлен session
     refresh_token = request.cookies.get("refresh_token")
     if not refresh_token:
         raise HTTPException(status_code=401, detail="Нет refresh токена")
+    
     try:
         payload = jwt.decode(refresh_token, SECRET_KEY, algorithms=[ALGORITHM])
-    except JWTError:
+        user_id = int(payload["sub"])
+    except (JWTError, ValueError, TypeError):
         raise HTTPException(status_code=401, detail="Недействительный refresh токен")
 
-    user_id = payload.get("sub")
+    user = await session.get(User, user_id)
+    if not user:
+        raise HTTPException(status_code=404, detail="Пользователь не найден")
+
     new_access = create_token(
-        {"sub": user_id}, timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+        {"sub": str(user_id)}, timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     )
     response.set_cookie(key="access_token", value=new_access, httponly=True)
 
-    return {"success": True, "message": "Access токен обновлён"}
+    return {"success": True, "message": "Access токен обновлён", "role": user.role}
 
 
 @router.get("/logout")
