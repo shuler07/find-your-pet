@@ -1,4 +1,4 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 from sqlalchemy import select
 from datetime import datetime
 
@@ -88,4 +88,22 @@ async def get_my_ads(session: sessionDep, current_user: userDep):
     result = await session.scalars(query)
     ads = result.all()
     ads_out = [AdOut.model_validate(ad) for ad in ads]
+    return {"success": True, "ads": ads_out}
+
+
+@router.get("/ads/to_check")
+async def get_ads_to_check(session: sessionDep, current_user: userDep, limit: int = 20):
+    if current_user.role != "admin":
+        raise HTTPException(status_code=403, detail="Доступ запрещен")
+
+    query = (
+        select(Ad)
+        .where(Ad.ischecked == False)
+        .order_by(Ad.created_at.desc())
+        .limit(limit)
+    )
+    result = await session.scalar(query)
+    ads = result.all()
+    ads_out = [AdOut.model_validate(ad) for ad in ads]
+
     return {"success": True, "ads": ads_out}
