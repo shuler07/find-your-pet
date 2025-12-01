@@ -16,6 +16,7 @@ from schemas import (
     UpdateName,
     UpdatePhone,
     UpdatePassword,
+    PasswordReset,
 )
 from auth import (
     create_token,
@@ -23,6 +24,7 @@ from auth import (
     hash_password,
     send_verification_email,
     send_verification_email_change,
+    send_password_reset_email,
 )
 from config import (
     ACCESS_TOKEN_EXPIRE_MINUTES,
@@ -328,3 +330,56 @@ async def update_location(
     current_user.notificationsLocation = data.notificationsLocation
     await session.commit()
     return {"success": True}
+
+
+@router.post("/user/password/reset")
+async def reset_password(data: PasswordReset, session: sessionDep):
+    user = await session.scalar(select(User).where(User.email == data.email))
+    if not user:
+        return {
+            "success": True,
+            "message": "Если email зарегистрирован, на него отправлена ссылка для сброса пароля",
+        }
+
+    password_hash = hash_password(data.new_password)
+
+    reset_token = create_token(
+        {
+            "sub": str(user.id),
+            "password_hash": password_hash,
+            "type": "password_reset",
+        },
+        timedelta(minutes=30),
+    )
+
+    await send_password_reset_email(data.email, reset_token)
+
+    return {"success": True, "message": "Проверьте email для сброса пароля"}
+
+
+@router.get("/user/verify-password-reset")
+async def verify_password_reset(token: str, session: sessionDep):
+    if not token:
+        raise HTTPException(status_code=400, detail="Токен не передан")
+
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        if payload.get("type") != "password_reset":
+            raise HTTPException(status_code=400, detail="Неверный тип токена")
+
+        user_id = int(payload["sub"])
+        password_hash = payload["password_hash"]
+
+    except JWTError:
+        raise HTTPException(
+            status_code=400, detail="Ссылка недействительна или истекла"
+        )
+
+    user = await session.get(User, user_id)
+    if not user:
+        raise HTTPException(status_code=404, detail="Пользователь не найден")
+
+    user.password_hash = password_hash
+    await session.commit()
+
+    return {"success": True, "message": "Пароль успешно изменён"}
