@@ -20,13 +20,14 @@ class UserOut(BaseModel):
     email: EmailStr
     phone: Optional[str] = None
     date: str
+    avatar_display_url: str = ""
 
     class Config:
         from_attributes = True
 
 
 class AdCreate(BaseModel):
-    status: Literal["lost", "found"]
+    status: Literal["lost", "found","closed"]
     type: Literal["dog", "cat"]
     breed: Literal["labrador", "german_shepherd", "poodle", "metis"]
     color: str
@@ -56,11 +57,14 @@ class AdOut(BaseModel):
     danger: str
     location: str
     geoLocation: List[float]
+    ad_image_display_url: str = ""
+    ad_image_delete_url: str = ""
     time: datetime
     contactName: str
     contactPhone: str
     contactEmail: str
     extras: str
+    ischecked: bool
 
     class Config:
         from_attributes = True

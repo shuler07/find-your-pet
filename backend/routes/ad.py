@@ -1,9 +1,11 @@
-from fastapi import APIRouter
+from typing import Optional
+from fastapi import APIRouter, HTTPException, Request
 from sqlalchemy import select
 from datetime import datetime
-
+from jose import JWTError, jwt
+from config import SECRET_KEY, ALGORITHM
 from dependencies import userDep, sessionDep
-from models import Ad
+from models import Ad, User
 from schemas import AdOut, AdCreate, AdFilters
 
 
@@ -34,6 +36,7 @@ async def create_ad(data: AdCreate, session: sessionDep, current_user: userDep):
         contactPhone=data.contactPhone,
         contactEmail=data.contactEmail,
         extras=data.extras,
+        ischecked=False,
     )
 
     session.add(ad)
@@ -44,9 +47,12 @@ async def create_ad(data: AdCreate, session: sessionDep, current_user: userDep):
 
 
 @router.post("/ads")
-async def get_ads(session: sessionDep, filters: AdFilters):
+async def get_ads(session: sessionDep, filters: AdFilters, current_user: userDep):
     try:
-        query = select(Ad)
+        query = select(Ad).where(Ad.ischecked == True)
+
+        if current_user.role != "admin":
+            query = query.where(Ad.status != "closed")
 
         if filters.status:
             query = query.where(Ad.status == filters.status)
@@ -73,12 +79,79 @@ async def get_ads(session: sessionDep, filters: AdFilters):
         return {"success": False, "message": "Ошибка на сервере"}
 
 
-@router.get("/ads/my")
-async def get_my_ads(session: sessionDep, current_user: userDep):
+@router.get("/ads/user")
+async def get_user_ads(session: sessionDep, current_user: userDep, uid: Optional[int] = None):
+    if current_user.role != "admin":
+        target_user_id = current_user.id
+    else:
+        target_user_id = uid if uid is not None else current_user.id
+
+    if current_user.role != "admin" and target_user_id != current_user.id:
+        raise HTTPException(
+            status_code=403, detail="Нет доступа к чужим объявлениям")
+
     query = (
-        select(Ad).where(Ad.user_id == current_user.id).order_by(Ad.created_at.desc())
+        select(Ad).
+        where(Ad.user_id == target_user_id).
+        where(Ad.ischecked == True).
+        order_by(Ad.created_at.desc())
     )
+    if current_user.role != "admin":
+        query = query.where(Ad.status != "closed")
     result = await session.scalars(query)
     ads = result.all()
     ads_out = [AdOut.model_validate(ad) for ad in ads]
     return {"success": True, "ads": ads_out}
+
+
+@router.get("/ads/to_check")
+async def get_ads_to_check(session: sessionDep, current_user: userDep, limit: int = 20):
+    if current_user.role != "admin":
+        raise HTTPException(status_code=403, detail="Доступ запрещен")
+
+    query = (
+        select(Ad)
+        .where(Ad.ischecked == False)
+        .order_by(Ad.created_at.desc())
+        .limit(limit)
+    )
+    result = await session.scalars(query)
+    ads = result.all()
+    ads_out = [AdOut.model_validate(ad) for ad in ads]
+
+    return {"success": True, "ads": ads_out}
+
+
+@router.get("/ad/creator")
+async def get_ad_creator(
+    uid: int,
+    request: Request,
+    session: sessionDep
+):
+    access_token = request.cookies.get("access_token")
+    if not access_token:
+        raise HTTPException(status_code=401, detail="Нет access токена")
+
+    try:
+        payload = jwt.decode(access_token, SECRET_KEY, algorithms=[ALGORITHM])
+        current_user_id = int(payload["sub"])
+    except (JWTError, ValueError, TypeError):
+        raise HTTPException(
+            status_code=401, detail="Токен недействителен или истёк")
+
+    user = await session.get(User, uid)
+    if not user:
+        raise HTTPException(status_code=404, detail="Пользователь не найден")
+
+    is_creator = (current_user_id == uid)
+
+    return {
+        "success": True,
+        "user": {
+            "name": user.name,
+            "date": user.created_at.strftime("%d.%m.%Y"),
+            "email": user.email,
+            "phone": user.phone,
+        },
+        "isCreator": is_creator
+    }
