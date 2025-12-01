@@ -53,7 +53,7 @@ class Ad(Base):
     contactPhone: Mapped[str] = mapped_column(String(20))
     contactEmail: Mapped[str] = mapped_column(String(100))
     extras: Mapped[str] = mapped_column(Text)
-    status: Mapped[str] = mapped_column(String(10), default="pending") 
+    state: Mapped[str] = mapped_column(String(10), default="pending") 
 
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), default=lambda: datetime.now(timezone.utc)
