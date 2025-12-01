@@ -27,7 +27,7 @@ class UserOut(BaseModel):
 
 
 class AdCreate(BaseModel):
-    status: Literal["lost", "found","closed"]
+    status: Literal["lost", "found", "closed"]
     type: Literal["dog", "cat"]
     breed: Literal["labrador", "german_shepherd", "poodle", "metis"]
     color: str
@@ -97,11 +97,19 @@ class UpdatePassword(BaseModel):
     curPassword: str = Field(..., min_length=8)
     newPassword: str = Field(..., min_length=8, max_length=72)
 
+
+class PasswordReset(BaseModel):
+    email: EmailStr
+    new_password: str = Field(..., min_length=8, max_length=72)
+
+
 class LocationUpdate(BaseModel):
     notificationsLocation: List[float]
 
+
 class AdApprove(BaseModel):
     ad_id: int
+
 
 class AdReject(BaseModel):
     ad_id: int
