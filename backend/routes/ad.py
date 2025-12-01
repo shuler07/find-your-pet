@@ -155,3 +155,21 @@ async def get_ad_creator(
         },
         "isCreator": is_creator
     }
+
+@router.delete("/ad/delete")
+async def regect_ad(
+    data: int,
+    session: sessionDep,
+    current_user: userDep
+):
+    if current_user.role != "admin":
+        raise HTTPException(status_code=403, detail="Требуются права администратора")
+    
+    ad = await session.get(Ad, data.ad_id)
+    if not ad:
+        raise HTTPException(status_code=404, detail="Объявление не найдено")
+    
+    await session.delete(ad)
+    await session.commit()
+    
+    return {"success": True}
