@@ -11,13 +11,7 @@ import { ApiGetAdsToCheck, ApiGetReportedAds } from "../apiRequests";
 export default function AdminPage() {
     const { CallAlert } = useContext(AppContext);
 
-    const [adsToCheck, setAdsToCheck] = useState([
-        {
-            contactName: "shuler7",
-            contactEmail: "vitalisobolevggg@gmail.com",
-            created_at: "11.26.2025 20:58",
-        },
-    ]);
+    const [adsToCheck, setAdsToCheck] = useState([]);
     const [reportedAds, setReportedAds] = useState([]);
     useEffect(() => {
         GetAdsToCheck();
@@ -82,8 +76,7 @@ function AdsToCheckSection({ ads }) {
         if (ads.length > 0) {
             return (
                 <tr>
-                    <th>Имя</th>
-                    <th>Почта</th>
+                    <th>UID</th>
                     <th>Дата создания</th>
                     <th style={{ textAlign: "end" }}>Действия</th>
                 </tr>
@@ -103,8 +96,7 @@ function AdsToCheckSection({ ads }) {
         if (ads.length > 0) {
             return ads.map((ad, index) => (
                 <tr key={`keyAdsToCheck${index}`}>
-                    <td>{ad.contactName}</td>
-                    <td>{ad.contactEmail}</td>
+                    <td>{ad.user_id}</td>
                     <td>{ad.created_at}</td>
                     <td className="admin-table-details-column">
                         <button className="primary-button red left-img in-table" onClick={handleClickRemove}>
@@ -152,8 +144,7 @@ function ReportedAdsSection({ ads }) {
         if (ads.length > 0) {
             return (
                 <tr>
-                    <th>Имя</th>
-                    <th>Почта</th>
+                    <th>UID</th>
                     <th>Дата создания</th>
                     <th style={{ textAlign: "end" }}>Действия</th>
                 </tr>
@@ -185,8 +176,7 @@ function ReportedAdsSection({ ads }) {
         if (ads.length > 0) {
             return ads.map((ad, index) => (
                 <tr key={`keyAdsToCheck${index}`}>
-                    <td>{ad.contactName}</td>
-                    <td>{ad.contactEmail}</td>
+                    <td>{ad.user_id}</td>
                     <td>{ad.created_at}</td>
                     <td className="admin-table-details-column">
                         <button className="primary-button red left-img in-table" onClick={handleClickRemove}>
