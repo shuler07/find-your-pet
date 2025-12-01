@@ -18,7 +18,7 @@ from config import (
 )
 from dependencies import userDep, sessionDep
 from models import Ad, User
-from schemas import AdOut, AdCreate, AdFilters, AdApprove, AdReject
+from schemas import AdOut, AdCreate, AdFilters, AdApprove, AdReject, AdRemove
 
 router = APIRouter()
 
@@ -192,6 +192,18 @@ async def regect_ad(data: AdReject, session: sessionDep, current_user: userDep):
         raise HTTPException(status_code=404, detail="Объявление не найдено")
 
     await session.delete(ad)
+    await session.commit()
+
+    return {"success": True}
+
+
+@router.put("/ad/remove")
+async def remove_ad(data: AdRemove, session: sessionDep, current_user: userDep):
+    ad = await session.get(Ad, data.ad_id)
+    if not ad:
+        raise HTTPException(status_code=404, detail="Объявление не найдено")
+
+    ad.state = "closed"
     await session.commit()
 
     return {"success": True}

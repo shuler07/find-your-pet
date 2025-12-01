@@ -93,6 +93,18 @@ class UpdatePhone(BaseModel):
     phone: str = Field(None, pattern=r"^\+7\d{10}$")
 
 
+class UpdateTg(BaseModel):
+    tg: str
+
+
+class UpdateVk(BaseModel):
+    vk: str
+
+
+class UpdateMax(BaseModel):
+    max: str
+
+
 class UpdatePassword(BaseModel):
     curPassword: str = Field(..., min_length=8)
     newPassword: str = Field(..., min_length=8, max_length=72)
@@ -112,4 +124,8 @@ class AdApprove(BaseModel):
 
 
 class AdReject(BaseModel):
+    ad_id: int
+
+
+class AdRemove(BaseModel):
     ad_id: int

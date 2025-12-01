@@ -17,6 +17,9 @@ from schemas import (
     UpdatePhone,
     UpdatePassword,
     PasswordReset,
+    UpdateTg,
+    UpdateVk,
+    UpdateMax,
 )
 from auth import (
     create_token,
@@ -328,6 +331,27 @@ async def update_location(
         raise HTTPException(status_code=400, detail="Требуется [lat, lon]")
 
     current_user.notificationsLocation = data.notificationsLocation
+    await session.commit()
+    return {"success": True}
+
+
+@router.put("/user/tg")
+async def update_tg(data: UpdateTg, session: sessionDep, current_user: userDep):
+    current_user.tg = data.tg
+    await session.commit()
+    return {"success": True}
+
+
+@router.put("/user/vk")
+async def update_vk(data: UpdateVk, session: sessionDep, current_user: userDep):
+    current_user.vk = data.vk
+    await session.commit()
+    return {"success": True}
+
+
+@router.put("/user/max")
+async def update_max(data: UpdateMax, session: sessionDep, current_user: userDep):
+    current_user.max = data.max
     await session.commit()
     return {"success": True}
 
