@@ -22,8 +22,7 @@ class User(Base):
         nullable=False,
     )
     notificationsLocation: Mapped[Optional[ARRAY[float]]] = mapped_column(
-        ARRAY(Float, as_tuple=True),
-              default=[]
+        ARRAY(Float, as_tuple=True), default=[]
     )
 
 
@@ -31,8 +30,7 @@ class Ad(Base):
     __tablename__ = "ads"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    user_id: Mapped[int] = mapped_column(
-        ForeignKey("users.id", ondelete="CASCADE"))
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))
 
     status: Mapped[str] = mapped_column(String(10))
     type: Mapped[str] = mapped_column(String(10))
@@ -46,14 +44,13 @@ class Ad(Base):
     ischecked: Mapped[bool] = mapped_column(Boolean, default=False)
     ad_image_delete_url: Mapped[str] = mapped_column(default="")
     ad_image_display_url: Mapped[str] = mapped_column(default="")
-    geoLocation: Mapped[ARRAY[float]] = mapped_column(
-        ARRAY(Float, as_tuple=True))
+    geoLocation: Mapped[ARRAY[float]] = mapped_column(ARRAY(Float, as_tuple=True))
     time: Mapped[datetime] = mapped_column(DateTime(timezone=True))
     contactName: Mapped[str] = mapped_column(String(50))
     contactPhone: Mapped[str] = mapped_column(String(20))
     contactEmail: Mapped[str] = mapped_column(String(100))
     extras: Mapped[str] = mapped_column(Text)
-    state: Mapped[str] = mapped_column(String(10), default="pending") 
+    state: Mapped[str] = mapped_column(String(10), default="pending")
 
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), default=lambda: datetime.now(timezone.utc)

@@ -1,5 +1,5 @@
 from pydantic import BaseModel, EmailStr, Field
-from typing import Optional, Literal, List
+from typing import Optional, Literal, List, Union
 from datetime import datetime
 
 
@@ -77,7 +77,7 @@ class AdFilters(BaseModel):
     size: Optional[str] = None
     danger: Optional[str] = None
     region: Optional[str] = None
-    geoloc: Optional[List[float]] = None
+    geoloc: Optional[Union[List[float], str]] = None
     radius: Optional[int] = None
 
 
