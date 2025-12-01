@@ -36,9 +36,11 @@ router = APIRouter()
 
 names = ["Альфа", "Барсик", "Крош", "Стрелка", "Мурзик"]
 
+
 class AvatarUpdate(BaseModel):
     avatar_delete_url: str
     avatar_display_url: str
+
 
 @router.put("/user/avatar")
 async def update_avatar(
@@ -55,7 +57,8 @@ async def update_avatar(
     current_user.avatar_delete_url = data.avatar_delete_url
     current_user.avatar_display_url = data.avatar_display_url
     await session.commit()
-    return {"success": True,"message":"Аватар обновлен"}
+    return {"success": True, "message": "Аватар обновлен"}
+
 
 @router.post("/register")
 async def register(user: UserRegister, session: sessionDep):
@@ -150,7 +153,7 @@ async def get_me(request: Request, session: sessionDep):
         user_id = int(payload["sub"])
     except JWTError:
         raise HTTPException(status_code=401, detail="Токен недействителен или истёк")
-    
+
     user = await session.get(User, user_id)
     if not user:
         raise HTTPException(status_code=404, detail="Пользователь не найден")
@@ -159,11 +162,13 @@ async def get_me(request: Request, session: sessionDep):
 
 
 @router.get("/refresh")
-async def refresh_token(request: Request, response: Response, session: sessionDep):  # ← Добавлен session
+async def refresh_token(
+    request: Request, response: Response, session: sessionDep
+):  # ← Добавлен session
     refresh_token = request.cookies.get("refresh_token")
     if not refresh_token:
         raise HTTPException(status_code=401, detail="Нет refresh токена")
-    
+
     try:
         payload = jwt.decode(refresh_token, SECRET_KEY, algorithms=[ALGORITHM])
         user_id = int(payload["sub"])
@@ -191,7 +196,7 @@ async def logout(response: Response):
 
 
 @router.get("/user")
-async def get_user(request: Request, session: sessionDep,uid: Optional[int] = None):
+async def get_user(request: Request, session: sessionDep, uid: Optional[int] = None):
     token = request.cookies.get("access_token")
     if not token:
         raise HTTPException(status_code=401, detail="Нет access токена")
@@ -243,8 +248,8 @@ async def update_email(
 
     await send_verification_email_change(data.email, change_token)
 
-    response.delete_cookie('access_token')
-    response.delete_cookie('refresh_token')
+    response.delete_cookie("access_token")
+    response.delete_cookie("refresh_token")
 
     return {"success": True, "message": "Подтвердите смену email на новой почте"}
 
@@ -301,6 +306,7 @@ async def verify_email_change(token: str, session: sessionDep, response: Respons
 
     return {"success": True, "message": "Email успешно изменён"}
 
+
 @router.delete("/user")
 async def delete_user(session: sessionDep, current_user: userDep, response: Response):
     await session.delete(current_user)
@@ -311,15 +317,14 @@ async def delete_user(session: sessionDep, current_user: userDep, response: Resp
 
     return {"success": True, "message": "Аккаунт удалён"}
 
+
 @router.put("/user/location")
 async def update_location(
-    data: LocationUpdate,
-    session: sessionDep,
-    current_user: userDep
+    data: LocationUpdate, session: sessionDep, current_user: userDep
 ):
     if len(data.notificationsLocation) != 2:
         raise HTTPException(status_code=400, detail="Требуется [lat, lon]")
-    
+
     current_user.notificationsLocation = data.notificationsLocation
     await session.commit()
     return {"success": True}
