@@ -15,7 +15,9 @@ export const API_PATHS = {
     get_ads_to_check: API_BASENAME + "/ads/to_check",
     get_reported_ads: API_BASENAME + "/ads/reported",
     get_ad_creator: API_BASENAME + "/ad/creator",
-    remove_ad: API_BASENAME + "/todo",
+    close_ad: API_BASENAME + "/todo",
+    delete_ad: API_BASENAME + "/ad/delete",
+    approve_ad: API_BASENAME + "/ad/approve",
 
     change_avatar: API_BASENAME + '/user/avatar',
     change_name: API_BASENAME + "/user/name",
@@ -25,7 +27,7 @@ export const API_PATHS = {
     change_vk: API_BASENAME + "/todo",
     change_tg: API_BASENAME + "/todo",
     change_max: API_BASENAME + "/todo",
-    change_notifications_location: API_BASENAME + "/todo",
+    change_notifications_location: API_BASENAME + "/user/location",
 
     get_server_stats: API_BASENAME + "/todo",
 };

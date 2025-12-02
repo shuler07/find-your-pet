@@ -34,7 +34,7 @@ export default function ProfilePage() {
             : {
                   avatar_display_url: "/images/avatar_not_found.png",
                   name: "",
-                  date: "",
+                  created_at: "",
                   email: "",
                   phone: "",
                   vk: "",
@@ -63,7 +63,11 @@ export default function ProfilePage() {
         <>
             <Header />
             <div id="profile-page-container" className="page-container">
-                <ProfileCard CallAlert={CallAlert} {...user} setUser={setUser} />
+                <ProfileCard
+                    CallAlert={CallAlert}
+                    {...user}
+                    setUser={setUser}
+                />
                 <AccountCard
                     {...user}
                     setUser={setUser}
@@ -89,8 +93,18 @@ export default function ProfilePage() {
     );
 }
 
-function ProfileCard({ CallAlert, avatar_display_url, name, date, email, phone, vk, tg, max }) {
-
+function ProfileCard({
+    CallAlert,
+    setUser,
+    avatar_display_url,
+    name,
+    created_at,
+    email,
+    phone,
+    vk,
+    tg,
+    max,
+}) {
     const handleClickEditAvatar = async (e) => {
         const img = e.target.files[0];
         if (!img) return;
@@ -103,7 +117,10 @@ function ProfileCard({ CallAlert, avatar_display_url, name, date, email, phone, 
             const data2 = await ApiChangeAvatar(delete_url, display_url);
 
             if (data2.success) {
-                setUser((prev) => ({ ...prev, avatar_display_url: display_url }))
+                setUser((prev) => ({
+                    ...prev,
+                    avatar_display_url: display_url,
+                }));
                 CallAlert("Фото профиля успешно изменено", "green");
             } else if (data2.error)
                 CallAlert(
@@ -116,7 +133,11 @@ function ProfileCard({ CallAlert, avatar_display_url, name, date, email, phone, 
     return (
         <section id="profile-card-section" className="card-section">
             <div id="profile-card-avatar">
-                <div style={{ background: `url("${avatar_display_url}") center / cover` }} />
+                <div
+                    style={{
+                        background: `url("${avatar_display_url}") center / cover`,
+                    }}
+                />
                 <label
                     id="edit-avatar-button"
                     htmlFor="avatar-upload-input"
@@ -135,7 +156,7 @@ function ProfileCard({ CallAlert, avatar_display_url, name, date, email, phone, 
             <div id="profile-card-info">
                 <h2>{name}</h2>
                 <h6 style={{ marginTop: "-1.25rem" }}>
-                    Зарегистрирован {date}
+                    Зарегистрирован {created_at}
                 </h6>
                 <div
                     style={{ display: "flex", gap: ".5rem", flexWrap: "wrap" }}
@@ -777,7 +798,7 @@ function SettingsCard({
             <h5>Настройки</h5>
             <SettingsNotificationsField
                 CallAlert={CallAlert}
-                _notificationsLocation={notificationsLocation}
+                notificationsLocation={notificationsLocation}
                 setUser={setUser}
             />
             <SettingsThemeField theme={theme} setTheme={setTheme} />
@@ -787,16 +808,12 @@ function SettingsCard({
 
 function SettingsNotificationsField({
     CallAlert,
-    _notificationsLocation,
+    notificationsLocation,
     setUser,
 }) {
-    const [notificationsLocation, setNotificationsLocation] = useState(
-        _notificationsLocation
-    );
-
     const handleClickNotifications = () => {
         if (notificationsLocation.length == 0) GetGeolocation();
-        else ChangeNotificationsLocation();
+        else ChangeNotificationsLocation([]);
     };
 
     function GetGeolocation() {
@@ -813,10 +830,9 @@ function SettingsNotificationsField({
     async function ChangeNotificationsLocation(location) {
         const data = await ApiChangeNotificationsLocation(location);
 
-        if (data.success) {
-            setNotificationsLocation(location);
+        if (data.success)
             setUser((prev) => ({ ...prev, notificationsLocation: location }));
-        } else if (data.error)
+        else if (data.error)
             CallAlert("Что-то пошло не так. Попробуйте позже", "red");
     }
 

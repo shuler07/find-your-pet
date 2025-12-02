@@ -2,7 +2,6 @@ from math import radians, cos, sin, asin, sqrt
 import smtplib
 from email.mime.text import MIMEText
 
-from typing import Optional
 from fastapi import APIRouter, HTTPException, Request
 from sqlalchemy import select
 from datetime import datetime
@@ -18,7 +17,7 @@ from config import (
 )
 from dependencies import userDep, sessionDep
 from models import Ad, User
-from schemas import AdOut, AdCreate, AdFilters, AdApprove, AdReject, AdRemove
+from schemas import AdOut, AdCreate, AdFilters, AdApprove, AdReject, AdRemove, UserOut
 
 router = APIRouter()
 
@@ -44,7 +43,9 @@ async def create_ad(data: AdCreate, session: sessionDep, current_user: userDep):
         location=data.location,
         geoLocation=data.geoLocation,
         time=time_obj,
-        ischecked=False,
+        state="pending",
+        ad_image_delete_url=data.ad_image_delete_url,
+        ad_image_display_url=data.ad_image_display_url,
     )
 
     session.add(ad)
@@ -57,10 +58,10 @@ async def create_ad(data: AdCreate, session: sessionDep, current_user: userDep):
 @router.post("/ads")
 async def get_ads(session: sessionDep, filters: AdFilters, current_user: userDep):
     try:
-        query = select(Ad).where(Ad.ischecked == True)
+        query = select(Ad).where(Ad.state != "pending")
 
-        if current_user.role != "admin":
-            query = query.where(Ad.status != "closed")
+        if current_user.role == "user":
+            query = query.where(Ad.state != "closed")
 
         if filters.status:
             query = query.where(Ad.status == filters.status)
@@ -113,9 +114,7 @@ async def get_user_ads(session: sessionDep, current_user: userDep, uid: int = 0)
         select(Ad).where(Ad.user_id == target_user_id).order_by(Ad.created_at.desc())
     )
     if uid != 0:
-        query = query.where(Ad.ischecked == True)
-    if current_user.role != "admin" and uid != 0:
-        query = query.where(Ad.status != "closed")
+        query = query.where(Ad.state != "pending")
     result = await session.scalars(query)
     ads = result.all()
     ads_out = [AdOut.model_validate(ad) for ad in ads]
@@ -129,7 +128,7 @@ async def get_ads_to_check(session: sessionDep, current_user: userDep, limit: in
 
     query = (
         select(Ad)
-        .where(Ad.ischecked == False)
+        .where(Ad.state == "pending")
         .order_by(Ad.created_at.desc())
         .limit(limit)
     )
@@ -156,18 +155,10 @@ async def get_ad_creator(uid: int, request: Request, session: sessionDep):
     if not user:
         raise HTTPException(status_code=404, detail="Пользователь не найден")
 
+    valid_user = UserOut.model_validate(user)
     is_creator = current_user_id == uid
 
-    return {
-        "success": True,
-        "user": {
-            "name": user.name,
-            "date": user.created_at.strftime("%d.%m.%Y"),
-            "email": user.email,
-            "phone": user.phone,
-        },
-        "isCreator": is_creator,
-    }
+    return {"success": True, "user": valid_user, "isCreator": is_creator}
 
 
 @router.delete("/ad/delete")

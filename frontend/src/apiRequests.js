@@ -512,26 +512,74 @@ export async function ApiGetAdCreator(uid) {
     }
 }
 
-export async function ApiRemoveAd(id) {
+export async function ApiCloseAd(id) {
     try {
-        const response = await fetch(API_PATHS.remove_ad, {
-            method: "DELETE",
+        const response = await fetch(API_PATHS.close_ad, {
+            method: "PUT",
             credentials: 'include',
-            body: JSON.stringify({ id }),
+            body: JSON.stringify({ ad_id: id }),
             headers: { 'Content-Type':'application/json' }
         });
 
         const data = await response.json();
-        if (DEBUG) console.debug("Removing ad. Data received:", data);
+        if (DEBUG) console.debug("Closing ad. Data received:", data);
 
         if (data.detail && data.detail.includes("Токен недействителен")) {
             await ApiRefreshAuth();
-            return await ApiRemoveAd(id);
+            return await ApiCloseAd(id);
         };
 
         return data;
     } catch (error) {
-        console.error("Removing ad. Error occured:", error);
+        console.error("Closing ad. Error occured:", error);
+        return { error: true };
+    }
+}
+
+export async function ApiApproveAd(id) {
+    try {
+        const response = await fetch(API_PATHS.approve_ad, {
+            method: "PUT",
+            credentials: 'include',
+            body: JSON.stringify({ ad_id: id }),
+            headers: { 'Content-Type':'application/json' }
+        });
+
+        const data = await response.json();
+        if (DEBUG) console.debug("Approving ad. Data received:", data);
+
+        if (data.detail && data.detail.includes("Токен недействителен")) {
+            await ApiRefreshAuth();
+            return await ApiApproveAd(id);
+        };
+
+        return data;
+    } catch (error) {
+        console.error("Approving ad. Error occured:", error);
+        return { error: true };
+    }
+}
+
+export async function ApiDeleteAd(id) {
+    try {
+        const response = await fetch(API_PATHS.delete_ad, {
+            method: "DELETE",
+            credentials: 'include',
+            body: JSON.stringify({ ad_id: id }),
+            headers: { 'Content-Type':'application/json' }
+        });
+
+        const data = await response.json();
+        if (DEBUG) console.debug("Deleting ad. Data received:", data);
+
+        if (data.detail && data.detail.includes("Токен недействителен")) {
+            await ApiRefreshAuth();
+            return await ApiDeleteAd(id);
+        };
+
+        return data;
+    } catch (error) {
+        console.error("Deleting ad. Error occured:", error);
         return { error: true };
     }
 }
