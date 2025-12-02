@@ -10,15 +10,14 @@ export async function ApiCheckAuth() {
             headers: { "Content-Type": "application/json" },
         });
 
-        const data = await response.json();
-        if (DEBUG) console.debug("Authentication. Data received:", data);
+        const data1 = await response.json();
+        if (DEBUG) console.debug("Authentication (access). Data received:", data1);
 
-        if (data.detail && data.detail.includes("Токен недействителен")) {
-            await ApiRefreshAuth();
-            return await ApiCheckAuth();
+        if (data1.detail && data1.detail.includes("Токен недействителен")) {
+            return await ApiRefreshAuth();
         };
 
-        return data;
+        return data1;
     } catch (error) {
         console.error("Authentication. Error occured:", error);
         return { error: true };
@@ -141,25 +140,6 @@ export async function ApiResetPassword(email, new_password) {
     }
 }
 
-export async function ApiChangeAvatar(delete_url, display_url) {
-    try {
-        const response = await fetch(API_PATHS.change_avatar, {
-            method: 'PUT',
-            credentials: 'include',
-            body: JSON.stringify({ delete_url, display_url }),
-            headers: { 'Content-Type':'application/json' }
-        });
-
-        const data = await response.json();
-        if (DEBUG) console.debug('Changing avatar. Data received:', data);
-
-        return data;
-    } catch (error) {
-        console.error('Changing avatar. Error occured:', error);
-        return { error: true };
-    }
-}
-
 // User data
 
 export async function ApiGetUser(uid) {
@@ -183,6 +163,25 @@ export async function ApiGetUser(uid) {
         return data;
     } catch (error) {
         console.error("Getting user. Error occured:", error);
+        return { error: true };
+    }
+}
+
+export async function ApiChangeAvatar(avatar_delete_url, avatar_display_url) {
+    try {
+        const response = await fetch(API_PATHS.change_avatar, {
+            method: 'PUT',
+            credentials: 'include',
+            body: JSON.stringify({ avatar_delete_url, avatar_display_url }),
+            headers: { 'Content-Type':'application/json' }
+        });
+
+        const data = await response.json();
+        if (DEBUG) console.debug('Changing avatar. Data received:', data);
+
+        return data;
+    } catch (error) {
+        console.error('Changing avatar. Error occured:', error);
         return { error: true };
     }
 }

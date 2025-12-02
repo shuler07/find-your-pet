@@ -184,7 +184,6 @@ function PetInfo({
 function PetContacts({ uid, status, name, date, email, phone, vk, tg, max }) {
     const navigate = useNavigate();
 
-    console.log(uid)
     const profileText =
         status == "lost" ? "Владелец питомца" : "Нашедший питомца";
 

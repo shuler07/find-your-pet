@@ -3,23 +3,20 @@ from typing import Optional, Literal, List, Union
 from datetime import datetime
 
 
-class UserRegister(BaseModel):
+class UserAuth(BaseModel):
     email: EmailStr
     password: str = Field(min_length=8, max_length=72)
-    phone: Optional[str] = Field(None, pattern=r"^\+7\d{10}$")
-    name: Optional[str] = None
-
-
-class UserLogin(BaseModel):
-    email: EmailStr
-    password: str
 
 
 class UserOut(BaseModel):
     name: str
     email: EmailStr
-    phone: Optional[str] = None
-    date: str
+    phone: Optional[str] = ""
+    tg: Optional[str] = ""
+    vk: Optional[str] = ""
+    max: Optional[str] = ""
+    notificationsLocation: Optional[List[float]] = []
+    created_at: datetime
     avatar_display_url: str = ""
 
     class Config:
@@ -29,7 +26,8 @@ class UserOut(BaseModel):
 class AdCreate(BaseModel):
     status: Literal["lost", "found", "closed"]
     type: Literal["dog", "cat"]
-    breed: Literal["labrador", "german_shepherd", "poodle", "metis"]
+    extras: str
+    breed: str
     color: str
     size: Literal["little", "medium", "big"]
     distincts: str
@@ -37,11 +35,9 @@ class AdCreate(BaseModel):
     danger: Literal["danger", "safe", "unknown"]
     location: str
     geoLocation: List[float]
+    ad_image_display_url: Optional[str] = ""
+    ad_image_delete_url: Optional[str] = ""
     time: str
-    contactName: str
-    contactPhone: str
-    contactEmail: EmailStr
-    extras: str
 
 
 class AdOut(BaseModel):
@@ -49,6 +45,7 @@ class AdOut(BaseModel):
     user_id: int
     status: str
     type: str
+    extras: str
     breed: str
     color: str
     size: str
@@ -57,13 +54,10 @@ class AdOut(BaseModel):
     danger: str
     location: str
     geoLocation: List[float]
-    ad_image_display_url: str = ""
-    ad_image_delete_url: str = ""
+    ad_image_display_url: str
+    ad_image_delete_url: str
     time: datetime
-    contactName: str
-    contactPhone: str
-    contactEmail: str
-    extras: str
+    created_at: datetime
     ischecked: bool
 
     class Config:

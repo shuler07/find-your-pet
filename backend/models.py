@@ -13,6 +13,12 @@ class User(Base):
     password_hash: Mapped[str]
     phone: Mapped[Optional[str]] = mapped_column(default="")
     name: Mapped[Optional[str]] = mapped_column(nullable=True)
+    tg: Mapped[Optional[str]] = mapped_column(default="")
+    vk: Mapped[Optional[str]] = mapped_column(default="")
+    max: Mapped[Optional[str]] = mapped_column(default="")
+    notificationsLocation: Mapped[Optional[list[float]]] = mapped_column(
+        ARRAY(Float, as_tuple=True), default=[]
+    )
     role: Mapped[str] = mapped_column(default="user")
     avatar_delete_url: Mapped[str] = mapped_column(default="")
     avatar_display_url: Mapped[str] = mapped_column(default="")
@@ -37,6 +43,7 @@ class Ad(Base):
 
     status: Mapped[str] = mapped_column(String(10))
     type: Mapped[str] = mapped_column(String(10))
+    extras: Mapped[str] = mapped_column(Text)
     breed: Mapped[str] = mapped_column(String(30))
     color: Mapped[str] = mapped_column(String(20))
     size: Mapped[str] = mapped_column(String(10))
@@ -47,14 +54,10 @@ class Ad(Base):
     ischecked: Mapped[bool] = mapped_column(Boolean, default=False)
     ad_image_delete_url: Mapped[str] = mapped_column(default="")
     ad_image_display_url: Mapped[str] = mapped_column(default="")
-    geoLocation: Mapped[ARRAY[float]] = mapped_column(ARRAY(Float, as_tuple=True))
+    geoLocation: Mapped[list[float]] = mapped_column(ARRAY(Float, as_tuple=True))
     time: Mapped[datetime] = mapped_column(DateTime(timezone=True))
-    contactName: Mapped[str] = mapped_column(String(50))
-    contactPhone: Mapped[str] = mapped_column(String(20))
-    contactEmail: Mapped[str] = mapped_column(String(100))
-    extras: Mapped[str] = mapped_column(Text)
-    state: Mapped[str] = mapped_column(String(10), default="pending")
 
+    state: Mapped[str] = mapped_column(String(10), default="pending")
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), default=lambda: datetime.now(timezone.utc)
     )

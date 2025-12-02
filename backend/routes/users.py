@@ -1,4 +1,3 @@
-from typing import Optional
 from fastapi import APIRouter, HTTPException, Response, Request
 from pydantic import BaseModel
 from sqlalchemy import select
@@ -9,9 +8,8 @@ from dependencies import userDep, sessionDep
 import random
 from models import User
 from schemas import (
-    LocationUpdate,
-    UserRegister,
-    UserLogin,
+    UserAuth,
+    UserOut,
     UpdateEmail,
     UpdateName,
     UpdatePhone,
@@ -20,6 +18,7 @@ from schemas import (
     UpdateTg,
     UpdateVk,
     UpdateMax,
+    LocationUpdate,
 )
 from auth import (
     create_token,
@@ -66,12 +65,12 @@ async def update_avatar(
 
 
 @router.post("/register")
-async def register(user: UserRegister, session: sessionDep):
+async def register(user: UserAuth, session: sessionDep):
     existing = await session.scalar(select(User).where(User.email == user.email))
     if existing:
         raise HTTPException(status_code=400, detail="Email уже зарегистрирован")
 
-    user_name = user.name or f"{random.choice(names)}{random.randint(1, 999)}"
+    user_name = f"{random.choice(names)}{random.randint(1, 999)}"
 
     password_hash = hash_password(user.password)
 
@@ -79,7 +78,7 @@ async def register(user: UserRegister, session: sessionDep):
         {
             "email": user.email,
             "password_hash": password_hash,
-            "phone": user.phone or "",
+            "phone": "",
             "name": user_name,
             "type": "verify",
         },
@@ -92,7 +91,7 @@ async def register(user: UserRegister, session: sessionDep):
 
 
 @router.post("/login")
-async def login(response: Response, data: UserLogin, session: sessionDep):
+async def login(response: Response, data: UserAuth, session: sessionDep):
     user = await session.scalar(select(User).where(User.email == data.email))
     if not user or not verify_password(data.password, user.password_hash):
         raise HTTPException(status_code=400, detail="Неверный email или пароль")
@@ -167,9 +166,7 @@ async def get_me(request: Request, session: sessionDep):
 
 
 @router.get("/refresh")
-async def refresh_token(
-    request: Request, response: Response, session: sessionDep
-):  # ← Добавлен session
+async def refresh_token(request: Request, response: Response, session: sessionDep):
     refresh_token = request.cookies.get("refresh_token")
     if not refresh_token:
         raise HTTPException(status_code=401, detail="Нет refresh токена")
@@ -201,7 +198,7 @@ async def logout(response: Response):
 
 
 @router.get("/user")
-async def get_user(request: Request, session: sessionDep, uid: Optional[int] = None):
+async def get_user(request: Request, session: sessionDep, uid: int = 0):
     token = request.cookies.get("access_token")
     if not token:
         raise HTTPException(status_code=401, detail="Нет access токена")
@@ -212,20 +209,15 @@ async def get_user(request: Request, session: sessionDep, uid: Optional[int] = N
     except JWTError:
         raise HTTPException(status_code=401, detail="Токен недействителен или истёк")
 
-    target_user_id = uid if uid is not None else current_user_id
+    target_user_id = uid if uid != 0 else current_user_id
 
     user = await session.get(User, target_user_id)
     if not user:
         raise HTTPException(status_code=404, detail="Пользователь не найден")
 
-    return {
-        "user": {
-            "name": user.name,
-            "date": user.created_at.strftime("%d.%m.%Y"),
-            "email": user.email,
-            "phone": user.phone,
-        }
-    }
+    valid_user = UserOut.model_validate(user)
+
+    return {"user": valid_user}
 
 
 @router.put("/user/name")
