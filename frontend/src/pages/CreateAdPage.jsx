@@ -36,8 +36,8 @@ export default function CreateAdPage() {
     const adDetails = useRef({
         status: "", // ONLY lost / found
         type: "", // ONLY dog / cat
-        adImageDeleteUrl: "",
-        adImageDisplayUrl: "",
+        ad_image_delete_url: "",
+        ad_image_display_url: "/images/image_not_found.png",
         image: null,
         breed: "", // ONLY labrador, german_shepherd, poodle, metis etc
         color: "", // pet color
@@ -83,8 +83,8 @@ export default function CreateAdPage() {
             const data1 = await UploadImage(adDetails.current.image);
 
             if (data1.success) {
-                adDetails.current.adImageDeleteUrl = data1.data.delete_url;
-                adDetails.current.adImageDisplayUrl = data1.data.display_url;
+                adDetails.current.ad_image_delete_url = data1.data.delete_url;
+                adDetails.current.ad_image_display_url = data1.data.display_url;
             } else if (data1.error) CallAlert("Ошибка при загрузке фотографии", "red");
         };
 

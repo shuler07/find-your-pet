@@ -17,14 +17,14 @@ class UserOut(BaseModel):
     max: Optional[str] = ""
     notificationsLocation: Optional[List[float]] = []
     created_at: datetime
-    avatar_display_url: str = ""
+    avatar_display_url: str = "/images/avatar_not_found.png"
 
     class Config:
         from_attributes = True
 
 
 class AdCreate(BaseModel):
-    status: Literal["lost", "found","closed"]
+    status: Literal["lost", "found"]
     type: Literal["dog", "cat"]
     extras: str
     breed: str
@@ -58,7 +58,7 @@ class AdOut(BaseModel):
     ad_image_delete_url: str
     time: datetime
     created_at: datetime
-    ischecked: bool
+    state: Literal["pending", "active", "closed"]
 
     class Config:
         from_attributes = True
@@ -99,3 +99,7 @@ class AdApprove(BaseModel):
 
 class AdReject(BaseModel):
     ad_id: int
+
+class AvatarUpdate(BaseModel):
+    avatar_delete_url: str
+    avatar_display_url: str

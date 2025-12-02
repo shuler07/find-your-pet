@@ -27,7 +27,7 @@ export default function SigninPage() {
 
     const navigate = useNavigate();
 
-    const { setSignedIn, CallAlert } = useContext(AppContext);
+    const { CheckAuth, CallAlert } = useContext(AppContext);
 
     const [authButtonDisabled, setAuthButtonDisabled] = useState(false);
 
@@ -107,8 +107,8 @@ export default function SigninPage() {
 
         if (data.success) {
             CallAlert("Успешный вход", "green");
-            setSignedIn(true);
             navigate("/");
+            CheckAuth();
         } else {
             if (data.detail == "Неверный email или пароль")
                 CallAlert("Неверная почта или пароль", "red");

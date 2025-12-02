@@ -10,7 +10,7 @@ import Footer from "../components/Footer";
 import { ApiGetServerStats } from "../apiRequests";
 
 export default function MainPage() {
-    const { signedIn } = useContext(AppContext);
+    const { signedIn, isAdmin } = useContext(AppContext);
     const navigate = useNavigate();
 
     const [serverStats, setServerStats] = useState({
@@ -49,14 +49,16 @@ export default function MainPage() {
                     </h2>
                 </section>
                 <section id="main-page-navigate-section">
-                    <div
-                        className="navigate-banner"
-                        onClick={handleClickCreateAd}
-                    >
-                        <img src="/icons/plus-square.svg" />
-                        <h2>Создать объявление</h2>
-                        <h6>Разместите объявление о пропавшем питомце</h6>
-                    </div>
+                    {!isAdmin && (
+                        <div
+                            className="navigate-banner"
+                            onClick={handleClickCreateAd}
+                        >
+                            <img src="/icons/plus-square.svg" />
+                            <h2>Создать объявление</h2>
+                            <h6>Разместите объявление о пропавшем питомце</h6>
+                        </div>
+                    )}
                     <div
                         className="navigate-banner"
                         onClick={handleClickSearchAds}

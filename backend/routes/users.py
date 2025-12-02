@@ -14,7 +14,8 @@ from schemas import (
     UpdateName,
     UpdatePhone,
     UpdatePassword,
-    LocationUpdate
+    LocationUpdate,
+    AvatarUpdate
 )
 from auth import (
     create_token,
@@ -34,11 +35,6 @@ from config import (
 router = APIRouter()
 
 names = ["Альфа", "Барсик", "Крош", "Стрелка", "Мурзик"]
-
-
-class AvatarUpdate(BaseModel):
-    avatar_delete_url: str
-    avatar_display_url: str
 
 
 @router.put("/user/avatar")
@@ -211,6 +207,7 @@ async def get_user(request: Request, session: sessionDep, uid: int = 0):
         raise HTTPException(status_code=404, detail="Пользователь не найден")
 
     valid_user = UserOut.model_validate(user)
+    valid_user.created_at = valid_user.created_at.strftime("%d.%m.%Y")
 
     return {"user": valid_user}
 
@@ -314,10 +311,7 @@ async def update_location(
     data: LocationUpdate,
     session: sessionDep,
     current_user: userDep
-):
-    if len(data.notificationsLocation) != 2:
-        raise HTTPException(status_code=400, detail="Требуется [lat, lon]")
-    
+):    
     current_user.notificationsLocation = data.notificationsLocation
     await session.commit()
     return {"success": True}

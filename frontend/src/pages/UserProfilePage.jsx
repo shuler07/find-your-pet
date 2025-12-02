@@ -22,7 +22,7 @@ export default function ProfilePage() {
         avatar_display_url: "/images/avatar-not-found.png",
         avatar: "",
         name: "",
-        date: "",
+        created_at: "",
         email: "",
         phone: "",
         vk: "",
@@ -54,7 +54,7 @@ export default function ProfilePage() {
     );
 }
 
-function ProfileCard({ avatar_display_url, name, date, email, phone, vk, tg, max }) {
+function ProfileCard({ avatar_display_url, name, created_at, email, phone, vk, tg, max }) {
     return (
         <section id="profile-card-section" className="card-section">
             <div id="profile-card-avatar">
@@ -65,7 +65,7 @@ function ProfileCard({ avatar_display_url, name, date, email, phone, vk, tg, max
             <div id="profile-card-info">
                 <h2>{name}</h2>
                 <h6 style={{ marginTop: "-1.25rem" }}>
-                    Зарегистрирован {date}
+                    Зарегистрирован {created_at}
                 </h6>
                 <div
                     style={{ display: "flex", gap: ".5rem", flexWrap: "wrap" }}

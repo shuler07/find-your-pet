@@ -8,7 +8,7 @@ import Header from "../components/Header";
 import Footer from "../components/Footer";
 
 import { AD_INFO_DICT } from "../data";
-import { ApiGetAdCreator, ApiRemoveAd } from "../apiRequests";
+import { ApiGetAdCreator, ApiCloseAd } from "../apiRequests";
 import {
     ymapsInitPromise,
     YMap,
@@ -103,7 +103,7 @@ function PetInfo({
         : "Пожалуйста, свяжитесь с автором объявления, если вы нашли потерянное животное или найденный питомец является вашим";
 
     async function RemoveAd() {
-        const data = await ApiRemoveAd(id);
+        const data = await ApiCloseAd(id);
 
         if (data.success) {
             CallAlert("Объявление успешно снято", "green");
@@ -181,7 +181,7 @@ function PetInfo({
     );
 }
 
-function PetContacts({ uid, status, name, date, email, phone, vk, tg, max }) {
+function PetContacts({ uid, status, name, created_at, email, phone, vk, tg, max }) {
     const navigate = useNavigate();
 
     const profileText =
@@ -199,7 +199,7 @@ function PetContacts({ uid, status, name, date, email, phone, vk, tg, max }) {
                     <h3>{name}</h3>
                     <h6
                         style={{ fontSize: ".8em" }}
-                    >{`${profileText}, участник сообщества с ${date}`}</h6>
+                    >{`${profileText}, участник сообщества с ${created_at}`}</h6>
                 </div>
             </div>
             <div

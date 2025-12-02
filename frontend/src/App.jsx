@@ -62,8 +62,10 @@ export default function App() {
         <AppContext
             value={{
                 signedIn,
-                isAdmin,
                 setSignedIn,
+                CheckAuth,
+                isAdmin,
+                setIsAdmin,
                 CallAlert,
                 theme,
                 setTheme
