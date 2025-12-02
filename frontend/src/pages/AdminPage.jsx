@@ -16,7 +16,7 @@ import {
 } from "../apiRequests";
 
 export default function AdminPage() {
-    const { CallAlert, setSignedIn, setIsAdmin } = useContext(AppContext);
+    const { CallAlert, setSignedIn, isAdmin, setIsAdmin } = useContext(AppContext);
     const navigate = useNavigate();
 
     const [adsToCheck, setAdsToCheck] = useState([]);
@@ -64,7 +64,7 @@ export default function AdminPage() {
     }
 
 
-    return (
+    return isAdmin ? (
         <>
             <Header />
             <div id="admin-page-container" className="page-container">
@@ -106,6 +106,10 @@ export default function AdminPage() {
             </div>
             <Footer />
         </>
+    ) : (
+        <div className="page-container" style={{ padding: 0, height: '100dvh' }}>
+            <h1>{"Эта страница для вас недоступна :("}</h1>
+        </div>
     );
 }
 
