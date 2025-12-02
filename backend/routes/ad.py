@@ -59,11 +59,21 @@ async def create_ad(data: AdCreate, session: sessionDep, current_user: userDep):
 
 
 @router.post("/ads")
-async def get_ads(session: sessionDep, filters: AdFilters, current_user: userDep):
+async def get_ads(session: sessionDep, filters: AdFilters, request: Request):
     try:
+        current_user = None
+        token = request.cookies.get("access_token")
+        if token:
+            try:
+                payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+                user_id = int(payload["sub"])
+                current_user = await session.get(User, user_id)
+            except (JWTError, ValueError, TypeError):
+                pass
+
         query = select(Ad).where(Ad.state != "pending")
 
-        if current_user.role == "user":
+        if not current_user or current_user.role == "user":
             query = query.where(Ad.state != "closed")
 
         if filters.status:
