@@ -1,6 +1,7 @@
 from math import radians, cos, sin, asin, sqrt
 import smtplib
 from email.mime.text import MIMEText
+import httpx
 
 from fastapi import APIRouter, HTTPException, Request
 from sqlalchemy import select
@@ -169,12 +170,27 @@ async def get_ad_creator(id: int, request: Request, session: sessionDep):
 
 @router.delete("/ad/delete")
 async def regect_ad(data: AdReject, session: sessionDep, current_user: userDep):
-    if current_user.role != "admin":
-        raise HTTPException(status_code=403, detail="Требуются права администратора")
-
     ad = await session.get(Ad, data.ad_id)
     if not ad:
         raise HTTPException(status_code=404, detail="Объявление не найдено")
+
+    if current_user.role != "admin":
+        if ad.user_id != current_user.id:
+            raise HTTPException(status_code=403, detail="Нет прав на удаление чужого объявления")
+        
+        if ad.state == "active":
+            raise HTTPException(status_code=403, detail="Нельзя удалить активное объявление")
+    else:
+        if ad.state != "pending":
+            raise HTTPException(status_code=403, detail="Администратор может удалять только на проверке объявления")
+        
+    if ad.ad_image_delete_url:
+        try:
+            async with httpx.AsyncClient() as client:
+                await client.delete(ad.ad_image_delete_url)
+                print(f"Изображение удалено: {ad.ad_image_delete_url}")
+        except Exception as e:
+            print(f"Ошибка при удалении изображения: {e}")
 
     await session.delete(ad)
     await session.commit()
