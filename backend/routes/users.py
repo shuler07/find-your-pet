@@ -14,16 +14,12 @@ from schemas import (
     UpdateName,
     UpdatePhone,
     UpdatePassword,
-<<<<<<< HEAD
+    LocationUpdate,
+    AvatarUpdate,
     PasswordReset,
     UpdateTg,
     UpdateVk,
     UpdateMax,
-    LocationUpdate,
-=======
-    LocationUpdate,
-    AvatarUpdate
->>>>>>> main
 )
 from auth import (
     create_token,
@@ -318,18 +314,8 @@ async def delete_user(session: sessionDep, current_user: userDep, response: Resp
 
 @router.put("/user/location")
 async def update_location(
-<<<<<<< HEAD
     data: LocationUpdate, session: sessionDep, current_user: userDep
 ):
-    if len(data.notificationsLocation) != 2:
-        raise HTTPException(status_code=400, detail="Требуется [lat, lon]")
-
-=======
-    data: LocationUpdate,
-    session: sessionDep,
-    current_user: userDep
-):    
->>>>>>> main
     current_user.notificationsLocation = data.notificationsLocation
     await session.commit()
     return {"success": True}

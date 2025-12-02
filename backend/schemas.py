@@ -24,11 +24,7 @@ class UserOut(BaseModel):
 
 
 class AdCreate(BaseModel):
-<<<<<<< HEAD
-    status: Literal["lost", "found", "closed"]
-=======
     status: Literal["lost", "found"]
->>>>>>> main
     type: Literal["dog", "cat"]
     extras: str
     breed: str
@@ -127,6 +123,8 @@ class AdReject(BaseModel):
 
 class AdRemove(BaseModel):
     ad_id: int
+
+
 class AvatarUpdate(BaseModel):
     avatar_delete_url: str
     avatar_display_url: str
