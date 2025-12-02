@@ -10,10 +10,7 @@ import { getGeolocation } from "../functions";
 export default function AdsContainer({ ads, inProfile }) {
     const showAds = () => {
         return ads.map((value, index) => (
-            <AdCard
-                key={`keyAdCard${index}`}
-                ad={value}
-            />
+            <AdCard key={`keyAdCard${index}`} ad={value} />
         ));
     };
 
@@ -54,12 +51,12 @@ function AdCard({ ad }) {
         location,
         geoLocation,
         time,
-        ad_image_display_url
+        ad_image_display_url,
+        state,
     } = ad;
 
     const navigate = useNavigate();
 
-    const image = ad_image_display_url.length != 0 ? ad_image_display_url : "/images/image-not-found.png";
     const title = nickname ? nickname : "Кличка неизвестна";
     const subtitle = `${AD_INFO_DICT.type[type]} • ${AD_INFO_DICT.breed[breed]}`;
     const description = `Окрас: ${color}, размер: ${AD_INFO_DICT.size[size]}`;
@@ -97,12 +94,37 @@ function AdCard({ ad }) {
 
     return (
         <div className="ad-card">
-            <div className="ad-card-image" style={{ background: `url("${image}") center / cover` }} />
             <div
-                className="ad-card-status"
-                style={{ background: status == "lost" ? "#f53535" : "#1fcf1f" }}
-            >
-                <h3>{AD_INFO_DICT.status[status]}</h3>
+                className="ad-card-image"
+                style={{
+                    background: `url("${ad_image_display_url}") center / cover`,
+                }}
+            />
+            <div className="ad-card-status">
+                <div
+                    className="ad-card-status-div"
+                    style={{
+                        background: status == "lost" ? "#f53535" : "#1fcf1f",
+                    }}
+                >
+                    <h3>{AD_INFO_DICT.status[status]}</h3>
+                </div>
+                {state == "pending" && (
+                    <div
+                        className="ad-card-status-div"
+                        style={{ background: "#818181" }}
+                    >
+                        <h3>На рассмотрении</h3>
+                    </div>
+                )}
+                {state == "closed" && (
+                    <div
+                        className="ad-card-status-div"
+                        style={{ background: "#818181" }}
+                    >
+                        <h3>Снято</h3>
+                    </div>
+                )}
             </div>
             <div className="ad-card-info-block">
                 <h3>{title}</h3>

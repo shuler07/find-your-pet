@@ -153,19 +153,22 @@ async def get_ad_creator(id: int, request: Request, session: sessionDep):
 
     ad = await session.get(Ad, id)
     if not ad:
-        raise HTTPException(status_code=404, detail="Объявление не найдено")  
-    
+        raise HTTPException(status_code=404, detail="Объявление не найдено")
+
     user = await session.get(User, ad.user_id)
     if not user:
-        raise HTTPException(status_code=404, detail="Пользователь не найден")  
-
+        raise HTTPException(status_code=404, detail="Пользователь не найден")
 
     valid_user = UserOut.model_validate(user)
     valid_ad = AdOut.model_validate(ad)
-    is_creator = current_user_id == id
-    
+    is_creator = current_user_id == ad.user_id
 
-    return {"success": True, "user": valid_user, "isCreator": is_creator,"ad": ad}
+    return {
+        "success": True,
+        "ad": valid_ad,
+        "user": valid_user,
+        "isCreator": is_creator,
+    }
 
 
 @router.delete("/ad/delete")
@@ -176,14 +179,21 @@ async def regect_ad(data: AdReject, session: sessionDep, current_user: userDep):
 
     if current_user.role != "admin":
         if ad.user_id != current_user.id:
-            raise HTTPException(status_code=403, detail="Нет прав на удаление чужого объявления")
-        
+            raise HTTPException(
+                status_code=403, detail="Нет прав на удаление чужого объявления"
+            )
+
         if ad.state == "active":
-            raise HTTPException(status_code=403, detail="Нельзя удалить активное объявление")
+            raise HTTPException(
+                status_code=403, detail="Нельзя удалить активное объявление"
+            )
     else:
         if ad.state != "pending":
-            raise HTTPException(status_code=403, detail="Администратор может удалять только на проверке объявления")
-        
+            raise HTTPException(
+                status_code=403,
+                detail="Администратор может удалять только на проверке объявления",
+            )
+
     if ad.ad_image_delete_url:
         try:
             async with httpx.AsyncClient() as client:

@@ -24,12 +24,17 @@
 .ad-card-status {
     position: absolute;
     top: .5rem;
-    right: .5rem;
+    left: .5rem;
+    display: flex;
+    gap: .5rem;
+}
+
+.ad-card-status-div {
     padding: .25rem .5rem;
     border-radius: 1rem;
 }
 
-.ad-card-status > h3 {
+.ad-card-status-div > h3 {
     font-size: .8em;
     color: white;
 }

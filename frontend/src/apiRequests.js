@@ -510,6 +510,12 @@ export async function ApiGetAdAndCreator(aid) {
         const data = await response.json();
         if (DEBUG) console.debug("Getting ad and creator. Data received:", data);
 
+        if (data.detail && data.detail.includes("Токен недействителен")) {
+            await ApiRefreshAuth();
+            return await ApiGetAdAndCreator(aid);
+        };
+
+
         return data;
     } catch (error) {
         console.error("Getting ad and creator. Error occured:", error);

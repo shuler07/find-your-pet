@@ -27,7 +27,9 @@ export default function AdPage() {
     const { CallAlert, isAdmin, theme } = useContext(AppContext);
     const { aid } = useParams();
 
-    const [ad, setAd] = useState({});
+    const [ad, setAd] = useState({
+        geoLocation: [],
+    });
     const [creator, setCreator] = useState({});
     const [isCreator, setIsCreator] = useState(false);
     useEffect(() => {
@@ -202,7 +204,7 @@ function PetInfo({
                 : RemoveAd
             : scrollToContacts;
 
-        return !isAdmin ? (
+        return !isAdmin || state != "pending" ? (
             <button
                 className={`primary-button ${isCreator && "red"}`}
                 onClick={buttonEvent}

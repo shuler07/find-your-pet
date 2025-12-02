@@ -40,8 +40,8 @@
 
 #ad-info-status {
     position: absolute;
-    top: 1rem;
-    left: 1rem;
+    top: 1.25rem;
+    left: 1.25rem;
     display: flex;
     gap: .25rem;
 }
