@@ -32,6 +32,7 @@ export default function ProfilePage() {
         _user
             ? JSON.parse(_user)
             : {
+                  avatar_display_url: "/images/avatar_not_found.png",
                   name: "",
                   date: "",
                   email: "",
@@ -49,10 +50,10 @@ export default function ProfilePage() {
     const { CallAlert, setSignedIn, theme, setTheme } = useContext(AppContext);
 
     async function GetUser() {
-        const data = await ApiGetUser(null);
+        const data = await ApiGetUser(0);
 
         if (data.user) {
-            // window.localStorage.setItem("fyp-user", JSON.stringify(data.user));
+            window.localStorage.setItem("fyp-user", JSON.stringify(data.user));
             setUser(data.user);
         } else if (data.error)
             CallAlert("Ошибка при обновлении профиля", "red");
@@ -62,7 +63,7 @@ export default function ProfilePage() {
         <>
             <Header />
             <div id="profile-page-container" className="page-container">
-                <ProfileCard CallAlert={CallAlert} {...user} />
+                <ProfileCard CallAlert={CallAlert} {...user} setUser={setUser} />
                 <AccountCard
                     {...user}
                     setUser={setUser}
@@ -88,8 +89,7 @@ export default function ProfilePage() {
     );
 }
 
-function ProfileCard({ CallAlert, name, date, email, phone, vk, tg, max }) {
-    const [avatarUrl, setAvatarUrl] = useState("/images/avatar-not-found.png");
+function ProfileCard({ CallAlert, avatar_display_url, name, date, email, phone, vk, tg, max }) {
 
     const handleClickEditAvatar = async (e) => {
         const img = e.target.files[0];
@@ -103,7 +103,7 @@ function ProfileCard({ CallAlert, name, date, email, phone, vk, tg, max }) {
             const data2 = await ApiChangeAvatar(delete_url, display_url);
 
             if (data2.success) {
-                setAvatarUrl(display_url);
+                setUser((prev) => ({ ...prev, avatar_display_url: display_url }))
                 CallAlert("Фото профиля успешно изменено", "green");
             } else if (data2.error)
                 CallAlert(
@@ -116,7 +116,7 @@ function ProfileCard({ CallAlert, name, date, email, phone, vk, tg, max }) {
     return (
         <section id="profile-card-section" className="card-section">
             <div id="profile-card-avatar">
-                <div style={{ background: `url("${avatarUrl}") center / cover` }} />
+                <div style={{ background: `url("${avatar_display_url}") center / cover` }} />
                 <label
                     id="edit-avatar-button"
                     htmlFor="avatar-upload-input"
@@ -738,7 +738,7 @@ function PostedPetsCard({ CallAlert }) {
     }, []);
 
     async function GetMyAds() {
-        const data = await ApiGetUserAds(null);
+        const data = await ApiGetUserAds(0);
 
         if (data.success) setMyAds(data.ads);
         else if (data.error)

@@ -26,6 +26,7 @@ async def create_ad(data: AdCreate, session: sessionDep, current_user: userDep):
         user_id=current_user.id,
         status=data.status,
         type=data.type,
+        extras=data.extras,
         breed=data.breed,
         color=data.color,
         size=data.size,
@@ -35,10 +36,6 @@ async def create_ad(data: AdCreate, session: sessionDep, current_user: userDep):
         location=data.location,
         geoLocation=data.geoLocation,
         time=time_obj,
-        contactName=data.contactName,
-        contactPhone=data.contactPhone,
-        contactEmail=data.contactEmail,
-        extras=data.extras,
         ischecked=False,
     )
 
@@ -83,23 +80,17 @@ async def get_ads(session: sessionDep, filters: AdFilters, current_user: userDep
 
 
 @router.get("/ads/user")
-async def get_user_ads(session: sessionDep, current_user: userDep, uid: Optional[int] = None):
-    if current_user.role != "admin":
-        target_user_id = current_user.id
-    else:
-        target_user_id = uid if uid is not None else current_user.id
-
-    if current_user.role != "admin" and target_user_id != current_user.id:
-        raise HTTPException(
-            status_code=403, detail="Нет доступа к чужим объявлениям")
+async def get_user_ads(session: sessionDep, current_user: userDep, uid: int = 0):
+    target_user_id = uid if uid != 0 else current_user.id
 
     query = (
         select(Ad).
         where(Ad.user_id == target_user_id).
-        where(Ad.ischecked == True).
         order_by(Ad.created_at.desc())
     )
-    if current_user.role != "admin":
+    if uid != 0:
+        query = query.where(Ad.ischecked == True)
+    if current_user.role != "admin" and uid != 0:
         query = query.where(Ad.status != "closed")
     result = await session.scalars(query)
     ads = result.all()

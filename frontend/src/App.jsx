@@ -14,7 +14,7 @@ import MyProfilePage from "./pages/MyProfilePage";
 import UserProfilePage from './pages/UserProfilePage';
 import AdminPage from "./pages/AdminPage";
 
-import { ApiCheckAuth, ApiRefreshAuth } from "./apiRequests";
+import { ApiCheckAuth } from "./apiRequests";
 import { RestartAnim } from "./functions";
 
 export const AppContext = createContext();
@@ -40,19 +40,8 @@ export default function App() {
         if (data.success) {
             setSignedIn(true);
             if (data.role == "admin") setIsAdmin(true);
-        } else {
-            if (data.detail == "Токен недействителен или истёк") RefreshAuth();
-            if (data.error)
-                CallAlert("Ошибка при аутентификации. Попробуйте позже", "red");
-        }
-    }
-
-    async function RefreshAuth() {
-        const data = await ApiRefreshAuth();
-
-        if (data.success) setSignedIn(true);
-        else if (data.error)
-            CallAlert("Ошибка при аутентфикации. Попробуйте позже", "red");
+        } else if (data.error)
+            CallAlert("Ошибка при аутентификации. Попробуйте позже", "red");
     }
 
     const _theme = window.localStorage.getItem("fyp-theme");

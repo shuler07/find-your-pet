@@ -19,6 +19,7 @@ export default function ProfilePage() {
     const { CallAlert } = useContext(AppContext);
 
     const [user, setUser] = useState({
+        avatar_display_url: "/images/avatar-not-found.png",
         avatar: "",
         name: "",
         date: "",
@@ -46,20 +47,19 @@ export default function ProfilePage() {
             <Header />
             <div id="profile-page-container" className="page-container">
                 <ProfileCard {...user} />
-                <PostedPetsCard CallAlert={CallAlert} />
+                <PostedPetsCard CallAlert={CallAlert} uid={uid} />
             </div>
             <Footer />
         </>
     );
 }
 
-function ProfileCard({ avatar, name, date, email, phone, vk, tg, max }) {
-    console.log(avatar)
+function ProfileCard({ avatar_display_url, name, date, email, phone, vk, tg, max }) {
     return (
         <section id="profile-card-section" className="card-section">
             <div id="profile-card-avatar">
                 <div
-                    style={{ background: `url("${avatar}") center / cover` }}
+                    style={{ background: `url("${avatar_display_url}") center / cover` }}
                 />
             </div>
             <div id="profile-card-info">
@@ -96,14 +96,14 @@ function ProfileCard({ avatar, name, date, email, phone, vk, tg, max }) {
     );
 }
 
-function PostedPetsCard({ CallAlert }) {
+function PostedPetsCard({ CallAlert, uid }) {
     const [userAds, setUserAds] = useState([]);
     useEffect(() => {
         GetUserAds();
     }, []);
 
     async function GetUserAds() {
-        const data = await ApiGetUserAds(null);
+        const data = await ApiGetUserAds(uid);
 
         if (data.success) setUserAds(data.ads);
         else if (data.error)
