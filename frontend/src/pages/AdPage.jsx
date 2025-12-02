@@ -36,6 +36,8 @@ export default function AdPage() {
         GetAdAndCreator();
     }, []);
 
+    const [adExists, setAdExists] = useState(true);
+
     async function GetAdAndCreator() {
         const data = await ApiGetAdAndCreator(aid);
 
@@ -43,14 +45,15 @@ export default function AdPage() {
             setAd(data.ad);
             setCreator(data.user);
             setIsCreator(data.isCreator);
-        } else if (data.error)
+        } else if (data.detail == "Объявление не найдено") setAdExists(false);
+        else if (data.error)
             CallAlert(
                 "Ошибка при получении создателя объявления. Попробуйте позже",
                 "red"
             );
     }
 
-    return (
+    return adExists ? (
         <>
             <Header />
             <div className="page-container">
@@ -76,6 +79,13 @@ export default function AdPage() {
             </div>
             <Footer />
         </>
+    ) : (
+        <div
+            className="page-container"
+            style={{ padding: 0, height: "100dvh" }}
+        >
+            <h1>{"Объявление не найдено :("}</h1>
+        </div>
     );
 }
 
@@ -84,10 +94,14 @@ function PetPhotos({ ad_image_display_url, status, state }) {
         backgroundColor: status == "lost" ? "#f53535" : "#1fcf1f",
     };
 
-
     return (
         <section id="ad-photos" className="ad-page-section">
-            <div id="ad-photos-img" style={{ background: `url("${ad_image_display_url}") center / cover` }} />
+            <div
+                id="ad-photos-img"
+                style={{
+                    background: `url("${ad_image_display_url}") center / cover`,
+                }}
+            />
             <div id="ad-info-status">
                 <div className="ad-info-status-div" style={styledInfoStatus}>
                     <h3>{AD_INFO_DICT.status[status]}</h3>
@@ -157,7 +171,7 @@ function PetInfo({
         if (data.success) {
             CallAlert("Объявление удалено", "green");
             if (!isAdmin) navigate("/profile");
-            else navigate('/admin');
+            else navigate("/admin");
         } else if (data.error)
             CallAlert("Ошибка при удалении объявления", "red");
     }

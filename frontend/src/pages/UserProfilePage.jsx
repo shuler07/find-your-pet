@@ -8,10 +8,7 @@ import Header from "../components/Header";
 import Footer from "../components/Footer";
 import AdsContainer from "../components/AdsContainer";
 
-import {
-    ApiGetUserAds,
-    ApiGetUser,
-} from "../apiRequests";
+import { ApiGetUserAds, ApiGetUser } from "../apiRequests";
 
 export default function ProfilePage() {
     const { uid } = useParams();
@@ -33,16 +30,17 @@ export default function ProfilePage() {
         GetUser();
     }, []);
 
+    const [userExists, setUserExists] = useState(true);
+
     async function GetUser() {
         const data = await ApiGetUser(uid);
 
-        if (data.user) {
-            setUser(data.user);
-        } else if (data.error)
-            CallAlert("Ошибка при получении профиля", "red");
+        if (data.user) setUser(data.user);
+        else if (data.detail == "Пользователь не найден") setUserExists(false);
+        else if (data.error) CallAlert("Ошибка при получении профиля", "red");
     }
 
-    return (
+    return userExists ? (
         <>
             <Header />
             <div id="profile-page-container" className="page-container">
@@ -51,15 +49,30 @@ export default function ProfilePage() {
             </div>
             <Footer />
         </>
+    ) : (
+        <div className="page-container" style={{ padding: 0, height: '100dvh' }}>
+            <h1>{"Пользователь не найден :("}</h1>
+        </div>
     );
 }
 
-function ProfileCard({ avatar_display_url, name, created_at, email, phone, vk, tg, max }) {
+function ProfileCard({
+    avatar_display_url,
+    name,
+    created_at,
+    email,
+    phone,
+    vk,
+    tg,
+    max,
+}) {
     return (
         <section id="profile-card-section" className="card-section">
             <div id="profile-card-avatar">
                 <div
-                    style={{ background: `url("${avatar_display_url}") center / cover` }}
+                    style={{
+                        background: `url("${avatar_display_url}") center / cover`,
+                    }}
                 />
             </div>
             <div id="profile-card-info">

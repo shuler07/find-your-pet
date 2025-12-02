@@ -27,6 +27,7 @@ import { RestartAnim } from "../functions";
 import { UploadImage } from "../imageuploader";
 
 export default function CreateAdPage() {
+    const { CallAlert, theme, isAdmin } = useContext(AppContext);
     const navigate = useNavigate();
 
     const [activeStage, setActiveStage] = useState(0);
@@ -51,8 +52,6 @@ export default function CreateAdPage() {
         geoLocation: [], // place in coords
         time: "", // time in dd.MM.yyyy hh:mm:ss
     });
-
-    const { CallAlert, theme } = useContext(AppContext);
 
     const [navigationButtonsDisabled, setNavigationButtonsDisabled] =
         useState(false);
@@ -85,10 +84,13 @@ export default function CreateAdPage() {
             if (data1.success) {
                 adDetails.current.ad_image_delete_url = data1.data.delete_url;
                 adDetails.current.ad_image_display_url = data1.data.display_url;
-            } else if (data1.error) CallAlert("Ошибка при загрузке фотографии", "red");
-        };
+            } else if (data1.error)
+                CallAlert("Ошибка при загрузке фотографии", "red");
+        }
 
-        const _adDetails = Object.fromEntries(Object.entries(adDetails.current).filter((v) => v != 'image'));
+        const _adDetails = Object.fromEntries(
+            Object.entries(adDetails.current).filter((v) => v != "image")
+        );
         const data2 = await ApiCreateAd(_adDetails);
 
         setNavigationButtonsDisabled(false);
@@ -105,7 +107,7 @@ export default function CreateAdPage() {
             );
     }
 
-    return (
+    return !isAdmin ? (
         <>
             <Header />
             <div className="page-container" style={{ justifyContent: "start" }}>
@@ -129,6 +131,10 @@ export default function CreateAdPage() {
             </div>
             <Footer />
         </>
+    ) : (
+        <div className="page-container" style={{ padding: 0, height: '100dvh' }}>
+            <h1>{"Эта страница для вас недоступна :("}</h1>
+        </div>
     );
 }
 
@@ -261,7 +267,7 @@ function MainInformationFields({ validate, apply, adDetails }) {
                     </h6>
                 </label>
                 {img && (
-                    <div style={{ display: 'flex', justifyContent: 'center' }}>
+                    <div style={{ display: "flex", justifyContent: "center" }}>
                         <img
                             id="image-preview"
                             src={URL.createObjectURL(img)}

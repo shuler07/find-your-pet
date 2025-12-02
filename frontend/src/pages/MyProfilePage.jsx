@@ -47,7 +47,7 @@ export default function ProfilePage() {
         GetUser();
     }, []);
 
-    const { CallAlert, setSignedIn, theme, setTheme } = useContext(AppContext);
+    const { CallAlert, setSignedIn, theme, setTheme, isAdmin } = useContext(AppContext);
 
     async function GetUser() {
         const data = await ApiGetUser(0);
@@ -59,7 +59,7 @@ export default function ProfilePage() {
             CallAlert("Ошибка при обновлении профиля", "red");
     }
 
-    return (
+    return !isAdmin ? (
         <>
             <Header />
             <div id="profile-page-container" className="page-container">
@@ -90,6 +90,10 @@ export default function ProfilePage() {
             </div>
             <Footer />
         </>
+    ) : (
+        <div className="page-container" style={{ padding: 0, height: '100dvh' }}>
+            <h1>{"Эта страница для вас недоступна :("}</h1>
+        </div>
     );
 }
 
