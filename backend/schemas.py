@@ -90,3 +90,12 @@ class UpdatePhone(BaseModel):
 class UpdatePassword(BaseModel):
     curPassword: str = Field(..., min_length=8)
     newPassword: str = Field(..., min_length=8, max_length=72)
+
+class LocationUpdate(BaseModel):
+    notificationsLocation: List[float]
+
+class AdApprove(BaseModel):
+    ad_id: int
+
+class AdReject(BaseModel):
+    ad_id: int

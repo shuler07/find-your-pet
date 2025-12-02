@@ -1,13 +1,16 @@
+from math import radians, cos, sin, asin, sqrt
+import smtplib
+from email.mime.text import MIMEText
+
 from typing import Optional
 from fastapi import APIRouter, HTTPException, Request
 from sqlalchemy import select
 from datetime import datetime
 from jose import JWTError, jwt
-from config import SECRET_KEY, ALGORITHM
+from config import EMAIL_FROM, SECRET_KEY, ALGORITHM, SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASSWORD
 from dependencies import userDep, sessionDep
 from models import Ad, User
-from schemas import AdOut, AdCreate, AdFilters
-
+from schemas import AdOut, AdCreate, AdFilters, AdApprove, AdReject
 
 router = APIRouter()
 
@@ -146,3 +149,83 @@ async def get_ad_creator(
         },
         "isCreator": is_creator
     }
+
+@router.delete("/ad/delete")
+async def regect_ad(
+    data: AdReject,
+    session: sessionDep,
+    current_user: userDep
+):
+    if current_user.role != "admin":
+        raise HTTPException(status_code=403, detail="Требуются права администратора")
+    
+    ad = await session.get(Ad, data.ad_id)
+    if not ad:
+        raise HTTPException(status_code=404, detail="Объявление не найдено")
+    
+    await session.delete(ad)
+    await session.commit()
+    
+    return {"success": True}
+
+def haversine(lat1, lon1, lat2, lon2):
+    R = 6371
+    d_lat = radians(lat2 - lat1)
+    d_lon = radians(lon2 - lon1)
+    a = sin(d_lat/2)**2 + cos(radians(lat1)) * cos(radians(lat2)) * sin(d_lon/2)**2
+    return R * 2 * asin(sqrt(a))
+
+async def send_ad_notification_email(user_email: str, ad_id: int, ad_location: str):
+    msg = MIMEText(f"Обнаружено новое объявление рядом с вами!\nID: {ad_id}\nМестоположение: {ad_location}")
+    msg['Subject'] = "Новое объявление в вашем районе"
+    msg['From'] = EMAIL_FROM
+    msg['To'] = user_email
+
+    try:
+        with smtplib.SMTP(SMTP_HOST, SMTP_PORT) as server:
+            server.starttls()
+            server.login(SMTP_USER, SMTP_PASSWORD)
+            server.sendmail(EMAIL_FROM, user_email, msg.as_string())
+    except Exception as e:
+        print(f"Ошибка отправки email на {user_email}: {e}")
+
+@router.put("/ad/approve")
+async def approve_ad(
+    data: AdApprove,
+    session: sessionDep,
+    current_user: userDep
+):
+    ad = await session.get(Ad, data.ad_id)
+    if not ad:
+        raise HTTPException(status_code=404, detail="Объявление не найдено")
+    
+    ad.state = "active"
+    await session.commit()
+  
+    if ad.geoLocation and len(ad.geoLocation) == 2:
+        ad_lat, ad_lon = ad.geoLocation[0], ad.geoLocation[1]
+    
+        query = select(User).where(User.notificationsLocation != None)
+        result = await session.scalars(query)
+        users = result.all()
+        
+    
+        notified_emails = []
+        for user in users:
+            if not user.notificationsLocation or len(user.notificationsLocation) != 2:
+                continue
+            
+            user_lat, user_lon = user.notificationsLocation[0], user.notificationsLocation[1]
+            distance = haversine(ad_lat, ad_lon, user_lat, user_lon)
+            
+            if distance <= 10: 
+                await send_ad_notification_email(
+                    user.email,
+                    data.ad_id,
+                    ad.location or f"Координаты: {ad_lat}, {ad_lon}"
+                )
+                notified_emails.append(user.email)
+        
+        print(f"Уведомления по email отправлены {len(notified_emails)} пользователям: {notified_emails}")
+    
+    return {"success": True}
