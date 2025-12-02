@@ -138,8 +138,8 @@ async def get_ads_to_check(session: sessionDep, current_user: userDep, limit: in
     return {"success": True, "ads": ads_out}
 
 
-@router.get("/ad/creator")
-async def get_ad_creator(uid: int, request: Request, session: sessionDep):
+@router.get("/ad/data")
+async def get_ad_creator(id: int, request: Request, session: sessionDep):
     access_token = request.cookies.get("access_token")
     if not access_token:
         raise HTTPException(status_code=401, detail="Нет access токена")
@@ -150,14 +150,21 @@ async def get_ad_creator(uid: int, request: Request, session: sessionDep):
     except (JWTError, ValueError, TypeError):
         raise HTTPException(status_code=401, detail="Токен недействителен или истёк")
 
-    user = await session.get(User, uid)
+    ad = await session.get(Ad, id)
+    if not ad:
+        raise HTTPException(status_code=404, detail="Объявление не найдено")  
+    
+    user = await session.get(User, ad.user_id)
     if not user:
-        raise HTTPException(status_code=404, detail="Пользователь не найден")
+        raise HTTPException(status_code=404, detail="Пользователь не найден")  
+
 
     valid_user = UserOut.model_validate(user)
-    is_creator = current_user_id == uid
+    valid_ad = AdOut.model_validate(ad)
+    is_creator = current_user_id == id
+    
 
-    return {"success": True, "user": valid_user, "isCreator": is_creator}
+    return {"success": True, "user": valid_user, "isCreator": is_creator,"ad": ad}
 
 
 @router.delete("/ad/delete")
