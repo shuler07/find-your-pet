@@ -43,6 +43,7 @@ async def create_ad(data: AdCreate, session: sessionDep, current_user: userDep):
         nickname=data.nickname,
         danger=data.danger,
         location=data.location,
+        region=data.region,
         geoLocation=data.geoLocation,
         time=time_obj,
         state="pending",
@@ -81,7 +82,7 @@ async def get_ads(session: sessionDep, filters: AdFilters, current_user: userDep
             if isinstance(filters.geoloc, list) and len(filters.geoloc) == 2:
                 use_geoloc_filter = True
         elif filters.region:
-            query = query.where(Ad.location.contains(filters.region))
+            query = query.where(Ad.region == filters.region)
 
         query = query.order_by(Ad.created_at.desc()).limit(50)
         result = await session.scalars(query)

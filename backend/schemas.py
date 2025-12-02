@@ -34,6 +34,7 @@ class AdCreate(BaseModel):
     nickname: str
     danger: Literal["danger", "safe", "unknown"]
     location: str
+    region: str
     geoLocation: List[float]
     ad_image_display_url: Optional[str] = ""
     ad_image_delete_url: Optional[str] = ""
@@ -53,6 +54,7 @@ class AdOut(BaseModel):
     nickname: str
     danger: str
     location: str
+    region: str
     geoLocation: List[float]
     ad_image_display_url: str
     ad_image_delete_url: str
