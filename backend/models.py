@@ -16,7 +16,9 @@ class User(Base):
     tg: Mapped[Optional[str]] = mapped_column(default="")
     vk: Mapped[Optional[str]] = mapped_column(default="")
     max: Mapped[Optional[str]] = mapped_column(default="")
-    notificationsLocation: Mapped[Optional[list[float]]] = mapped_column(ARRAY(Float, as_tuple=True), default=[])
+    notificationsLocation: Mapped[Optional[list[float]]] = mapped_column(
+        ARRAY(Float, as_tuple=True), default=[]
+    )
     role: Mapped[str] = mapped_column(default="user")
     avatar_delete_url: Mapped[str] = mapped_column(default="")
     avatar_display_url: Mapped[str] = mapped_column(default="/images/avatar-not-found.png")
@@ -26,17 +28,18 @@ class User(Base):
         nullable=False,
     )
     notificationsLocation: Mapped[Optional[ARRAY[float]]] = mapped_column(
-        ARRAY(Float, as_tuple=True),
-              default=[]
+        ARRAY(Float, as_tuple=True), default=[]
     )
+    tg: Mapped[Optional[str]] = mapped_column(default="")
+    vk: Mapped[Optional[str]] = mapped_column(default="")
+    max: Mapped[Optional[str]] = mapped_column(default="")
 
 
 class Ad(Base):
     __tablename__ = "ads"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    user_id: Mapped[int] = mapped_column(
-        ForeignKey("users.id", ondelete="CASCADE"))
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))
 
     status: Mapped[str] = mapped_column(String(10))
     type: Mapped[str] = mapped_column(String(10))
@@ -50,11 +53,10 @@ class Ad(Base):
     location: Mapped[str] = mapped_column(String(100))
     ad_image_delete_url: Mapped[str] = mapped_column(default="")
     ad_image_display_url: Mapped[str] = mapped_column(default="")
-    geoLocation: Mapped[list[float]] = mapped_column(
-        ARRAY(Float, as_tuple=True))
+    geoLocation: Mapped[list[float]] = mapped_column(ARRAY(Float, as_tuple=True))
     time: Mapped[datetime] = mapped_column(DateTime(timezone=True))
-      
-    state: Mapped[str] = mapped_column(String(10), default="pending") 
+
+    state: Mapped[str] = mapped_column(String(10), default="pending")
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), default=lambda: datetime.now(timezone.utc)
     )

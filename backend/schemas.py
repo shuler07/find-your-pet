@@ -1,5 +1,5 @@
 from pydantic import BaseModel, EmailStr, Field
-from typing import Optional, Literal, List
+from typing import Optional, Literal, List, Union
 from datetime import datetime
 
 
@@ -71,7 +71,7 @@ class AdFilters(BaseModel):
     size: Optional[str] = None
     danger: Optional[str] = None
     region: Optional[str] = None
-    geoloc: Optional[List[float]] = None
+    geoloc: Optional[Union[List[float], str]] = None
     radius: Optional[int] = None
 
 
@@ -87,18 +87,43 @@ class UpdatePhone(BaseModel):
     phone: str = Field(None, pattern=r"^\+7\d{10}$")
 
 
+class UpdateTg(BaseModel):
+    tg: str
+
+
+class UpdateVk(BaseModel):
+    vk: str
+
+
+class UpdateMax(BaseModel):
+    max: str
+
+
 class UpdatePassword(BaseModel):
     curPassword: str = Field(..., min_length=8)
     newPassword: str = Field(..., min_length=8, max_length=72)
 
+
+class PasswordReset(BaseModel):
+    email: EmailStr
+    new_password: str = Field(..., min_length=8, max_length=72)
+
+
 class LocationUpdate(BaseModel):
     notificationsLocation: List[float]
+
 
 class AdApprove(BaseModel):
     ad_id: int
 
+
 class AdReject(BaseModel):
     ad_id: int
+
+
+class AdRemove(BaseModel):
+    ad_id: int
+
 
 class AvatarUpdate(BaseModel):
     avatar_delete_url: str
