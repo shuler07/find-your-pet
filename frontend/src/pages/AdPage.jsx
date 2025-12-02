@@ -1,14 +1,19 @@
 import "./AdPage.css";
 
 import { useContext, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { AppContext } from "../App";
 
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 
 import { AD_INFO_DICT } from "../data";
-import { ApiGetAdCreator, ApiCloseAd } from "../apiRequests";
+import {
+    ApiGetAdAndCreator,
+    ApiCloseAd,
+    ApiDeleteAd,
+    ApiApproveAd,
+} from "../apiRequests";
 import {
     ymapsInitPromise,
     YMap,
@@ -19,18 +24,21 @@ import {
 import { RestartAnim } from "../functions";
 
 export default function AdPage() {
-    const { ad, CallAlert, theme } = useContext(AppContext);
+    const { CallAlert, isAdmin, theme } = useContext(AppContext);
+    const { aid } = useParams();
 
+    const [ad, setAd] = useState({});
     const [creator, setCreator] = useState({});
     const [isCreator, setIsCreator] = useState(false);
     useEffect(() => {
-        GetCreator();
+        GetAdAndCreator();
     }, []);
 
-    async function GetCreator() {
-        const data = await ApiGetAdCreator(ad.user_id);
+    async function GetAdAndCreator() {
+        const data = await ApiGetAdAndCreator(aid);
 
         if (data.success) {
+            setAd(data.ad);
             setCreator(data.user);
             setIsCreator(data.isCreator);
         } else if (data.error)
@@ -45,13 +53,18 @@ export default function AdPage() {
             <Header />
             <div className="page-container">
                 <div id="ad-details-container">
-                    <PetPhotos photo={ad.ad_image_display_url} />
+                    <PetPhotos {...ad} />
                     <PetInfo
                         {...ad}
                         isCreator={isCreator}
+                        isAdmin={isAdmin}
                         CallAlert={CallAlert}
                     />
-                    <PetContacts uid={ad.user_id} status={ad.status} {...creator} />
+                    <PetContacts
+                        uid={ad.user_id}
+                        status={ad.status}
+                        {...creator}
+                    />
                     <PetPlace
                         location={ad.location}
                         geoLocation={ad.geoLocation}
@@ -64,19 +77,42 @@ export default function AdPage() {
     );
 }
 
-function PetPhotos({ photo }) {
-    const img = photo.length != 0 ? photo : "/images/image-not-found.png";
+function PetPhotos({ ad_image_display_url, status, state }) {
+    const styledInfoStatus = {
+        backgroundColor: status == "lost" ? "#f53535" : "#1fcf1f",
+    };
+
 
     return (
         <section id="ad-photos" className="ad-page-section">
-            <div style={{ background: `url("${img}") center / cover` }} />
+            <div id="ad-photos-img" style={{ background: `url("${ad_image_display_url}") center / cover` }} />
+            <div id="ad-info-status">
+                <div className="ad-info-status-div" style={styledInfoStatus}>
+                    <h3>{AD_INFO_DICT.status[status]}</h3>
+                </div>
+                {state == "pending" && (
+                    <div
+                        className="ad-info-status-div"
+                        style={{ backgroundColor: "#818181" }}
+                    >
+                        <h3>На рассмотрении</h3>
+                    </div>
+                )}
+                {state == "closed" && (
+                    <div
+                        className="ad-info-status-div"
+                        style={{ backgroundColor: "#818181" }}
+                    >
+                        <h3>Снято</h3>
+                    </div>
+                )}
+            </div>
         </section>
     );
 }
 
 function PetInfo({
     id,
-    status,
     type,
     breed,
     color,
@@ -87,7 +123,9 @@ function PetInfo({
     location,
     time,
     extras,
+    state,
     isCreator,
+    isAdmin,
     CallAlert,
 }) {
     const navigate = useNavigate();
@@ -95,10 +133,9 @@ function PetInfo({
     const nicknameText = nickname != "" ? nickname : "Кличка неизвестна";
     const distinctsText = distincts != "" ? distincts : "Не указаны";
     const extrasText = extras != "" ? extras : "Не указана";
-    const styledInfoStatus = {
-        backgroundColor: status == "lost" ? "#f53535" : "#1fcf1f",
-    };
-    const helpText = isCreator
+    const helpText = isAdmin
+        ? "Проверьте объявление на корректность и адекватность"
+        : isCreator
         ? "Это созданное вами объявление. Если оно перестало быть актуальным вы можете его снять"
         : "Пожалуйста, свяжитесь с автором объявления, если вы нашли потерянное животное или найденный питомец является вашим";
 
@@ -106,10 +143,34 @@ function PetInfo({
         const data = await ApiCloseAd(id);
 
         if (data.success) {
-            CallAlert("Объявление успешно снято", "green");
+            CallAlert("Объявление снято", "green");
             navigate("/profile");
         } else if (data.error)
             CallAlert("Ошибка при снятии объявления. Попробуйте позже", "red");
+    }
+
+    async function DeleteAd() {
+        const data = await ApiDeleteAd(id);
+
+        if (data.success) {
+            CallAlert("Объявление удалено", "green");
+            if (!isAdmin) navigate("/profile");
+            else navigate('/admin');
+        } else if (data.error)
+            CallAlert("Ошибка при удалении объявления", "red");
+    }
+
+    async function UploadAd() {
+        const data = await ApiApproveAd(id);
+
+        if (data.success) {
+            CallAlert("Объявление опубликовано", "green");
+            navigate("/admin");
+        } else if (data.error)
+            CallAlert(
+                "Ошибка при попытке опубликовать объявления. Попробуйте позже",
+                "red"
+            );
     }
 
     const scrollToContacts = () => {
@@ -124,15 +185,55 @@ function PetInfo({
         RestartAnim(contactsElem);
     };
 
-    const buttonImage = isCreator ? "/icons/trash.svg" : "/icons/message.svg";
-    const buttonText = isCreator ? "Снять объявление" : "Связаться";
-    const buttonEvent = isCreator ? RemoveAd : scrollToContacts;
+    function AuthButton() {
+        const buttonImage = isCreator
+            ? state == "pending" || state == "closed"
+                ? "/icons/trash.svg"
+                : "/icons/close.svg"
+            : "/icons/message.svg";
+        const buttonText = isCreator
+            ? state == "pending" || state == "closed"
+                ? "Удалить объявление"
+                : "Снять объявление"
+            : "Связаться";
+        const buttonEvent = isCreator
+            ? state == "pending" || state == "closed"
+                ? DeleteAd
+                : RemoveAd
+            : scrollToContacts;
+
+        return !isAdmin ? (
+            <button
+                className={`primary-button ${isCreator && "red"}`}
+                onClick={buttonEvent}
+            >
+                <img src={buttonImage} />
+                {buttonText}
+            </button>
+        ) : (
+            <div style={{ display: "flex", gap: "1rem" }}>
+                <button
+                    className="primary-button left-img red"
+                    style={{ flexGrow: 1 }}
+                    onClick={DeleteAd}
+                >
+                    <img src="/icons/trash.svg" />
+                    Удалить
+                </button>
+                <button
+                    className="primary-button left-img"
+                    style={{ flexGrow: 1 }}
+                    onClick={UploadAd}
+                >
+                    <img src="/icons/upload.svg" />
+                    Опубликовать
+                </button>
+            </div>
+        );
+    }
 
     return (
         <section id="ad-info" className="ad-page-section">
-            <div id="ad-info-status" style={styledInfoStatus}>
-                <h3>{AD_INFO_DICT.status[status]}</h3>
-            </div>
             <div>
                 <h2>{nicknameText}</h2>
                 <h6>
@@ -170,18 +271,23 @@ function PetInfo({
                 <h6>{extrasText}</h6>
             </div>
             <h6>{helpText}</h6>
-            <button
-                className={`primary-button ${isCreator && "red"}`}
-                onClick={buttonEvent}
-            >
-                <img src={buttonImage} />
-                {buttonText}
-            </button>
+            {<AuthButton />}
         </section>
     );
 }
 
-function PetContacts({ uid, status, name, created_at, email, phone, vk, tg, max }) {
+function PetContacts({
+    uid,
+    status,
+    name,
+    created_at,
+    email,
+    phone,
+    vk,
+    tg,
+    max,
+    avatar_display_url,
+}) {
     const navigate = useNavigate();
 
     const profileText =
@@ -194,7 +300,7 @@ function PetContacts({ uid, status, name, created_at, email, phone, vk, tg, max 
     return (
         <section id="ad-contacts" className="ad-page-section">
             <div id="ad-contacts-profile" onClick={handleClickContacts}>
-                <img src="/images/avatar-not-found.png" />
+                <img src={avatar_display_url} />
                 <div>
                     <h3>{name}</h3>
                     <h6
@@ -250,7 +356,10 @@ function PetPlace({ location, geoLocation, theme }) {
             <div id="ad-place-map">
                 {mapLoaded &&
                     (geoLocation.length != 0 ? (
-                        <YMap location={{ center: geoLocation, zoom: 9 }} theme={theme}>
+                        <YMap
+                            location={{ center: geoLocation, zoom: 9 }}
+                            theme={theme}
+                        >
                             <YMapDefaultSchemeLayer />
                             <YMapDefaultFeaturesLayer />
                             <YMapMarker coordinates={geoLocation}>

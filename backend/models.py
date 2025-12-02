@@ -52,7 +52,7 @@ class Ad(Base):
     danger: Mapped[str] = mapped_column(String(10))
     location: Mapped[str] = mapped_column(String(100))
     ad_image_delete_url: Mapped[str] = mapped_column(default="")
-    ad_image_display_url: Mapped[str] = mapped_column(default="")
+    ad_image_display_url: Mapped[str] = mapped_column(default="/images/image-not-found.png")
     geoLocation: Mapped[list[float]] = mapped_column(ARRAY(Float, as_tuple=True))
     time: Mapped[datetime] = mapped_column(DateTime(timezone=True))
 

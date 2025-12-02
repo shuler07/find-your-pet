@@ -89,9 +89,10 @@ export default function AdminPage() {
                 <AdsToCheckSection
                     ads={adsToCheck}
                     GetAdsToCheck={GetAdsToCheck}
+                    CallAlert={CallAlert}
                 />
                 <h2>Объявления с жалобой</h2>
-                <ReportedAdsSection ads={reportedAds} />
+                <ReportedAdsSection ads={reportedAds} CallAlert={CallAlert} />
                 <div>
                     <button
                         className="primary-button red left-img"
@@ -108,8 +109,7 @@ export default function AdminPage() {
     );
 }
 
-function AdsToCheckSection({ ads, GetAdsToCheck }) {
-    const context = useContext(AppContext);
+function AdsToCheckSection({ ads, GetAdsToCheck, CallAlert }) {
     const navigate = useNavigate();
 
     const getHead = () => {
@@ -141,21 +141,21 @@ function AdsToCheckSection({ ads, GetAdsToCheck }) {
                     <td className="admin-table-details-column">
                         <button
                             className="primary-button red left-img in-table"
-                            onClick={() => handleClickRemove(ad)}
+                            onClick={() => handleClickRemove(ad.id)}
                         >
-                            <img src="/icons/remove.svg" />
+                            <img src="/icons/trash.svg" />
                             Удалить
                         </button>
                         <button
                             className="primary-button left-img in-table"
-                            onClick={() => handleClickPost(ad)}
+                            onClick={() => handleClickPost(ad.id)}
                         >
                             <img src="/icons/upload.svg" />
                             Опубликовать
                         </button>
                         <button
                             className="primary-button left-img in-table"
-                            onClick={() => handleClickShow(ad)}
+                            onClick={() => handleClickShow(ad.id)}
                         >
                             <img src="/icons/eye.svg" />
                             Посмотреть
@@ -166,12 +166,12 @@ function AdsToCheckSection({ ads, GetAdsToCheck }) {
         }
     };
 
-    const handleClickRemove = async (ad) => {
-        const data = await ApiDeleteAd(ad.id);
+    const handleClickRemove = async (id) => {
+        const data = await ApiDeleteAd(id);
 
         if (data.success) {
             GetAdsToCheck();
-            context.CallAlert("Объявление удалено", "green");
+            CallAlert("Объявление удалено", "green");
         } else if (data.error)
             CallAlert(
                 "Ошибка при удалении объявления. Попробуйте позже",
@@ -179,12 +179,12 @@ function AdsToCheckSection({ ads, GetAdsToCheck }) {
             );
     };
 
-    const handleClickPost = async (ad) => {
-        const data = await ApiApproveAd(ad.id);
+    const handleClickPost = async (id) => {
+        const data = await ApiApproveAd(id);
 
         if (data.success) {
             GetAdsToCheck();
-            context.CallAlert("Объявление одобрено", "green");
+            CallAlert("Объявление одобрено", "green");
         } else if (data.error)
             CallAlert(
                 "Ошибка при одобрении объявления. Попробуйте позже",
@@ -192,10 +192,7 @@ function AdsToCheckSection({ ads, GetAdsToCheck }) {
             );
     };
 
-    const handleClickShow = (ad) => {
-        context.ad = ad;
-        navigate("/ad");
-    };
+    const handleClickShow = (id) => navigate(`/ad/${id}`);
 
     return (
         <section className="table-section">

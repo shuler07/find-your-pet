@@ -80,7 +80,7 @@ export default function App() {
                     <Route path="/help" element={<HelpPage />} />
                     <Route path="/ads/create" element={<CreateAdPage />} />
                     <Route path="/ads" element={<SearchAdsPage />} />
-                    <Route path="/ad" element={<AdPage />} />
+                    <Route path="/ad/:aid" element={<AdPage />} />
                     <Route path="/authors" element={<AuthorsPage />} />
                     <Route path="/admin" element={<AdminPage />} />
                 </Routes>

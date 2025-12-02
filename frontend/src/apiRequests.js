@@ -179,6 +179,11 @@ export async function ApiChangeAvatar(avatar_delete_url, avatar_display_url) {
         const data = await response.json();
         if (DEBUG) console.debug('Changing avatar. Data received:', data);
 
+        if (data.detail && data.detail.includes("Токен недействителен")) {
+            await ApiRefreshAuth();
+            return await ApiChangeAvatar(avatar_delete_url, avatar_display_url);
+        };
+
         return data;
     } catch (error) {
         console.error('Changing avatar. Error occured:', error);
@@ -494,20 +499,20 @@ export async function ApiGetReportedAds() {
     }
 }
 
-export async function ApiGetAdCreator(uid) {
+export async function ApiGetAdAndCreator(aid) {
     try {
-        const response = await fetch(API_PATHS.get_ad_creator + `?uid=${uid}`, {
+        const response = await fetch(API_PATHS.get_ad_and_creator + `?id=${aid}`, {
             method: "GET",
             credentials: 'include',
             headers: { 'Content-Type':'application/json' }
         });
 
         const data = await response.json();
-        if (DEBUG) console.debug("Getting ad creator. Data received:", data);
+        if (DEBUG) console.debug("Getting ad and creator. Data received:", data);
 
         return data;
     } catch (error) {
-        console.error("Getting ad creator. Error occured:", error);
+        console.error("Getting ad and creator. Error occured:", error);
         return { error: true };
     }
 }

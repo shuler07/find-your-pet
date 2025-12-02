@@ -1,7 +1,6 @@
 import "./AdsContainer.css";
 
-import { useContext, useEffect, useState } from "react";
-import { AppContext } from "../App";
+import { useEffect, useState } from "react";
 
 import { useNavigate } from "react-router-dom";
 
@@ -13,10 +12,7 @@ export default function AdsContainer({ ads, inProfile }) {
         return ads.map((value, index) => (
             <AdCard
                 key={`keyAdCard${index}`}
-                ad={{
-                    ...value,
-                    time: value.time.replaceAll("Z", "").replaceAll("T", " "),
-                }}
+                ad={value}
             />
         ));
     };
@@ -46,6 +42,7 @@ export default function AdsContainer({ ads, inProfile }) {
 
 function AdCard({ ad }) {
     const {
+        id,
         status,
         type,
         breed,
@@ -61,7 +58,6 @@ function AdCard({ ad }) {
     } = ad;
 
     const navigate = useNavigate();
-    const context = useContext(AppContext);
 
     const image = ad_image_display_url.length != 0 ? ad_image_display_url : "/images/image-not-found.png";
     const title = nickname ? nickname : "Кличка неизвестна";
@@ -97,10 +93,7 @@ function AdCard({ ad }) {
         return Math.round(R * c);
     };
 
-    const handleClickAd = () => {
-        context.ad = ad;
-        navigate("/ad");
-    };
+    const handleClickAd = () => navigate(`/ad/${id}`);
 
     return (
         <div className="ad-card">
