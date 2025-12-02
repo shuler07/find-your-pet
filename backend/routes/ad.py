@@ -18,6 +18,7 @@ from config import (
 from dependencies import userDep, sessionDep
 from models import Ad, User
 from schemas import AdOut, AdCreate, AdFilters, AdApprove, AdReject, AdRemove, UserOut
+from auth import send_ad_notification_email
 
 router = APIRouter()
 
@@ -74,7 +75,6 @@ async def get_ads(session: sessionDep, filters: AdFilters, current_user: userDep
         if filters.danger:
             query = query.where(Ad.danger == filters.danger)
 
-        # Фильтрация по геолокации или региону
         use_geoloc_filter = False
         if filters.geoloc and filters.geoloc != "any":
             if isinstance(filters.geoloc, list) and len(filters.geoloc) == 2:
@@ -86,7 +86,6 @@ async def get_ads(session: sessionDep, filters: AdFilters, current_user: userDep
         result = await session.scalars(query)
         ads = result.all()
 
-        # Фильтрация по геолокации с радиусом (после получения из БД)
         if use_geoloc_filter and filters.radius:
             center_lat, center_lon = filters.geoloc[0], filters.geoloc[1]
             radius_km = filters.radius
@@ -139,8 +138,8 @@ async def get_ads_to_check(session: sessionDep, current_user: userDep, limit: in
     return {"success": True, "ads": ads_out}
 
 
-@router.get("/ad/creator")
-async def get_ad_creator(uid: int, request: Request, session: sessionDep):
+@router.get("/ad/data")
+async def get_ad_creator(id: int, request: Request, session: sessionDep):
     access_token = request.cookies.get("access_token")
     if not access_token:
         raise HTTPException(status_code=401, detail="Нет access токена")
@@ -151,14 +150,21 @@ async def get_ad_creator(uid: int, request: Request, session: sessionDep):
     except (JWTError, ValueError, TypeError):
         raise HTTPException(status_code=401, detail="Токен недействителен или истёк")
 
-    user = await session.get(User, uid)
+    ad = await session.get(Ad, id)
+    if not ad:
+        raise HTTPException(status_code=404, detail="Объявление не найдено")  
+    
+    user = await session.get(User, ad.user_id)
     if not user:
-        raise HTTPException(status_code=404, detail="Пользователь не найден")
+        raise HTTPException(status_code=404, detail="Пользователь не найден")  
+
 
     valid_user = UserOut.model_validate(user)
-    is_creator = current_user_id == uid
+    valid_ad = AdOut.model_validate(ad)
+    is_creator = current_user_id == id
+    
 
-    return {"success": True, "user": valid_user, "isCreator": is_creator}
+    return {"success": True, "user": valid_user, "isCreator": is_creator,"ad": ad}
 
 
 @router.delete("/ad/delete")
@@ -199,23 +205,6 @@ def haversine(lat1, lon1, lat2, lon2):
     return R * 2 * asin(sqrt(a))
 
 
-async def send_ad_notification_email(user_email: str, ad_id: int, ad_location: str):
-    msg = MIMEText(
-        f"Обнаружено новое объявление рядом с вами!\nID: {ad_id}\nМестоположение: {ad_location}"
-    )
-    msg["Subject"] = "Новое объявление в вашем районе"
-    msg["From"] = EMAIL_FROM
-    msg["To"] = user_email
-
-    try:
-        with smtplib.SMTP(SMTP_HOST, SMTP_PORT) as server:
-            server.starttls()
-            server.login(SMTP_USER, SMTP_PASSWORD)
-            server.sendmail(EMAIL_FROM, user_email, msg.as_string())
-    except Exception as e:
-        print(f"Ошибка отправки email на {user_email}: {e}")
-
-
 @router.put("/ad/approve")
 async def approve_ad(data: AdApprove, session: sessionDep, current_user: userDep):
     ad = await session.get(Ad, data.ad_id)
@@ -242,13 +231,9 @@ async def approve_ad(data: AdApprove, session: sessionDep, current_user: userDep
                 user.notificationsLocation[1],
             )
             distance = haversine(ad_lat, ad_lon, user_lat, user_lon)
-
+            print(distance)
             if distance <= 10:
-                await send_ad_notification_email(
-                    user.email,
-                    data.ad_id,
-                    ad.location or f"Координаты: {ad_lat}, {ad_lon}",
-                )
+                await send_ad_notification_email(user.email, ad)
                 notified_emails.append(user.email)
 
         print(
