@@ -5,13 +5,6 @@ from pydantic import BaseModel
 router = APIRouter()
 
 
-class ServerStats(BaseModel):
-    animalsBack: int
-    activeAds: int
-    communityMembers: int
-    successRate: int
-
-
 @router.get("/server/stats")
 async def get_server_stats():
     return {
@@ -23,7 +16,3 @@ async def get_server_stats():
             "successRate": 0,
         },
     }
-<<<<<<< HEAD
-=======
-
->>>>>>> development_backend_feat_report
