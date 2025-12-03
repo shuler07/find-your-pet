@@ -106,7 +106,8 @@ find-your-pet/
 │   ├── dependencies.py       # FastAPI зависимости
 │   ├── main.py               # Точка входа приложения
 │   ├── requirements.txt      # Python зависимости
-│   └── Dockerfile            # Docker образ для backend
+│   ├── Dockerfile            # Docker образ для backend
+│   └── .dockerignore         # Исключения для Docker
 │
 ├── frontend/                   # Frontend приложение (React/Vite)
 │   ├── src/
@@ -128,7 +129,8 @@ find-your-pet/
 │   │   │   ├── Alert.jsx            # Компонент уведомлений
 │   │   │   ├── AdsContainer.jsx     # Контейнер объявлений
 │   │   │   ├── DropdownLabeled.jsx  # Выпадающий список
-│   │   │   └── InputLabeled.jsx     # Поле ввода
+│   │   │   ├── InputLabeled.jsx     # Поле ввода
+│   │   │   └── PageUnavailable.jsx  # Страница недоступных ресурсов
 │   │   │
 │   │   ├── App.jsx            # Главный компонент приложения
 │   │   ├── main.jsx           # Точка входа React приложения
