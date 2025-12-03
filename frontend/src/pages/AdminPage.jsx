@@ -79,7 +79,7 @@ export default function AdminPage() {
                         </div>
                     </div>
                     <div className="about-block">
-                        <img src="/icons/report-flag.svg" />
+                        <img src="/icons/report-flag-red.svg" />
                         <div>
                             <h6>Жалобы</h6>
                             <h3>{reportedAds.length}</h3>
@@ -282,7 +282,7 @@ function ReportedAdsSection({ ads, GetReportedAds, CallAlert }) {
                             className="primary-button left-img in-table"
                             onClick={handleClickStay}
                         >
-                            <img src="/icons/close.svg" />
+                            <img src="/icons/unreport-flag.svg" />
                             Оставить
                         </button>
                         <button
