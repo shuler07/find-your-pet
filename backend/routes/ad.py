@@ -18,7 +18,7 @@ from config import (
 )
 from dependencies import userDep, sessionDep
 from models import Ad, User
-from schemas import AdOut, AdCreate, AdFilters, AdApprove, AdReject, AdRemove, UserOut
+from schemas import AdOut, AdCreate, AdFilters, AdApprove, AdReject, AdRemove, AdReport, UserOut
 from auth import send_ad_notification_email
 
 router = APIRouter()
@@ -278,3 +278,38 @@ async def approve_ad(data: AdApprove, session: sessionDep, current_user: userDep
         )
 
     return {"success": True}
+
+
+@router.put("/ad/report")
+async def report_ad(data: AdReport, session: sessionDep, current_user: userDep):
+    ad = await session.get(Ad, data.ad_id)
+    if not ad:
+        raise HTTPException(status_code=404, detail="Объявление не найдено")
+
+    if ad.state != "active":
+        raise HTTPException(
+            status_code=400, detail="Можно пожаловаться только на активное объявление"
+        )
+
+    ad.reported = True
+    await session.commit()
+
+    return {"success": True}
+
+
+@router.get("/ads/reported")
+async def get_reported_ads(session: sessionDep, current_user: userDep, limit: int = 20):
+    if current_user.role != "admin":
+        raise HTTPException(status_code=403, detail="Доступ запрещен")
+
+    query = (
+        select(Ad)
+        .where(Ad.reported == True)
+        .order_by(Ad.created_at.desc())
+        .limit(limit)
+    )
+    result = await session.scalars(query)
+    ads = result.all()
+    ads_out = [AdOut.model_validate(ad) for ad in ads]
+
+    return {"success": True, "ads": ads_out}
