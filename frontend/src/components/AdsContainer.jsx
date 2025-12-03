@@ -10,7 +10,7 @@ import { getGeolocation } from "../functions";
 export default function AdsContainer({ ads, inProfile }) {
     const showAds = () => {
         return ads.map((value, index) => (
-            <AdCard key={`keyAdCard${index}`} ad={value} />
+            <AdCard key={`keyAdCard${index}`} ad={value} bg={inProfile ? "var(--secondary-color)" : "var(--main-color)"} />
         ));
     };
 
@@ -37,7 +37,7 @@ export default function AdsContainer({ ads, inProfile }) {
     );
 }
 
-function AdCard({ ad }) {
+function AdCard({ ad, bg }) {
     const {
         id,
         status,
@@ -93,7 +93,7 @@ function AdCard({ ad }) {
     const handleClickAd = () => navigate(`/ad/${id}`);
 
     return (
-        <div className="ad-card">
+        <div className="ad-card" style={{ background: bg }}>
             <div
                 className="ad-card-image"
                 style={{
