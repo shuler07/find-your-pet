@@ -13,6 +13,7 @@ import {
     ApiCloseAd,
     ApiDeleteAd,
     ApiApproveAd,
+    ApiReportAd,
 } from "../apiRequests";
 import {
     ymapsInitPromise,
@@ -90,7 +91,7 @@ export default function AdPage() {
 }
 
 function PetPhotos({ ad_image_display_url, status, state }) {
-    const styledInfoStatus = {
+    const styledAdStatus = {
         backgroundColor: status == "lost" ? "#f53535" : "#1fcf1f",
     };
 
@@ -102,13 +103,13 @@ function PetPhotos({ ad_image_display_url, status, state }) {
                     background: `url("${ad_image_display_url}") center / cover`,
                 }}
             />
-            <div id="ad-info-status">
-                <div className="ad-info-status-div" style={styledInfoStatus}>
+            <div id="ad-status">
+                <div className="ad-status-div" style={styledAdStatus}>
                     <h3>{AD_INFO_DICT.status[status]}</h3>
                 </div>
                 {state == "pending" && (
                     <div
-                        className="ad-info-status-div"
+                        className="ad-status-div"
                         style={{ backgroundColor: "#818181" }}
                     >
                         <h3>На рассмотрении</h3>
@@ -116,7 +117,7 @@ function PetPhotos({ ad_image_display_url, status, state }) {
                 )}
                 {state == "closed" && (
                     <div
-                        className="ad-info-status-div"
+                        className="ad-status-div"
                         style={{ backgroundColor: "#818181" }}
                     >
                         <h3>Снято</h3>
@@ -189,6 +190,17 @@ function PetInfo({
             );
     }
 
+    async function ReportAd() {
+        const data = await ApiReportAd(id);
+
+        if (data.success) CallAlert("Жалоба на объявление отправлена", "green");
+        else if (data.error)
+            CallAlert(
+                "Ошибка при попытке пожаловаться на объявление. Попробуйте позже",
+                "red"
+            );
+    }
+
     const scrollToContacts = () => {
         const contactsElem = document.getElementById("ad-contacts");
 
@@ -200,6 +212,8 @@ function PetInfo({
         contactsElem.classList.add("anim");
         RestartAnim(contactsElem);
     };
+
+    const handleClickReport = () => ReportAd();
 
     function AuthButton() {
         const buttonImage = isCreator
@@ -250,6 +264,15 @@ function PetInfo({
 
     return (
         <section id="ad-info" className="ad-page-section">
+            {!isCreator && !isAdmin && (
+                <button
+                    id="ad-info-report-button"
+                    className="primary-button red"
+                    onClick={handleClickReport}
+                >
+                    <img src="/icons/report-flag.svg" />
+                </button>
+            )}
             <div>
                 <h2>{nicknameText}</h2>
                 <h6>
