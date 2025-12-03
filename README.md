@@ -152,6 +152,7 @@ find-your-pet/
 │   └── .dockerignore         # Исключения для Docker
 │
 ├── docker-compose.yml        # Конфигурация Docker Compose
+├── .env.example              # Пример вида файла .env
 └── README.md                 # Документация проекта
 ```
 
@@ -198,7 +199,7 @@ find-your-pet/
 git clone https://github.com/shuler07/find-your-pet.git
 cd find-your-pet
 
-# Настройте переменные окружения в .env файле
+# Настройте переменные окружения в .env файле, взяв за шаблон .env.example
 # Запустите приложение
 docker-compose up -d
 ```
