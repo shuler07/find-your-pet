@@ -9,7 +9,7 @@ export default function Alert({ text, color, ref }) {
 
     return (
         <div id="app-alert-container" ref={ref} style={{ display: text ? 'flex' : 'none' }}>
-            <div id="app-alert" style={{ background: alert_color[color] }}>
+            <div id="app-alert" style={{ background: alert_color[color], boxShadow: `0px 5px 20px ${alert_color[color]}60` }}>
                 <h3>{text}</h3>
             </div>
         </div>
