@@ -164,7 +164,7 @@ async def get_ads_to_check(session: sessionDep, current_user: userDep, limit: in
     ads_out = [AdOut.model_validate(ad) for ad in ads]
 
     for ad_out in ads_out:
-        ad_out.time = ad_out.time.strftime("%d.%m.%Y %H:%M")
+        ad_out.created_at = ad_out.created_at.strftime("%d.%m.%Y %H:%M")
 
     return {"success": True, "ads": ads_out}
 
@@ -336,7 +336,7 @@ async def get_reported_ads(session: sessionDep, current_user: userDep, limit: in
     ads_out = [AdOut.model_validate(ad) for ad in ads]
 
     for ad_out in ads_out:
-        ad_out.time = ad_out.time.strftime("%d.%m.%Y %H:%M")
+        ad_out.created_at = ad_out.created_at.strftime("%d.%m.%Y %H:%M")
 
     return {"success": True, "ads": ads_out}
 
