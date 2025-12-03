@@ -175,7 +175,7 @@ h6 {
     height: 1.5rem;
     scale: 1.2;
     translate: -.75rem -.75rem;
-    background: url('/icons/map-pin.svg');
+    background: url('/icons/map-pin.svg') center/cover;
     animation: map-marker-appear .5s ease forwards;
 }
 @keyframes map-marker-appear {
