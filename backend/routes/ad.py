@@ -174,6 +174,12 @@ async def get_ad_creator(id: int, request: Request, session: sessionDep):
     valid_ad = AdOut.model_validate(ad)
     is_creator = current_user_id == ad.user_id
 
+    # Форматируем дату создания пользователя
+    valid_user.created_at = valid_user.created_at.strftime("%d.%m.%Y")
+
+    # Форматируем время потери/нахождения питомца
+    valid_ad.time = valid_ad.time.strftime("%d.%m.%Y %H:%M")
+
     return {
         "success": True,
         "ad": valid_ad,
