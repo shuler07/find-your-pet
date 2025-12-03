@@ -4,12 +4,11 @@ import { useRef, useState, useContext, useEffect } from "react";
 import { AppContext } from "../App";
 import { useNavigate } from "react-router-dom";
 
-import React from "react";
-
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import DropdownLabeled from "../components/DropdownLabeled";
 import InputLabeled from "../components/InputLabeled";
+import PageUnavailable from "../components/PageUnavailable";
 
 import { CREATE_AD_STAGES, DEBUG, DROPDOWN_CHOICES } from "../data";
 import {
@@ -131,11 +130,7 @@ export default function CreateAdPage() {
             </div>
             <Footer />
         </>
-    ) : (
-        <div className="page-container" style={{ padding: 0, height: '100dvh' }}>
-            <h1>{"Эта страница для вас недоступна :("}</h1>
-        </div>
-    );
+    ) : <PageUnavailable message="Эта страница для вас недоступна :(" />
 }
 
 function StagesContainer({ activeStage }) {
