@@ -18,7 +18,17 @@ from config import (
 )
 from dependencies import userDep, sessionDep
 from models import Ad, User
-from schemas import AdOut, AdCreate, AdFilters, AdApprove, AdReject, AdRemove, UserOut
+from schemas import (
+    AdOut,
+    AdCreate,
+    AdFilters,
+    AdApprove,
+    AdReject,
+    AdRemove,
+    AdReport,
+    AdUnreport,
+    UserOut,
+)
 from auth import send_ad_notification_email
 
 router = APIRouter()
@@ -111,6 +121,9 @@ async def get_ads(session: sessionDep, filters: AdFilters, request: Request):
             ads = filtered_ads
 
         ads_out = [AdOut.model_validate(ad) for ad in ads]
+
+        for ad_out in ads_out:
+            ad_out.time = ad_out.time.strftime("%d.%m.%Y %H:%M")
         return {"success": True, "ads": ads_out}
     except Exception as e:
         print("Ошибка в /ads:", e)
@@ -129,6 +142,9 @@ async def get_user_ads(session: sessionDep, current_user: userDep, uid: int = 0)
     result = await session.scalars(query)
     ads = result.all()
     ads_out = [AdOut.model_validate(ad) for ad in ads]
+
+    for ad_out in ads_out:
+        ad_out.time = ad_out.time.strftime("%d.%m.%Y %H:%M")
     return {"success": True, "ads": ads_out}
 
 
@@ -147,20 +163,23 @@ async def get_ads_to_check(session: sessionDep, current_user: userDep, limit: in
     ads = result.all()
     ads_out = [AdOut.model_validate(ad) for ad in ads]
 
+    for ad_out in ads_out:
+        ad_out.time = ad_out.time.strftime("%d.%m.%Y %H:%M")
+
     return {"success": True, "ads": ads_out}
 
 
 @router.get("/ad/data")
 async def get_ad_creator(id: int, request: Request, session: sessionDep):
     access_token = request.cookies.get("access_token")
-    if not access_token:
-        raise HTTPException(status_code=401, detail="Нет access токена")
 
-    try:
-        payload = jwt.decode(access_token, SECRET_KEY, algorithms=[ALGORITHM])
-        current_user_id = int(payload["sub"])
-    except (JWTError, ValueError, TypeError):
-        raise HTTPException(status_code=401, detail="Токен недействителен или истёк")
+    current_user_id = None
+    if access_token:
+        try:
+            payload = jwt.decode(access_token, SECRET_KEY, algorithms=[ALGORITHM])
+            current_user_id = int(payload["sub"])
+        except (JWTError, ValueError, TypeError):
+            pass
 
     ad = await session.get(Ad, id)
     if not ad:
@@ -172,12 +191,10 @@ async def get_ad_creator(id: int, request: Request, session: sessionDep):
 
     valid_user = UserOut.model_validate(user)
     valid_ad = AdOut.model_validate(ad)
-    is_creator = current_user_id == ad.user_id
+    is_creator = current_user_id is not None and current_user_id == ad.user_id
 
-    # Форматируем дату создания пользователя
     valid_user.created_at = valid_user.created_at.strftime("%d.%m.%Y")
 
-    # Форматируем время потери/нахождения питомца
     valid_ad.time = valid_ad.time.strftime("%d.%m.%Y %H:%M")
 
     return {
@@ -282,5 +299,58 @@ async def approve_ad(data: AdApprove, session: sessionDep, current_user: userDep
         print(
             f"Уведомления по email отправлены {len(notified_emails)} пользователям: {notified_emails}"
         )
+
+    return {"success": True}
+
+
+@router.put("/ad/report")
+async def report_ad(data: AdReport, session: sessionDep, current_user: userDep):
+    ad = await session.get(Ad, data.ad_id)
+    if not ad:
+        raise HTTPException(status_code=404, detail="Объявление не найдено")
+
+    if ad.state != "active":
+        raise HTTPException(
+            status_code=400, detail="Можно пожаловаться только на активное объявление"
+        )
+
+    ad.reported = True
+    await session.commit()
+
+    return {"success": True}
+
+
+@router.get("/ads/reported")
+async def get_reported_ads(session: sessionDep, current_user: userDep, limit: int = 20):
+    if current_user.role != "admin":
+        raise HTTPException(status_code=403, detail="Доступ запрещен")
+
+    query = (
+        select(Ad)
+        .where(Ad.reported == True)
+        .order_by(Ad.created_at.desc())
+        .limit(limit)
+    )
+    result = await session.scalars(query)
+    ads = result.all()
+    ads_out = [AdOut.model_validate(ad) for ad in ads]
+
+    for ad_out in ads_out:
+        ad_out.time = ad_out.time.strftime("%d.%m.%Y %H:%M")
+
+    return {"success": True, "ads": ads_out}
+
+
+@router.put("/ad/unreport")
+async def unreport_ad(data: AdUnreport, session: sessionDep, current_user: userDep):
+    if current_user.role != "admin":
+        raise HTTPException(status_code=403, detail="Доступ запрещен")
+
+    ad = await session.get(Ad, data.ad_id)
+    if not ad:
+        raise HTTPException(status_code=404, detail="Объявление не найдено")
+
+    ad.reported = False
+    await session.commit()
 
     return {"success": True}

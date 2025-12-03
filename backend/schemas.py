@@ -61,6 +61,7 @@ class AdOut(BaseModel):
     time: datetime
     created_at: datetime
     state: Literal["pending", "active", "closed"]
+    reported: bool
 
     class Config:
         from_attributes = True
@@ -124,6 +125,14 @@ class AdReject(BaseModel):
 
 
 class AdRemove(BaseModel):
+    ad_id: int
+
+
+class AdReport(BaseModel):
+    ad_id: int
+
+
+class AdUnreport(BaseModel):
     ad_id: int
 
 

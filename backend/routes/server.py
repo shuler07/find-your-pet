@@ -23,3 +23,7 @@ async def get_server_stats():
             "successRate": 0,
         },
     }
+<<<<<<< HEAD
+=======
+
+>>>>>>> development_backend_feat_report
