@@ -595,6 +595,54 @@ export async function ApiDeleteAd(id) {
     }
 }
 
+export async function ApiReportAd(id) {
+    try {
+        const response = await fetch(API_PATHS.report_ad, {
+            method: "PUT",
+            credentials: 'include',
+            body: JSON.stringify({ ad_id: id }),
+            headers: { 'Content-Type':'application/json' }
+        });
+
+        const data = await response.json();
+        if (DEBUG) console.debug("Reporting ad. Data received:", data);
+
+        if (data.detail && data.detail.includes("Токен недействителен")) {
+            await ApiRefreshAuth();
+            return await ApiReportAd(id);
+        };
+
+        return data;
+    } catch (error) {
+        console.error("Reporting ad. Error occured:", error);
+        return { error: true };
+    }
+}
+
+export async function ApiUnreportAd(id) {
+    try {
+        const response = await fetch(API_PATHS.unreport_ad, {
+            method: "PUT",
+            credentials: 'include',
+            body: JSON.stringify({ ad_id: id }),
+            headers: { 'Content-Type':'application/json' }
+        });
+
+        const data = await response.json();
+        if (DEBUG) console.debug("Unreporting ad. Data received:", data);
+
+        if (data.detail && data.detail.includes("Токен недействителен")) {
+            await ApiRefreshAuth();
+            return await ApiUnreportAd(id);
+        };
+
+        return data;
+    } catch (error) {
+        console.error("Unreporting ad. Error occured:", error);
+        return { error: true };
+    }
+}
+
 // Server
 
 export async function ApiGetServerStats() {
