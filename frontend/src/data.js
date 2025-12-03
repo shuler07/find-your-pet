@@ -21,7 +21,7 @@ export const API_PATHS = {
     report_ad: API_BASENAME + "/ad/report",
     unreport_ad: API_BASENAME + "/ad/unreport",
 
-    change_avatar: API_BASENAME + '/user/avatar',
+    change_avatar: API_BASENAME + "/user/avatar",
     change_name: API_BASENAME + "/user/name",
     change_phone: API_BASENAME + "/user/phone",
     change_email: API_BASENAME + "/user/email",
@@ -151,7 +151,7 @@ export const AD_INFO_DICT = {
         singapura: "Сингапурская кошка",
         snowshoe: "Сноу-шу",
         turkish_van: "Турецкий ван",
-        any: "Любая"
+        any: "Любая",
     },
     size: {
         little: "Небольшой",
@@ -251,8 +251,8 @@ export const AD_INFO_DICT = {
         chukotka: "Чукотский авт. округ",
         yamalo_nenets: "Ямало-Ненецкий авт. округ",
         yaroslavl: "Ярославская обл.",
-        any: "Любой"
-    }
+        any: "Любой",
+    },
 };
 
 export const AD_FILTERS_DICT = {
@@ -335,7 +335,7 @@ export const DROPDOWN_CHOICES = {
         ["tibetan_mastiff", "Тибетский мастиф"],
         ["west_highland", "Вест-хайленд-уайт-терьер"],
         ["alaskan_malamute", "Аляскинский маламут"],
-        
+
         ["persian", "Персидская кошка"],
         ["maine_coon", "Мейн-кун"],
         ["siamese", "Сиамская кошка"],
@@ -375,7 +375,7 @@ export const DROPDOWN_CHOICES = {
         ["ragamuffin", "Рагамаффин"],
         ["singapura", "Сингапурская кошка"],
         ["snowshoe", "Сноу-шу"],
-        ["turkish_van", "Турецкий ван"]
+        ["turkish_van", "Турецкий ван"],
     ],
     size: [
         ["little", "Маленький"],
@@ -472,6 +472,14 @@ export const DROPDOWN_CHOICES = {
         ["chuvashiya", "респ. Чувашия"],
         ["chukotka", "Чукотский авт. округ"],
         ["yamalo_nenets", "Ямало-Ненецкий авт. округ"],
-        ["yaroslavl", "Ярославская обл."]
-    ]
+        ["yaroslavl", "Ярославская обл."],
+    ],
 };
+
+export const AUTHORS = [
+    { title: "shuler07", description: "Frontend / UI", img: "/images/shuler07.webp" },
+    { title: "iszenzi", description: "Backend", img: "/images/iszenzi.webp" },
+    { title: "chubinho", description: "Backend", img: "/images/chubinho.webp" },
+    { title: "maxat228", description: "Teamlead", img: "/images/maxat228.webp" },
+    { title: "dubchakm97-lgtm", description: "Design", img: "/images/dubchakm97-lgtm.webp" },
+];
