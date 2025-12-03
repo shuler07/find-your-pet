@@ -18,6 +18,8 @@ export const API_PATHS = {
     close_ad: API_BASENAME + "/ad/remove",
     delete_ad: API_BASENAME + "/ad/delete",
     approve_ad: API_BASENAME + "/ad/approve",
+    report_ad: API_BASENAME + "/ad/report",
+    unreport_ad: API_BASENAME + "/ad/unreport",
 
     change_avatar: API_BASENAME + '/user/avatar',
     change_name: API_BASENAME + "/user/name",
@@ -29,7 +31,7 @@ export const API_PATHS = {
     change_max: API_BASENAME + "/user/max",
     change_notifications_location: API_BASENAME + "/user/location",
 
-    get_server_stats: API_BASENAME + "/todo",
+    get_server_stats: API_BASENAME + "/server/stats",
 };
 
 export const DEBUG = true;

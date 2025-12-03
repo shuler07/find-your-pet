@@ -12,11 +12,13 @@ import {
     ApiGetReportedAds,
     ApiApproveAd,
     ApiDeleteAd,
-    ApiLogOutUser
+    ApiUnreportAd,
+    ApiLogOutUser,
 } from "../apiRequests";
 
 export default function AdminPage() {
-    const { CallAlert, setSignedIn, isAdmin, setIsAdmin } = useContext(AppContext);
+    const { CallAlert, setSignedIn, isAdmin, setIsAdmin } =
+        useContext(AppContext);
     const navigate = useNavigate();
 
     const [adsToCheck, setAdsToCheck] = useState([]);
@@ -63,7 +65,6 @@ export default function AdminPage() {
             );
     }
 
-
     return isAdmin ? (
         <>
             <Header />
@@ -92,7 +93,11 @@ export default function AdminPage() {
                     CallAlert={CallAlert}
                 />
                 <h2>Объявления с жалобой</h2>
-                <ReportedAdsSection ads={reportedAds} CallAlert={CallAlert} />
+                <ReportedAdsSection
+                    ads={reportedAds}
+                    GetReportedAds={GetReportedAds}
+                    CallAlert={CallAlert}
+                />
                 <div>
                     <button
                         className="primary-button red left-img"
@@ -107,7 +112,10 @@ export default function AdminPage() {
             <Footer />
         </>
     ) : (
-        <div className="page-container" style={{ padding: 0, height: '100dvh' }}>
+        <div
+            className="page-container"
+            style={{ padding: 0, height: "100dvh" }}
+        >
             <h1>{"Эта страница для вас недоступна :("}</h1>
         </div>
     );
@@ -208,7 +216,9 @@ function AdsToCheckSection({ ads, GetAdsToCheck, CallAlert }) {
     );
 }
 
-function ReportedAdsSection({ ads }) {
+function ReportedAdsSection({ ads, GetReportedAds, CallAlert }) {
+    const navigate = useNavigate();
+
     const getHead = () => {
         if (ads.length > 0) {
             return (
@@ -229,11 +239,30 @@ function ReportedAdsSection({ ads }) {
         }
     };
 
-    const handleClickRemove = () => {};
+    const handleClickRemove = async (id) => {
+        const data = await ApiDeleteAd(id);
 
-    const handleClickStay = () => {};
+        if (data.success) {
+            GetReportedAds();
+            CallAlert("Объявление удалено", "green");
+        } else if (data.error)
+            CallAlert(
+                "Ошибка при удалении объявления. Попробуйте позже",
+                "red"
+            );
+    };
 
-    const handleClickShow = () => {};
+    const handleClickStay = async (id) => {
+        const data = await ApiUnreportAd(id);
+
+        if (data.success) {
+            GetReportedAds();
+            CallAlert("Объявление оставлено", "green");
+        } else if (data.error)
+            CallAlert("Ошибка при снятии жалобы. Попробуйте позже", "red");
+    };
+
+    const handleClickShow = (id) => navigate(`/ad/${id}`);
 
     const getRows = () => {
         if (ads.length > 0) {
