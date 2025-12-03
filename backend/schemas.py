@@ -75,7 +75,7 @@ class AdFilters(BaseModel):
     danger: Optional[str] = None
     region: Optional[str] = None
     geoloc: Optional[Union[List[float], str]] = None
-    radius: Optional[int] = None
+    radius: Optional[float] = None
 
 
 class UpdateName(BaseModel):
