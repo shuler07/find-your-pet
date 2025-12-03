@@ -15,7 +15,10 @@ import {
     ApiDeleteAd,
     ApiApproveAd,
     ApiReportAd,
+<<<<<<< HEAD
     ApiUnreportAd,
+=======
+>>>>>>> 71fce66 (kt-67: add ad reporting system)
 } from "../apiRequests";
 import {
     ymapsInitPromise,
@@ -229,6 +232,8 @@ function PetInfo({
         RestartAnim(contactsElem);
     };
 
+    const handleClickReport = () => ReportAd();
+
     function AuthButton() {
         const buttonImage = isCreator
             ? state == "pending" || state == "closed"
@@ -293,7 +298,11 @@ function PetInfo({
                 <button
                     id="ad-info-report-button"
                     className="primary-button red"
+<<<<<<< HEAD
                     onClick={ReportAd}
+=======
+                    onClick={handleClickReport}
+>>>>>>> 71fce66 (kt-67: add ad reporting system)
                 >
                     <img src="/icons/report-flag.svg" />
                 </button>
