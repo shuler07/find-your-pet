@@ -478,7 +478,7 @@ export async function ApiGetAdsToCheck() {
 
 export async function ApiGetReportedAds() {
     try {
-        const response = await fetch(API_PATHS.get_ads_reported, {
+        const response = await fetch(API_PATHS.get_reported_ads, {
             method: "GET",
             credentials: 'include',
             headers: { 'Content-Type':'application/json' }

@@ -46,7 +46,6 @@ export const AD_INFO_DICT = {
     status: {
         lost: "Потеряно",
         found: "Найдено",
-        closed: "Снято",
         any: "Любой",
     },
     type: { dog: "Собака", cat: "Кошка", any: "Любое" },

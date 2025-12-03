@@ -267,23 +267,23 @@ function ReportedAdsSection({ ads, GetReportedAds, CallAlert }) {
                     <td className="admin-table-details-column">
                         <button
                             className="primary-button red left-img in-table"
-                            onClick={handleClickRemove}
+                            onClick={() => handleClickRemove(ad.id)}
                         >
-                            <img src="/icons/remove.svg" />
+                            <img src="/icons/trash.svg" />
                             Удалить
                         </button>
                         <button
                             className="primary-button left-img in-table"
-                            onClick={handleClickStay}
+                            onClick={() => handleClickStay(ad.id)}
                         >
                             <img src="/icons/unreport-flag.svg" />
                             Оставить
                         </button>
                         <button
                             className="primary-button left-img in-table"
-                            onClick={handleClickShow}
+                            onClick={() => handleClickShow(ad.id)}
                         >
-                            <img src="/icons/upload.svg" />
+                            <img src="/icons/eye.svg" />
                             Посмотреть
                         </button>
                     </td>

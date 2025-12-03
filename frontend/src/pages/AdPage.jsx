@@ -15,6 +15,7 @@ import {
     ApiDeleteAd,
     ApiApproveAd,
     ApiReportAd,
+    ApiUnreportAd,
 } from "../apiRequests";
 import {
     ymapsInitPromise,
@@ -144,6 +145,7 @@ function PetInfo({
     time,
     extras,
     state,
+    reported,
     isCreator,
     isAdmin,
     CallAlert,
@@ -153,11 +155,12 @@ function PetInfo({
     const nicknameText = nickname != "" ? nickname : "Кличка неизвестна";
     const distinctsText = distincts != "" ? distincts : "Не указаны";
     const extrasText = extras != "" ? extras : "Не указана";
-    const helpText = isAdmin
-        ? "Проверьте объявление на корректность и адекватность"
-        : isCreator
-        ? "Это созданное вами объявление. Если оно перестало быть актуальным вы можете его снять"
-        : "Пожалуйста, свяжитесь с автором объявления, если вы нашли потерянное животное или найденный питомец является вашим";
+    const helpText =
+        isAdmin && (state == "pending" || reported)
+            ? "Проверьте объявление на корректность и адекватность"
+            : isCreator
+            ? "Это созданное вами объявление. Если оно перестало быть актуальным вы можете его снять"
+            : "Пожалуйста, свяжитесь с автором объявления, если вы нашли потерянное животное или найденный питомец является вашим";
 
     async function RemoveAd() {
         const data = await ApiCloseAd(id);
@@ -204,6 +207,16 @@ function PetInfo({
             );
     }
 
+    async function UnreportAd() {
+        const data = await ApiUnreportAd(id);
+
+        if (data.success) {
+            CallAlert("Объявление оставлено", "green");
+            navigate("/admin");
+        } else if (data.error)
+            CallAlert("Ошибка при снятии жалобы. Попробуйте позже", "red");
+    }
+
     const scrollToContacts = () => {
         const contactsElem = document.getElementById("ad-contacts");
 
@@ -215,8 +228,6 @@ function PetInfo({
         contactsElem.classList.add("anim");
         RestartAnim(contactsElem);
     };
-
-    const handleClickReport = () => ReportAd();
 
     function AuthButton() {
         const buttonImage = isCreator
@@ -235,7 +246,7 @@ function PetInfo({
                 : RemoveAd
             : scrollToContacts;
 
-        return !isAdmin || state != "pending" ? (
+        return !isAdmin || (state != "pending" && !reported) ? (
             <button
                 className={`primary-button ${isCreator && "red"}`}
                 onClick={buttonEvent}
@@ -253,14 +264,25 @@ function PetInfo({
                     <img src="/icons/trash.svg" />
                     Удалить
                 </button>
-                <button
-                    className="primary-button left-img"
-                    style={{ flexGrow: 1 }}
-                    onClick={UploadAd}
-                >
-                    <img src="/icons/upload.svg" />
-                    Опубликовать
-                </button>
+                {reported ? (
+                    <button
+                        className="primary-button left-img"
+                        style={{ flexGrow: 1 }}
+                        onClick={UnreportAd}
+                    >
+                        <img src="/icons/unreport-flag.svg" />
+                        Оставить
+                    </button>
+                ) : (
+                    <button
+                        className="primary-button left-img"
+                        style={{ flexGrow: 1 }}
+                        onClick={UploadAd}
+                    >
+                        <img src="/icons/upload.svg" />
+                        Опубликовать
+                    </button>
+                )}
             </div>
         );
     }
@@ -271,7 +293,7 @@ function PetInfo({
                 <button
                     id="ad-info-report-button"
                     className="primary-button red"
-                    onClick={handleClickReport}
+                    onClick={ReportAd}
                 >
                     <img src="/icons/report-flag.svg" />
                 </button>

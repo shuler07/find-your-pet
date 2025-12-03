@@ -304,15 +304,6 @@ function SideBar({
 
 function SideBarElement({ type, value, event, isAdmin }) {
     const showOptions = () => {
-        if (type == "status") {
-            const dict = AD_INFO_DICT.status;
-            if (!isAdmin) delete dict.closed;
-            return Object.entries(dict).map((value, index) => (
-                <option key={`keyOption${type}${index}`} value={value[0]}>
-                    {value[1]}
-                </option>
-            ));
-        }
         return Object.entries(AD_INFO_DICT[type]).map((value, index) => (
             <option key={`keyOption${type}${index}`} value={value[0]}>
                 {value[1]}

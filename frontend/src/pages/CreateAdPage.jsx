@@ -37,7 +37,7 @@ export default function CreateAdPage() {
         status: "", // ONLY lost / found
         type: "", // ONLY dog / cat
         ad_image_delete_url: "",
-        ad_image_display_url: "/images/image_not_found.png",
+        ad_image_display_url: "/images/image-not-found.png",
         image: null,
         breed: "", // ONLY labrador, german_shepherd, poodle, metis etc
         color: "", // pet color

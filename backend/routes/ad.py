@@ -222,10 +222,10 @@ async def regect_ad(data: AdReject, session: sessionDep, current_user: userDep):
                 status_code=403, detail="Нельзя удалить активное объявление"
             )
     else:
-        if ad.state != "pending":
+        if ad.state != "pending" and not ad.reported:
             raise HTTPException(
                 status_code=403,
-                detail="Администратор может удалять только на проверке объявления",
+                detail="Администратор может удалять только объявления на проверке или с жалобой",
             )
 
     if ad.ad_image_delete_url:

@@ -1,6 +1,6 @@
 import "./MainPage.css";
 
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AppContext } from "../App";
 
@@ -19,14 +19,15 @@ export default function MainPage() {
         communityMembers: 0,
         successRate: 0,
     });
+    useEffect(() => {
+        GetServerStats();
+    }, []);
 
     async function GetServerStats() {
         const data = await ApiGetServerStats();
 
         if (data.success) setServerStats(data.stats);
     }
-
-    GetServerStats();
 
     const handleClickCreateAd = () => {
         if (signedIn) navigate("/ads/create");
