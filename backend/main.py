@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 
 from database import engine, Base
-from routes import users, ad
+from routes import users, ad, server
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -22,4 +22,5 @@ app.add_middleware(
 )
 app.include_router(users.router)
 app.include_router(ad.router)
+app.include_router(server.router)
 

@@ -162,7 +162,7 @@ async def get_ads_to_check(session: sessionDep, current_user: userDep, limit: in
     result = await session.scalars(query)
     ads = result.all()
     ads_out = [AdOut.model_validate(ad) for ad in ads]
-    # Форматируем время потери/нахождения питомца
+
     for ad_out in ads_out:
         ad_out.time = ad_out.time.strftime("%d.%m.%Y %H:%M")
 
@@ -193,10 +193,8 @@ async def get_ad_creator(id: int, request: Request, session: sessionDep):
     valid_ad = AdOut.model_validate(ad)
     is_creator = current_user_id is not None and current_user_id == ad.user_id
 
-    # Форматируем дату создания пользователя
     valid_user.created_at = valid_user.created_at.strftime("%d.%m.%Y")
 
-    # Форматируем время потери/нахождения питомца
     valid_ad.time = valid_ad.time.strftime("%d.%m.%Y %H:%M")
 
     return {
@@ -336,7 +334,7 @@ async def get_reported_ads(session: sessionDep, current_user: userDep, limit: in
     result = await session.scalars(query)
     ads = result.all()
     ads_out = [AdOut.model_validate(ad) for ad in ads]
-    # Форматируем время потери/нахождения питомца
+
     for ad_out in ads_out:
         ad_out.time = ad_out.time.strftime("%d.%m.%Y %H:%M")
 
