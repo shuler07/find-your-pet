@@ -22,19 +22,20 @@
     position: absolute;
     background: var(--main-color);
     border-radius: 1rem;
-    padding: 1rem 1.5rem;
-    width: 10rem;
+    padding: 1rem;
+    width: 12rem;
     border: solid 2px #ffffff00;
     box-shadow: 4px 4px 2px color-mix(in srgb, var(--inverse-color), transparent 70%);
     display: flex;
     flex-direction: column;
-    gap: .5rem;
+    gap: .25rem;
     cursor: pointer;
     transition: all .5s ease;
 }
 .author-card:hover {
     scale: 1.1;
-    border: solid 2px var(--primary-color);
+    box-shadow: 6px 6px 3px color-mix(in srgb, var(--inverse-color), transparent 70%);
+    border: solid 2px var(--inverse-color);
 }
 
 .author-card > div {
@@ -51,6 +52,7 @@
 .author-card > img {
     width: 100%;
     aspect-ratio: 1 / 1;
+    border-radius: 1rem;
 }
 
 #author-card-1 {
@@ -69,14 +71,14 @@
 
 #author-card-3 {
     top: 15%;
-    left: 43%;
-    transform: rotate(12deg);
+    left: 39%;
+    transform: rotate(-3deg);
     animation: author-card-anim 10s infinite 2s;
 }
 
 #author-card-4 {
     bottom: 4%;
-    right: 18%;
+    right: 22%;
     transform: rotate(-8deg);
     animation: author-card-anim 10s infinite 3s;
 }
@@ -86,6 +88,10 @@
     left: 21%;
     transform: rotate(5deg);
     animation: author-card-anim 10s infinite 4s;
+}
+
+#author-card-5 > h2 {
+    font-size: 1.3em;
 }
 
 @keyframes author-card-anim {
@@ -106,19 +112,34 @@
     border-radius: 50%;
     aspect-ratio: 1 / 1;
     z-index: -2;
-    opacity: .5;
+    opacity: .6;
+    filter: blur(4px);
 }
 
 #bg-elem-1 {
     background-color: var(--primary-light);
     bottom: -30rem;
     right: -20rem;
+    animation: bg-elem-inf 10s infinite;
 }
 
 #bg-elem-2 {
     background-color: var(--accent-light);
     top: -30rem;
     left: -10rem;
+    animation: bg-elem-inf 10s infinite;
+}
+
+@keyframes bg-elem-inf {
+    0% {
+        opacity: .6;
+    }
+    50% {
+        opacity: .8;
+    }
+    100% {
+        opacity: .6;
+    }
 }
 
 
@@ -135,7 +156,7 @@
     }
 
     #author-card-2 {
-        top: 15%;
+        top: 13%;
         right: 7%;
     }
 
@@ -145,8 +166,8 @@
     }
 
     #author-card-4 {
-        bottom: 15%;
-        right: 14%;
+        bottom: 11%;
+        right: 12%;
     }
 
     #author-card-5 {

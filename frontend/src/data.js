@@ -475,9 +475,9 @@ export const DROPDOWN_CHOICES = {
 };
 
 export const AUTHORS = [
-    { title: "shuler07", description: "Frontend / UI" },
-    { title: "iszenzi", description: "Backend" },
-    { title: "chubinho", description: "Backend" },
-    { title: "maxat228", description: "Teamlead" },
-    { title: "dubchakm97-lgtm", description: "Design" },
+    { title: "shuler07", description: "Frontend / UI", img: "/images/shuler07.webp" },
+    { title: "iszenzi", description: "Backend", img: "/images/iszenzi.webp" },
+    { title: "chubinho", description: "Backend", img: "/images/chubinho.webp" },
+    { title: "maxat228", description: "Teamlead", img: "/images/maxat228.webp" },
+    { title: "dubchakm97-lgtm", description: "Design", img: "/images/dubchakm97-lgtm.webp" },
 ];
