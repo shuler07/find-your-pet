@@ -132,6 +132,10 @@ class AdReport(BaseModel):
     ad_id: int
 
 
+class AdUnreport(BaseModel):
+    ad_id: int
+
+
 class AvatarUpdate(BaseModel):
     avatar_delete_url: str
     avatar_display_url: str

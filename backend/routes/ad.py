@@ -18,7 +18,17 @@ from config import (
 )
 from dependencies import userDep, sessionDep
 from models import Ad, User
-from schemas import AdOut, AdCreate, AdFilters, AdApprove, AdReject, AdRemove, AdReport, UserOut
+from schemas import (
+    AdOut,
+    AdCreate,
+    AdFilters,
+    AdApprove,
+    AdReject,
+    AdRemove,
+    AdReport,
+    AdUnreport,
+    UserOut,
+)
 from auth import send_ad_notification_email
 
 router = APIRouter()
@@ -319,3 +329,18 @@ async def get_reported_ads(session: sessionDep, current_user: userDep, limit: in
     ads_out = [AdOut.model_validate(ad) for ad in ads]
 
     return {"success": True, "ads": ads_out}
+
+
+@router.put("/ad/unreport")
+async def unreport_ad(data: AdUnreport, session: sessionDep, current_user: userDep):
+    if current_user.role != "admin":
+        raise HTTPException(status_code=403, detail="Доступ запрещен")
+
+    ad = await session.get(Ad, data.ad_id)
+    if not ad:
+        raise HTTPException(status_code=404, detail="Объявление не найдено")
+
+    ad.reported = False
+    await session.commit()
+
+    return {"success": True}
