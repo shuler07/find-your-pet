@@ -7,6 +7,7 @@ import { AppContext } from "../App";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import AdsContainer from "../components/AdsContainer";
+import PageUnavailable from "../components/PageUnavailable";
 
 import {
     ApiChangeEmail,
@@ -90,11 +91,7 @@ export default function ProfilePage() {
             </div>
             <Footer />
         </>
-    ) : (
-        <div className="page-container" style={{ padding: 0, height: '100dvh' }}>
-            <h1>{"Эта страница для вас недоступна :("}</h1>
-        </div>
-    );
+    ) : <PageUnavailable message="Эта страница для вас недоступна :(" />;
 }
 
 function ProfileCard({

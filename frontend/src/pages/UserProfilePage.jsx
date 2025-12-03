@@ -7,6 +7,7 @@ import { AppContext } from "../App";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import AdsContainer from "../components/AdsContainer";
+import PageUnavailable from "../components/PageUnavailable";
 
 import { ApiGetUserAds, ApiGetUser } from "../apiRequests";
 
@@ -50,9 +51,7 @@ export default function ProfilePage() {
             <Footer />
         </>
     ) : (
-        <div className="page-container" style={{ padding: 0, height: '100dvh' }}>
-            <h1>{"Пользователь не найден :("}</h1>
-        </div>
+        <PageUnavailable message="Пользователь не найден :(" />
     );
 }
 

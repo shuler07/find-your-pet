@@ -6,6 +6,7 @@ import { AppContext } from "../App";
 
 import Header from "../components/Header";
 import Footer from "../components/Footer";
+import PageUnavailable from "../components/PageUnavailable";
 
 import {
     ApiGetAdsToCheck,
@@ -111,14 +112,7 @@ export default function AdminPage() {
             </div>
             <Footer />
         </>
-    ) : (
-        <div
-            className="page-container"
-            style={{ padding: 0, height: "100dvh" }}
-        >
-            <h1>{"Эта страница для вас недоступна :("}</h1>
-        </div>
-    );
+    ) : <PageUnavailable message="Эта страница для вас недоступна :(" />
 }
 
 function AdsToCheckSection({ ads, GetAdsToCheck, CallAlert }) {

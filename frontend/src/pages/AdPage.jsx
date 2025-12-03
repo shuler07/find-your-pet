@@ -6,6 +6,7 @@ import { AppContext } from "../App";
 
 import Header from "../components/Header";
 import Footer from "../components/Footer";
+import PageUnavailable from "../components/PageUnavailable";
 
 import { AD_INFO_DICT } from "../data";
 import {
@@ -88,12 +89,7 @@ export default function AdPage() {
             <Footer />
         </>
     ) : (
-        <div
-            className="page-container"
-            style={{ padding: 0, height: "100dvh" }}
-        >
-            <h1>{"Объявление не найдено :("}</h1>
-        </div>
+        <PageUnavailable message="Объявление не найдено :(" />
     );
 }
 
