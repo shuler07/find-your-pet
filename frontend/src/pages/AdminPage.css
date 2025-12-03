@@ -35,11 +35,14 @@
 
 .in-table {
     font-size: 0;
+    padding: 0.5rem 1rem;
     display: block;
     transition: all .25s ease;
 }
 
 .in-table:hover {
+    padding: 0.5rem 2rem;
+    display: flex;
     font-size: inherit;
 }
 

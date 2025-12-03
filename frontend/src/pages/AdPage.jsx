@@ -28,10 +28,17 @@ export default function AdPage() {
     const { CallAlert, isAdmin, theme } = useContext(AppContext);
     const { aid } = useParams();
 
+    // To pass the error on start - set default values for some fields because in code attempt to get .length causing error on undefined
     const [ad, setAd] = useState({
         geoLocation: [],
     });
-    const [creator, setCreator] = useState({});
+    const [creator, setCreator] = useState({
+        phone: "",
+        vk: "",
+        tg: "",
+        max: "",
+    });
+
     const [isCreator, setIsCreator] = useState(false);
     useEffect(() => {
         GetAdAndCreator();
@@ -137,7 +144,7 @@ function PetInfo({
     distincts,
     nickname,
     danger,
-    location,
+    region,
     time,
     extras,
     state,
@@ -299,7 +306,8 @@ function PetInfo({
                     {AD_INFO_DICT.danger[danger]}
                 </h6>
                 <h6>
-                    <span style={{ fontWeight: "600" }}>Место:</span> {location}
+                    <span style={{ fontWeight: "600" }}>Регион:</span>{" "}
+                    {AD_INFO_DICT.region[region]}
                 </h6>
                 <h6>
                     <span style={{ fontWeight: "600" }}>Время:</span> {time}
@@ -331,6 +339,10 @@ function PetContacts({
 
     const profileText =
         status == "lost" ? "Владелец питомца" : "Нашедший питомца";
+    const phoneText = phone.length > 0 ? phone : "Не указан";
+    const vkText = vk.length > 0 ? vk : "Не указан";
+    const tgText = tg.length > 0 ? tg : "Не указан";
+    const maxText = max.length > 0 ? max : "Не указан";
 
     const handleClickContacts = () => {
         navigate(`/profile/${uid}`);
@@ -360,19 +372,19 @@ function PetContacts({
                 </div>
                 <div className="ad-contacts-connect">
                     <img src="/icons/phone.png" />
-                    <h6>{phone}</h6>
+                    <h6>{phoneText}</h6>
                 </div>
                 <div className="ad-contacts-connect">
                     <img src="/icons/vk.png" />
-                    <h6>{vk}</h6>
+                    <h6>{vkText}</h6>
                 </div>
                 <div className="ad-contacts-connect">
                     <img src="/icons/tg.png" />
-                    <h6>{tg}</h6>
+                    <h6>{tgText}</h6>
                 </div>
                 <div className="ad-contacts-connect">
                     <img src="/icons/max.png" />
-                    <h6>{max}</h6>
+                    <h6>{maxText}</h6>
                 </div>
             </div>
         </section>
