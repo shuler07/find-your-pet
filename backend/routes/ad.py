@@ -121,6 +121,9 @@ async def get_ads(session: sessionDep, filters: AdFilters, request: Request):
             ads = filtered_ads
 
         ads_out = [AdOut.model_validate(ad) for ad in ads]
+
+        for ad_out in ads_out:
+            ad_out.time = ad_out.time.strftime("%d.%m.%Y %H:%M")
         return {"success": True, "ads": ads_out}
     except Exception as e:
         print("Ошибка в /ads:", e)
@@ -139,6 +142,9 @@ async def get_user_ads(session: sessionDep, current_user: userDep, uid: int = 0)
     result = await session.scalars(query)
     ads = result.all()
     ads_out = [AdOut.model_validate(ad) for ad in ads]
+
+    for ad_out in ads_out:
+        ad_out.time = ad_out.time.strftime("%d.%m.%Y %H:%M")
     return {"success": True, "ads": ads_out}
 
 
@@ -156,6 +162,9 @@ async def get_ads_to_check(session: sessionDep, current_user: userDep, limit: in
     result = await session.scalars(query)
     ads = result.all()
     ads_out = [AdOut.model_validate(ad) for ad in ads]
+    # Форматируем время потери/нахождения питомца
+    for ad_out in ads_out:
+        ad_out.time = ad_out.time.strftime("%d.%m.%Y %H:%M")
 
     return {"success": True, "ads": ads_out}
 
@@ -163,14 +172,14 @@ async def get_ads_to_check(session: sessionDep, current_user: userDep, limit: in
 @router.get("/ad/data")
 async def get_ad_creator(id: int, request: Request, session: sessionDep):
     access_token = request.cookies.get("access_token")
-    if not access_token:
-        raise HTTPException(status_code=401, detail="Нет access токена")
 
-    try:
-        payload = jwt.decode(access_token, SECRET_KEY, algorithms=[ALGORITHM])
-        current_user_id = int(payload["sub"])
-    except (JWTError, ValueError, TypeError):
-        raise HTTPException(status_code=401, detail="Токен недействителен или истёк")
+    current_user_id = None
+    if access_token:
+        try:
+            payload = jwt.decode(access_token, SECRET_KEY, algorithms=[ALGORITHM])
+            current_user_id = int(payload["sub"])
+        except (JWTError, ValueError, TypeError):
+            pass
 
     ad = await session.get(Ad, id)
     if not ad:
@@ -182,7 +191,7 @@ async def get_ad_creator(id: int, request: Request, session: sessionDep):
 
     valid_user = UserOut.model_validate(user)
     valid_ad = AdOut.model_validate(ad)
-    is_creator = current_user_id == ad.user_id
+    is_creator = current_user_id is not None and current_user_id == ad.user_id
 
     # Форматируем дату создания пользователя
     valid_user.created_at = valid_user.created_at.strftime("%d.%m.%Y")
@@ -327,6 +336,9 @@ async def get_reported_ads(session: sessionDep, current_user: userDep, limit: in
     result = await session.scalars(query)
     ads = result.all()
     ads_out = [AdOut.model_validate(ad) for ad in ads]
+    # Форматируем время потери/нахождения питомца
+    for ad_out in ads_out:
+        ad_out.time = ad_out.time.strftime("%d.%m.%Y %H:%M")
 
     return {"success": True, "ads": ads_out}
 
