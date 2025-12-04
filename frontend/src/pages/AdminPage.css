@@ -33,19 +33,6 @@
     padding: .25rem .5rem;
 }
 
-.in-table {
-    font-size: 0;
-    padding: 0.5rem 1rem;
-    display: block;
-    transition: all .25s ease;
-}
-
-.in-table:hover {
-    padding: 0.5rem 2rem;
-    display: flex;
-    font-size: inherit;
-}
-
 .admin-table-details-column {
     display: flex;
     gap: .5rem;
@@ -61,7 +48,9 @@
         padding-right: 2rem;
     }
 
-    .in-table:hover {
+    .in-table {
         font-size: 0;
+        padding: .5rem 1rem;
+        display: block;
     }
 }

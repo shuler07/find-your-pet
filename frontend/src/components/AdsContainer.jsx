@@ -10,7 +10,11 @@ import { getGeolocation } from "../functions";
 export default function AdsContainer({ ads, inProfile }) {
     const showAds = () => {
         return ads.map((value, index) => (
-            <AdCard key={`keyAdCard${index}`} ad={value} bg={inProfile ? "var(--secondary-color)" : "var(--main-color)"} />
+            <AdCard
+                key={`keyAdCard${index}`}
+                ad={value}
+                bg={inProfile ? "var(--secondary-color)" : "var(--main-color)"}
+            />
         ));
     };
 
@@ -63,7 +67,18 @@ function AdCard({ ad, bg }) {
     const distinctiveFeatures = distincts
         ? `Отличительные признаки: ${distincts}`
         : "Отличительные признаки не указаны";
-    const placeAndTimeData = `${location}, ${time}`;
+    const timeObj = new Date(time);
+    const timeText = `${timeObj.getDate().toString().padStart(2, "0")}.${timeObj
+        .getMonth()
+        .toString()
+        .padStart(2, "0")}.${timeObj
+        .getFullYear()
+        .toString()
+        .padStart(2, "0")} ${timeObj
+        .getHours()
+        .toString()
+        .padStart(2, "0")}:${timeObj.getMinutes().toString().padStart(2, "0")}`;
+    const placeAndTimeData = `${location}, ${timeText}`;
 
     const [geoloc, setGeoloc] = useState(null);
     useEffect(() => {

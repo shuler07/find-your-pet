@@ -122,8 +122,6 @@ async def get_ads(session: sessionDep, filters: AdFilters, request: Request):
 
         ads_out = [AdOut.model_validate(ad) for ad in ads]
 
-        for ad_out in ads_out:
-            ad_out.time = ad_out.time.strftime("%d.%m.%Y %H:%M")
         return {"success": True, "ads": ads_out}
     except Exception as e:
         print("Ошибка в /ads:", e)
@@ -143,8 +141,6 @@ async def get_user_ads(session: sessionDep, current_user: userDep, uid: int = 0)
     ads = result.all()
     ads_out = [AdOut.model_validate(ad) for ad in ads]
 
-    for ad_out in ads_out:
-        ad_out.time = ad_out.time.strftime("%d.%m.%Y %H:%M")
     return {"success": True, "ads": ads_out}
 
 
@@ -162,9 +158,6 @@ async def get_ads_to_check(session: sessionDep, current_user: userDep, limit: in
     result = await session.scalars(query)
     ads = result.all()
     ads_out = [AdOut.model_validate(ad) for ad in ads]
-
-    for ad_out in ads_out:
-        ad_out.created_at = ad_out.created_at.strftime("%d.%m.%Y %H:%M")
 
     return {"success": True, "ads": ads_out}
 
@@ -192,10 +185,6 @@ async def get_ad_creator(id: int, request: Request, session: sessionDep):
     valid_user = UserOut.model_validate(user)
     valid_ad = AdOut.model_validate(ad)
     is_creator = current_user_id is not None and current_user_id == ad.user_id
-
-    valid_user.created_at = valid_user.created_at.strftime("%d.%m.%Y")
-
-    valid_ad.time = valid_ad.time.strftime("%d.%m.%Y %H:%M")
 
     return {
         "success": True,
@@ -334,9 +323,6 @@ async def get_reported_ads(session: sessionDep, current_user: userDep, limit: in
     result = await session.scalars(query)
     ads = result.all()
     ads_out = [AdOut.model_validate(ad) for ad in ads]
-
-    for ad_out in ads_out:
-        ad_out.created_at = ad_out.created_at.strftime("%d.%m.%Y %H:%M")
 
     return {"success": True, "ads": ads_out}
 

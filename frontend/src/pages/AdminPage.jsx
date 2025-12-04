@@ -140,10 +140,22 @@ function AdsToCheckSection({ ads, GetAdsToCheck, CallAlert }) {
 
     const getRows = () => {
         if (ads.length > 0) {
-            return ads.map((ad, index) => (
-                <tr key={`keyAdsToCheck${index}`}>
+            return ads.map((ad, index) => {
+                const createdAtObj = new Date(ad.created_at);
+                const createdAtText = `${createdAtObj.getDate().toString().padStart(2, "0")}.${createdAtObj
+                    .getMonth()
+                    .toString()
+                    .padStart(2, "0")}.${createdAtObj
+                    .getFullYear()
+                    .toString()
+                    .padStart(2, "0")} ${createdAtObj
+                    .getHours()
+                    .toString()
+                    .padStart(2, "0")}:${createdAtObj.getMinutes().toString().padStart(2, "0")}`;
+
+                return <tr key={`keyAdsToCheck${index}`}>
                     <td>{ad.user_id}</td>
-                    <td>{ad.created_at}</td>
+                    <td>{createdAtText}</td>
                     <td className="admin-table-details-column">
                         <button
                             className="primary-button red left-img in-table"
@@ -168,7 +180,7 @@ function AdsToCheckSection({ ads, GetAdsToCheck, CallAlert }) {
                         </button>
                     </td>
                 </tr>
-            ));
+            });
         }
     };
 
@@ -260,10 +272,22 @@ function ReportedAdsSection({ ads, GetReportedAds, CallAlert }) {
 
     const getRows = () => {
         if (ads.length > 0) {
-            return ads.map((ad, index) => (
-                <tr key={`keyAdsToCheck${index}`}>
+            return ads.map((ad, index) => {
+                const createdAtObj = new Date(ad.created_at);
+                const createdAtText = `${createdAtObj.getDate().toString().padStart(2, "0")}.${createdAtObj
+                    .getMonth()
+                    .toString()
+                    .padStart(2, "0")}.${createdAtObj
+                    .getFullYear()
+                    .toString()
+                    .padStart(2, "0")} ${createdAtObj
+                    .getHours()
+                    .toString()
+                    .padStart(2, "0")}:${createdAtObj.getMinutes().toString().padStart(2, "0")}`;
+
+                return <tr key={`keyAdsToCheck${index}`}>
                     <td>{ad.user_id}</td>
-                    <td>{ad.created_at}</td>
+                    <td>{createdAtText}</td>
                     <td className="admin-table-details-column">
                         <button
                             className="primary-button red left-img in-table"
@@ -288,7 +312,7 @@ function ReportedAdsSection({ ads, GetReportedAds, CallAlert }) {
                         </button>
                     </td>
                 </tr>
-            ));
+            });
         }
     };
 

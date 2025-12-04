@@ -70,17 +70,25 @@
 }
 
 .profile-card-field {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
     padding: .5rem;
     background:var(--secondary-color);
     border-radius: .5rem;
     flex-grow: 1;
 }
 
-.profile-card-field > h6 {
+.profile-card-field > img {
+    width: 1.5rem;
+    height: 1.5rem;
+}
+
+.profile-card-field h6 {
     font-size: .8em;
 }
 
-.profile-card-field > h3 {
+.profile-card-field h3 {
     font-weight: 500;
 }
 

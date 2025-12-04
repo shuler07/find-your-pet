@@ -48,7 +48,8 @@ export default function ProfilePage() {
         GetUser();
     }, []);
 
-    const { CallAlert, setSignedIn, theme, setTheme, isAdmin } = useContext(AppContext);
+    const { CallAlert, setSignedIn, theme, setTheme, isAdmin } =
+        useContext(AppContext);
 
     async function GetUser() {
         const data = await ApiGetUser(0);
@@ -91,7 +92,9 @@ export default function ProfilePage() {
             </div>
             <Footer />
         </>
-    ) : <PageUnavailable message="Эта страница для вас недоступна :(" />;
+    ) : (
+        <PageUnavailable message="Эта страница для вас недоступна :(" />
+    );
 }
 
 function ProfileCard({
@@ -106,6 +109,14 @@ function ProfileCard({
     tg,
     max,
 }) {
+    const createdAtObj = new Date(created_at);
+    const createdAtText = `${createdAtObj
+        .getDate()
+        .toString()
+        .padStart(2, "0")}.${(createdAtObj.getMonth() + 1)
+        .toString()
+        .padStart(2, "0")}.${createdAtObj.getFullYear().toString()}`;
+
     const handleClickEditAvatar = async (e) => {
         const img = e.target.files[0];
         if (!img) return;
@@ -157,30 +168,48 @@ function ProfileCard({
             <div id="profile-card-info">
                 <h2>{name}</h2>
                 <h6 style={{ marginTop: "-1.25rem" }}>
-                    Зарегистрирован {created_at}
+                    Зарегистрирован {createdAtText}
                 </h6>
                 <div
                     style={{ display: "flex", gap: ".5rem", flexWrap: "wrap" }}
                 >
                     <div className="profile-card-field">
-                        <h6>Почта</h6>
-                        <h3>{email}</h3>
+                        <img src="/icons/email.png" />
+                        <div>
+                            <h6>Почта</h6>
+                            <h3>{email}</h3>
+                        </div>
                     </div>
                     <div className="profile-card-field">
-                        <h6>Телефон</h6>
-                        <h3>{phone || "Не указан"}</h3>
+                        <img src="/icons/phone.png" />
+                        <div>
+                            <h6>Телефон</h6>
+                            <h3>{phone || "Не указан"}</h3>
+                        </div>
                     </div>
                     <div className="profile-card-field">
-                        <h6>ВКонтакте</h6>
-                        <h3>{vk || "Не указан"}</h3>
+                        <img src="/icons/vk.png" />
+                        <div>
+                            {" "}
+                            <h6>ВКонтакте</h6>
+                            <h3>{vk || "Не указан"}</h3>
+                        </div>
                     </div>
                     <div className="profile-card-field">
-                        <h6>Telegram</h6>
-                        <h3>{tg || "Не указан"}</h3>
+                        <img src="/icons/tg.png" />
+                        <div>
+                            {" "}
+                            <h6>Telegram</h6>
+                            <h3>{tg || "Не указан"}</h3>
+                        </div>
                     </div>
                     <div className="profile-card-field">
-                        <h6>Max</h6>
-                        <h3>{max || "Не указан"}</h3>
+                        <img src="/icons/max.png" />
+                        <div>
+                            {" "}
+                            <h6>Max</h6>
+                            <h3>{max || "Не указан"}</h3>
+                        </div>
                     </div>
                 </div>
             </div>

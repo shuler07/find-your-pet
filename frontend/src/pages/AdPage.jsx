@@ -155,6 +155,17 @@ function PetInfo({
     const nicknameText = nickname != "" ? nickname : "Кличка неизвестна";
     const distinctsText = distincts != "" ? distincts : "Не указаны";
     const extrasText = extras != "" ? extras : "Не указана";
+    const timeObj = new Date(time);
+    const timeText = `${timeObj.getDate().toString().padStart(2, "0")}.${timeObj
+        .getMonth()
+        .toString()
+        .padStart(2, "0")}.${timeObj
+        .getFullYear()
+        .toString()
+        .padStart(2, "0")} ${timeObj
+        .getHours()
+        .toString()
+        .padStart(2, "0")}:${timeObj.getMinutes().toString().padStart(2, "0")}`;
     const helpText =
         isAdmin && (state == "pending" || reported)
             ? "Проверьте объявление на корректность и адекватность"
@@ -328,7 +339,7 @@ function PetInfo({
                     {AD_INFO_DICT.region[region]}
                 </h6>
                 <h6>
-                    <span style={{ fontWeight: "600" }}>Время:</span> {time}
+                    <span style={{ fontWeight: "600" }}>Время:</span> {timeText}
                 </h6>
             </div>
             <div>
@@ -361,6 +372,13 @@ function PetContacts({
     const vkText = vk.length > 0 ? vk : "Не указан";
     const tgText = tg.length > 0 ? tg : "Не указан";
     const maxText = max.length > 0 ? max : "Не указан";
+    const createdAtObj = new Date(created_at);
+    const createdAtText = `${createdAtObj
+        .getDate()
+        .toString()
+        .padStart(2, "0")}.${(createdAtObj.getMonth() + 1)
+        .toString()
+        .padStart(2, "0")}.${createdAtObj.getFullYear().toString()}`;
 
     const handleClickContacts = () => {
         navigate(`/profile/${uid}`);
@@ -374,7 +392,7 @@ function PetContacts({
                     <h3>{name}</h3>
                     <h6
                         style={{ fontSize: ".8em" }}
-                    >{`${profileText}, участник сообщества с ${created_at}`}</h6>
+                    >{`${profileText}, участник сообщества с ${createdAtText}`}</h6>
                 </div>
             </div>
             <div

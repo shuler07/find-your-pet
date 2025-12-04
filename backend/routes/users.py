@@ -212,7 +212,6 @@ async def get_user(request: Request, session: sessionDep, uid: int = 0):
         raise HTTPException(status_code=404, detail="Пользователь не найден")
 
     valid_user = UserOut.model_validate(user)
-    valid_user.created_at = valid_user.created_at.strftime("%d.%m.%Y")
 
     return {"user": valid_user}
 
