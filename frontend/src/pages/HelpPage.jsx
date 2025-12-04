@@ -1,9 +1,7 @@
 import './HelpPage.css'
 
-export default function HelpPage() {
-    return (
-        <div id='help-page-container'>
+import PageUnavailable from '../components/PageUnavailable'
 
-        </div>
-    )
+export default function HelpPage() {
+    return <PageUnavailable message="Страница в разработке :(" />
 }
