@@ -34,7 +34,7 @@ export const API_PATHS = {
     get_server_stats: API_BASENAME + "/server/stats",
 };
 
-export const DEBUG = true;
+export const DEBUG = false;
 
 export const CREATE_AD_STAGES = [
     "1. Основная информация",

@@ -40,6 +40,7 @@ services:
       args:
         - VITE_YMAPS_API_KEY=${VITE_YMAPS_API_KEY}
         - VITE_YMAPS_GEOSUGGEST_API_KEY=${VITE_YMAPS_GEOSUGGEST_API_KEY}
+        - VITE_IMAGE_UPLOADER_API_KEY=${VITE_IMAGE_UPLOADER_API_KEY}
     image: shuler7/find-your-pet-frontend:1.0
     networks:
       - frontend
