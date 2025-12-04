@@ -77,6 +77,8 @@ export default function SearchAdsPage() {
     const [geolocOpened, setGeolocOpened] = useState(false);
 
     async function GetAds() {
+        if (mobileView) setSidebarOpened(false);
+
         setSearchButtonDisabled(true);
 
         const filters = Object.fromEntries(
