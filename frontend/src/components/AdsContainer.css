@@ -1,5 +1,5 @@
 .ad-card {
-    width: 14rem;
+    min-width: 12rem;
     max-width: 20rem;
     flex-grow: 1;
     position: relative;

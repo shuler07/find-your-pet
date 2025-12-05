@@ -1,4 +1,4 @@
-const API_BASENAME = "http://localhost:8000";
+const API_BASENAME = import.meta.env.APP_URL;
 export const API_PATHS = {
     auth: API_BASENAME + "/me",
     refresh: API_BASENAME + "/refresh",

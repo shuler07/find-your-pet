@@ -22,8 +22,9 @@ export default function AdsContainer({ ads, inProfile }) {
         ads.length > 0
             ? {
                   width: "100%",
-                  display: "flex",
-                  flexWrap: "wrap",
+                  display: "grid",
+                  gridTemplateColumns: "repeat(auto-fit, minmax(12rem, 1fr))",
+                  gridTemplateRows: "repeat(auto-fit, minmax(12rem, 1fr))",
                   gap: "1rem",
               }
             : {

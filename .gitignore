@@ -12,6 +12,7 @@ template
 dist-ssr
 dist
 *.local
+.ssh
 
 # Editor directories and files
 .vscode/*
