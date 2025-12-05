@@ -32,9 +32,6 @@ class User(Base):
     notificationsLocation: Mapped[Optional[ARRAY[float]]] = mapped_column(
         ARRAY(Float, as_tuple=True), default=[]
     )
-    tg: Mapped[Optional[str]] = mapped_column(default="")
-    vk: Mapped[Optional[str]] = mapped_column(default="")
-    max: Mapped[Optional[str]] = mapped_column(default="")
 
 
 class Ad(Base):
