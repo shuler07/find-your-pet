@@ -1,0 +1,170 @@
+stages:
+  - test
+  - build
+  - publish
+
+workflow:
+  rules:
+    - if: $CI_COMMIT_TAG
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH
+
+variables:
+  PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
+  NPM_CACHE_DIR: "$CI_PROJECT_DIR/.npm"
+
+  DOCKER_DRIVER: overlay2
+  DOCKER_TLS_CERTDIR: ""
+
+  BACKEND_IMAGE: "$CI_REGISTRY_IMAGE/backend"
+  FRONTEND_IMAGE: "$CI_REGISTRY_IMAGE/frontend"
+  IMAGE_TAG: "$CI_COMMIT_REF_SLUG-$CI_COMMIT_SHORT_SHA"
+
+  FRONTEND_APP_URL: "/backend"
+  VITE_YMAPS_API_KEY: ""
+  VITE_YMAPS_GEOSUGGEST_API_KEY: ""
+  VITE_IMAGE_UPLOADER_API_KEY: ""
+
+cache:
+  key: "$CI_PROJECT_ID-$CI_COMMIT_REF_SLUG"
+  paths:
+    - .cache/pip/
+    - .npm/
+
+backend:pytest:
+  stage: test
+  image: python:3.13
+  variables:
+  
+    URL_DATABASE: "postgresql+asyncpg://ci:ci@localhost:5432/ci"
+    SECRET_KEY: "ci-secret"
+    SMTP_HOST: "smtp.example.com"
+    SMTP_PORT: "587"
+    SMTP_USER: "ci@example.com"
+    SMTP_PASSWORD: "ci-password"
+    EMAIL_FROM: "ci@example.com"
+    APP_URL: "http://localhost"
+  before_script:
+    - cd backend
+    - python -V
+    - pip install --upgrade pip
+    - pip install -r requirements.txt
+    - pip install -r requirements-dev.txt
+  script:
+    - pytest --junitxml=report.xml --cov=. --cov-report=xml:coverage.xml --cov-report=term-missing
+  coverage: '/TOTAL.+\s+(\d+)%/'
+  artifacts:
+    when: always
+    reports:
+      junit: backend/report.xml
+      coverage_report:
+        coverage_format: cobertura
+        path: backend/coverage.xml
+    paths:
+      - backend/report.xml
+      - backend/coverage.xml
+
+frontend:build:
+  stage: build
+  image: node:20
+  needs: ["backend:pytest"]
+  before_script:
+    - cd frontend
+    - node -v
+    - npm -v
+    - npm ci --cache "$NPM_CACHE_DIR" --prefer-offline
+  script:
+    - npm run build
+  artifacts:
+    expire_in: 1 day
+    paths:
+      - frontend/dist/
+  rules:
+    - if: $CI_COMMIT_TAG
+    - if: $CI_COMMIT_BRANCH
+
+docker:build:
+  stage: build
+  image: docker:24.0.5
+  services:
+    - name: docker:24.0.5-dind
+  needs: ["backend:pytest"]
+  before_script:
+    - docker info
+  script:
+    - docker build -t "$BACKEND_IMAGE:$IMAGE_TAG" -f backend/Dockerfile backend
+    - |
+      docker build \
+        -t "$FRONTEND_IMAGE:$IMAGE_TAG" \
+        -f frontend/Dockerfile frontend \
+        --build-arg VITE_YMAPS_API_KEY="$VITE_YMAPS_API_KEY" \
+        --build-arg VITE_YMAPS_GEOSUGGEST_API_KEY="$VITE_YMAPS_GEOSUGGEST_API_KEY" \
+        --build-arg VITE_IMAGE_UPLOADER_API_KEY="$VITE_IMAGE_UPLOADER_API_KEY" \
+        --build-arg APP_URL="$FRONTEND_APP_URL"
+
+    - |
+      docker run --rm \
+        -e URL_DATABASE="postgresql+asyncpg://ci:ci@localhost:5432/ci" \
+        -e SECRET_KEY="ci-secret" \
+        -e SMTP_HOST="smtp.example.com" \
+        -e SMTP_PORT="587" \
+        -e SMTP_USER="ci@example.com" \
+        -e SMTP_PASSWORD="ci-password" \
+        -e EMAIL_FROM="ci@example.com" \
+        -e APP_URL="http://localhost" \
+        "$BACKEND_IMAGE:$IMAGE_TAG" \
+        python -c "import main; print('backend image ok')"
+    - docker run --rm "$FRONTEND_IMAGE:$IMAGE_TAG" nginx -t
+
+    - docker save "$BACKEND_IMAGE:$IMAGE_TAG" -o backend-image.tar
+    - docker save "$FRONTEND_IMAGE:$IMAGE_TAG" -o frontend-image.tar
+  artifacts:
+    expire_in: 1 day
+    paths:
+      - backend-image.tar
+      - frontend-image.tar
+  rules:
+    - if: $CI_COMMIT_TAG
+    - if: $CI_COMMIT_BRANCH
+
+docker:publish:
+  stage: publish
+  image: docker:24.0.5
+  services:
+    - name: docker:24.0.5-dind
+  needs: ["docker:build"]
+  before_script:
+    - docker info
+    - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin "$CI_REGISTRY"
+  script:
+    - docker load -i backend-image.tar
+    - docker load -i frontend-image.tar
+
+    - docker tag "$BACKEND_IMAGE:$IMAGE_TAG" "$BACKEND_IMAGE:$CI_COMMIT_REF_SLUG"
+    - docker tag "$FRONTEND_IMAGE:$IMAGE_TAG" "$FRONTEND_IMAGE:$CI_COMMIT_REF_SLUG"
+
+    - docker push "$BACKEND_IMAGE:$IMAGE_TAG"
+    - docker push "$BACKEND_IMAGE:$CI_COMMIT_REF_SLUG"
+    - docker push "$FRONTEND_IMAGE:$IMAGE_TAG"
+    - docker push "$FRONTEND_IMAGE:$CI_COMMIT_REF_SLUG"
+
+    - |
+      if [ "$CI_COMMIT_BRANCH" = "main" ]; then
+        docker tag "$BACKEND_IMAGE:$IMAGE_TAG" "$BACKEND_IMAGE:latest";
+        docker tag "$FRONTEND_IMAGE:$IMAGE_TAG" "$FRONTEND_IMAGE:latest";
+        docker push "$BACKEND_IMAGE:latest";
+        docker push "$FRONTEND_IMAGE:latest";
+      fi
+
+    - |
+      if [ -n "$CI_COMMIT_TAG" ]; then
+        docker tag "$BACKEND_IMAGE:$IMAGE_TAG" "$BACKEND_IMAGE:$CI_COMMIT_TAG";
+        docker tag "$FRONTEND_IMAGE:$IMAGE_TAG" "$FRONTEND_IMAGE:$CI_COMMIT_TAG";
+        docker push "$BACKEND_IMAGE:$CI_COMMIT_TAG";
+        docker push "$FRONTEND_IMAGE:$CI_COMMIT_TAG";
+      fi
+
+    - docker run --rm "$FRONTEND_IMAGE:$IMAGE_TAG" nginx -t
+  rules:
+    - if: $CI_COMMIT_TAG
+    - if: $CI_COMMIT_BRANCH == "main"

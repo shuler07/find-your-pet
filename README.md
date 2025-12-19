@@ -199,6 +199,18 @@ find-your-pet/
 git clone https://github.com/shuler07/find-your-pet.git
 cd find-your-pet
 
+```
+
+## 🔁 CI/CD (GitLab)
+
+В репозитории настроен пайплайн GitLab CI/CD: запуск unit-тестов backend с отчётами (JUnit + cobertura), сборка frontend, сборка Docker-образов и публикация в GitLab Container Registry.
+
+Ключевые файлы:
+
+- .gitlab-ci.yml
+- backend/tests/
+- backend/requirements-dev.txt
+
 # Настройте переменные окружения в .env файле, взяв за шаблон .env.example
 # Запустите приложение
 docker-compose up -d
