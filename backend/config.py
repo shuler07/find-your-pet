@@ -21,7 +21,7 @@ SMTP_HOST = environ.get("SMTP_HOST")
 SMTP_PORT = int(environ.get("SMTP_PORT", 587))
 SMTP_USER = environ.get("SMTP_USER")
 SMTP_PASSWORD = environ.get("SMTP_PASSWORD")
-APP_URL = environ.get("APP_URL")
+APP_URL = "http://localhost:8000"
 EMAIL_FROM = environ.get("EMAIL_FROM")
 
 if not all([SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASSWORD, APP_URL, EMAIL_FROM]):
