@@ -6,7 +6,7 @@ services:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       - POSTGRES_DB=${POSTGRES_DB}
     networks:
-      - backend
+      - main
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "${POSTGRES_USER}", "-d", "${POSTGRES_DB}"]
       interval: 3s
@@ -17,7 +17,7 @@ services:
       - data:/var/lib/postgresql/data
   backend:
     build: ./backend
-    image: shuler7/find-your-pet-backend:1.0
+    image: shuler7/find-your-pet-backend:latest
     environment:
       - URL_DATABASE=${URL_DATABASE}
       - SECRET_KEY=${SECRET_KEY}
@@ -27,8 +27,7 @@ services:
       - EMAIL_FROM=${EMAIL_FROM}
       - APP_URL=${APP_URL}
     networks:
-      - backend
-      - frontend
+      - main
     ports:
       - "8000:8000"
     depends_on:
@@ -38,23 +37,20 @@ services:
     build:
       context: ./frontend
       args:
-        - VITE_YMAPS_API_KEY=${VITE_YMAPS_API_KEY}
-        - VITE_YMAPS_GEOSUGGEST_API_KEY=${VITE_YMAPS_GEOSUGGEST_API_KEY}
-        - VITE_IMAGE_UPLOADER_API_KEY=${VITE_IMAGE_UPLOADER_API_KEY}
+        - YMAPS_API_KEY=${YMAPS_API_KEY}
+        - YMAPS_GEOSUGGEST_API_KEY=${YMAPS_GEOSUGGEST_API_KEY}
+        - IMAGE_UPLOADER_API_KEY=${IMAGE_UPLOADER_API_KEY}
         - APP_URL=${APP_URL}
-    image: shuler7/find-your-pet-frontend:1.0
+    image: shuler7/find-your-pet-frontend:latest
     networks:
-      - frontend
+      - main
     ports:
       - "5173:5173"
     depends_on:
       - backend
 
 networks:
-  backend:
-    driver: bridge
-    internal: true
-  frontend:
+  main:
     driver: bridge
   
 volumes:
